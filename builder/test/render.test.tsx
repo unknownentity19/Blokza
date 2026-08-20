@@ -360,7 +360,7 @@ describe('inline editing', () => {
 
     act(() => useEditor.getState().beginEdit(first, 'text'));
     // Typing, as the browser would: the DOM changes, the prop does not yet.
-    frameEl(first).innerText = 'Typed into the first one';
+    frameEl(first).textContent = 'Typed into the first one';
     expect(useEditor.getState().doc.nodes[first].props.text).not.toBe('Typed into the first one');
 
     // Switching sessions used to drop this text on the floor: the effect cleanup
@@ -375,7 +375,7 @@ describe('inline editing', () => {
     await mount();
     const headingId = selectAHeading();
     act(() => useEditor.getState().beginEdit(headingId, 'text'));
-    frameEl(headingId).innerText = 'Committed on end';
+    frameEl(headingId).textContent = 'Committed on end';
     act(() => useEditor.getState().endEdit());
     expect(useEditor.getState().doc.nodes[headingId].props.text).toBe('Committed on end');
   });
@@ -554,5 +554,96 @@ describe('edit session guards', () => {
     // A link that is mid-edit would otherwise navigate the frame and replace the
     // document React portals into, blanking the canvas.
     expect(event.defaultPrevented).toBe(true);
+  });
+});
+
+describe('canvas formatting toolbar', () => {
+  function frameWin2(): Window & typeof globalThis {
+    const frame = container.querySelector('iframe.cv-frame') as HTMLIFrameElement;
+    return frame.contentWindow as Window & typeof globalThis;
+  }
+
+  /** `new frameWin2().FocusEvent(...)` parses as calling frameWin2 as a constructor. */
+  function blurEvent(): Event {
+    const win = frameWin2();
+    return new win.FocusEvent('blur');
+  }
+
+  function slot(nodeId: string): HTMLElement {
+    const frame = container.querySelector('iframe.cv-frame') as HTMLIFrameElement;
+    const el = frame.contentDocument?.querySelector<HTMLElement>(`[data-node-id="${nodeId}"]`);
+    if (!el) throw new Error(`no element for ${nodeId}`);
+    return el;
+  }
+
+  it('holds the edit session open while the link popover has focus', async () => {
+    await mount();
+    const headingId = selectAHeading();
+    act(() => useEditor.getState().beginEdit(headingId, 'text'));
+
+    // The popover's field must take focus to be typed into, which blurs the
+    // element being edited. Without the guard that blur committed and ended the
+    // session, unmounting the toolbar the user was mid-way through using.
+    act(() => useEditor.getState().setLinkPopoverOpen(true));
+    act(() => slot(headingId).dispatchEvent(blurEvent()));
+
+    expect(useEditor.getState().editing?.nodeId).toBe(headingId);
+    expect(slot(headingId).getAttribute('contenteditable')).toBe('true');
+  });
+
+  it('commits on blur again once the popover closes', async () => {
+    await mount();
+    const headingId = selectAHeading();
+    act(() => useEditor.getState().beginEdit(headingId, 'text'));
+    act(() => useEditor.getState().setLinkPopoverOpen(true));
+    act(() => useEditor.getState().setLinkPopoverOpen(false));
+
+    slot(headingId).textContent = 'Edited then blurred';
+    act(() => slot(headingId).dispatchEvent(blurEvent()));
+
+    expect(useEditor.getState().doc.nodes[headingId].props.text).toBe('Edited then blurred');
+    expect(useEditor.getState().editing).toBeNull();
+  });
+
+  it('clears the popover flag when the session ends', async () => {
+    await mount();
+    const headingId = selectAHeading();
+    act(() => useEditor.getState().beginEdit(headingId, 'text'));
+    act(() => useEditor.getState().setLinkPopoverOpen(true));
+    act(() => useEditor.getState().endEdit());
+    // A stale flag would suppress every future commit-on-blur.
+    expect(useEditor.getState().linkPopoverOpen).toBe(false);
+  });
+
+  it('commits formatting markup, not just plain text', async () => {
+    await mount();
+    const headingId = selectAHeading();
+    act(() => useEditor.getState().beginEdit(headingId, 'text'));
+    // What execCommand('bold') leaves behind.
+    slot(headingId).innerHTML = 'Ship <b>faster</b>';
+    act(() => useEditor.getState().endEdit());
+    expect(useEditor.getState().doc.nodes[headingId].props.text).toBe('Ship <b>faster</b>');
+  });
+
+  it('normalises a styled span on commit, so Safari formatting survives', async () => {
+    await mount();
+    const headingId = selectAHeading();
+    act(() => useEditor.getState().beginEdit(headingId, 'text'));
+    slot(headingId).innerHTML = 'Ship <span style="font-weight: bold">faster</span>';
+    act(() => useEditor.getState().endEdit());
+    expect(useEditor.getState().doc.nodes[headingId].props.text).toBe('Ship <b>faster</b>');
+  });
+
+  it('strips anything outside the inline subset on commit', async () => {
+    await mount();
+    const headingId = selectAHeading();
+    act(() => useEditor.getState().beginEdit(headingId, 'text'));
+    slot(headingId).innerHTML = 'Ship <div>faster</div><script>x()</script>';
+    act(() => useEditor.getState().endEdit());
+
+    const stored = useEditor.getState().doc.nodes[headingId].props.text as string;
+    expect(stored).not.toContain('div');
+    expect(stored).not.toContain('script');
+    expect(stored).toBe('Ship faster');
   });
 });

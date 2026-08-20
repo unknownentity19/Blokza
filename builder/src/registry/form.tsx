@@ -9,7 +9,7 @@
  */
 
 import type { ComponentDef, RenderProps } from '../core/types';
-import { EmptySlot, Txt, bool, cls, editSlot, list, num, options, str } from './helpers';
+import { EmptySlot, bool, cls, editSlot, list, num, options, str, textHtml } from './helpers';
 import { safeHref } from '../core/sanitize';
 import { slugify } from '../core/ids';
 import { BUTTON_CSS, FORM_CONTROL_CSS } from './shared-css';
@@ -113,9 +113,7 @@ export const input: ComponentDef = {
     const id = `f-${p.node.id}`;
     return (
       <div {...p.attrs}>
-        <label htmlFor={id} {...editSlot(p, 'label')}>
-          <Txt p={p} k="label" />
-        </label>
+        <label htmlFor={id} {...editSlot(p, 'label')} {...textHtml(p, 'label')} />
         <input
           id={id}
           name={name}
@@ -149,9 +147,7 @@ export const textarea: ComponentDef = {
     const id = `f-${p.node.id}`;
     return (
       <div {...p.attrs}>
-        <label htmlFor={id} {...editSlot(p, 'label')}>
-          <Txt p={p} k="label" />
-        </label>
+        <label htmlFor={id} {...editSlot(p, 'label')} {...textHtml(p, 'label')} />
         <textarea
           id={id}
           name={fieldName(p, 'message')}
@@ -197,9 +193,7 @@ export const select: ComponentDef = {
     const items = list(p.props, 'items');
     return (
       <div {...p.attrs}>
-        <label htmlFor={id} {...editSlot(p, 'label')}>
-          <Txt p={p} k="label" />
-        </label>
+        <label htmlFor={id} {...editSlot(p, 'label')} {...textHtml(p, 'label')} />
         <select id={id} name={fieldName(p, 'choice')} required={bool(p.props, 'required')} defaultValue="">
           <option value="" disabled>
             Choose one
@@ -238,9 +232,7 @@ export const checkbox: ComponentDef = {
     return (
       <div {...p.attrs}>
         <input id={id} type="checkbox" name={fieldName(p, 'optin')} required={bool(p.props, 'required')} />
-        <label htmlFor={id} {...editSlot(p, 'label')}>
-          <Txt p={p} k="label" />
-        </label>
+        <label htmlFor={id} {...editSlot(p, 'label')} {...textHtml(p, 'label')} />
       </div>
     );
   },
@@ -270,10 +262,7 @@ export const submit: ComponentDef = {
       {...p.attrs}
       className={cls(p, 'c-button', `c-button--${str(p.props, 'variant', 'primary').replace(/[^a-z]/gi, '') || 'primary'}`)}
       type={p.mode === 'export' ? 'submit' : 'button'}
-      {...editSlot(p, 'label')}
-    >
-      <Txt p={p} k="label" />
-    </button>
+      {...editSlot(p, 'label')} {...textHtml(p, 'label')} />
   ),
 };
 

@@ -993,6 +993,7 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   white-space: nowrap;
 }
 .cv-bar.is-inside { bottom: auto; top: 0; transform-origin: top left; }
+.cv-bar.is-hidden { display: none; }
 
 .cv-tag {
   display: block;
@@ -1302,6 +1303,88 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   pointer-events: none;
   z-index: 2;
 }
+
+/* Formatting toolbar that follows a text selection in the canvas. Sits in the
+   overlay layer, which is pointer-events:none, so it opts back in. */
+.cv-fmt {
+  position: absolute;
+  z-index: 4;
+  transform-origin: bottom left;
+  margin-top: -8px;
+  translate: 0 -100%;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font);
+}
+
+.cv-fmt__row {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 3px;
+  background: #241a38;
+  border-radius: 6px;
+  box-shadow: 0 6px 20px -6px rgba(20, 14, 34, 0.55);
+}
+
+.cv-fmt__btn {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  font-size: 12px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.82);
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+}
+.cv-fmt__btn:hover { color: #fff; background: rgba(255, 255, 255, 0.14); }
+.cv-fmt__btn.is-on { color: #fff; background: var(--p-500); }
+.cv-fmt__btn strong, .cv-fmt__btn em { font-size: 12.5px; }
+
+.cv-fmt__sep { width: 1px; height: 16px; margin: 0 3px; background: rgba(255, 255, 255, 0.18); }
+
+.cv-fmt__link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+}
+.cv-fmt__pages {
+  width: 108px;
+  padding: 4px;
+  font-size: 11px;
+  color: var(--fg-2);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.cv-fmt__url {
+  width: 168px;
+  padding: 4px 6px;
+  font-size: 11.5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.cv-fmt__url:focus { outline: 2px solid var(--p-100); border-color: var(--p-300); }
+.cv-fmt__apply {
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--p-600);
+  border: 0;
+  border-radius: 4px;
+}
+.cv-fmt__apply:hover { background: var(--p-700); }
 
 /* ------------------------------------------------------------- preview -- */
 

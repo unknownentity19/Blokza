@@ -199,7 +199,9 @@ describe('multi-line text', () => {
     doc.nodes[headingId].props.text = 'First line\nSecond line';
 
     const html = fileNamed(doc, 'index.html');
-    expect(html).toContain('First line<br/>Second line');
+    // The break now comes from the sanitiser rather than React, so accept either
+    // serialisation — what matters is that the newline did not collapse.
+    expect(html).toMatch(/First line<br\s*\/?>Second line/);
   });
 
   it('leaves single-line text untouched', () => {
@@ -313,5 +315,65 @@ describe('anchors in the export', () => {
   it('omits the attribute when no anchor is set', () => {
     const { doc } = heroDoc();
     expect(fileNamed(doc, 'index.html')).not.toContain(' id="');
+  });
+});
+
+describe('inline rich text', () => {
+  it('keeps bold and italic authored on the canvas', () => {
+    const { doc } = heroDoc();
+    const headingId = Object.values(doc.nodes).find((node) => node.type === 'heading')?.id as string;
+    doc.nodes[headingId].props.text = 'Ship <b>faster</b> and <i>safer</i>';
+    const html = fileNamed(doc, 'index.html');
+    expect(html).toContain('<b>faster</b>');
+    expect(html).toContain('<i>safer</i>');
+  });
+
+  it('escapes a plain value that happens to contain markup characters', () => {
+    const { doc } = heroDoc();
+    const headingId = Object.values(doc.nodes).find((node) => node.type === 'heading')?.id as string;
+    doc.nodes[headingId].props.text = 'Tom & Jerry, a < b';
+    const html = fileNamed(doc, 'index.html');
+    expect(html).toContain('Tom &amp; Jerry, a &lt; b');
+  });
+
+  it('strips anything that is not inline markup', () => {
+    const { doc } = heroDoc();
+    const headingId = Object.values(doc.nodes).find((node) => node.type === 'heading')?.id as string;
+    doc.nodes[headingId].props.text = 'Safe<script>steal()</script><div>block</div><b>ok</b>';
+    const html = fileNamed(doc, 'index.html');
+    expect(html).not.toContain('script');
+    expect(html).not.toContain('<div>block');
+    expect(html).toContain('<b>ok</b>');
+  });
+
+  it('rewrites an internal link authored inside text to the exported filename', () => {
+    const { doc } = heroDoc();
+    const about = addPage(doc, 'Work');
+    const headingId = Object.values(doc.nodes).find((node) => node.type === 'heading')?.id as string;
+    doc.nodes[headingId].props.text = `See our <a href="${about.path}">work</a>`;
+
+    const html = fileNamed(doc, 'index.html');
+    // Links inside a text value never pass through a component's resolveHref, so
+    // without rewriting here this would ship as /work and 404 from a folder.
+    expect(html).toContain('href="work.html"');
+    expect(html).not.toContain('href="/work"');
+  });
+
+  it('neutralises an unsafe href authored inside text', () => {
+    const { doc } = heroDoc();
+    const headingId = Object.values(doc.nodes).find((node) => node.type === 'heading')?.id as string;
+    doc.nodes[headingId].props.text = '<a href="javascript:alert(1)">tap</a>';
+    expect(fileNamed(doc, 'index.html')).not.toContain('javascript:');
+  });
+
+  it('never lets an attribute-only prop become markup', () => {
+    const { doc } = heroDoc();
+    const imageId = Object.values(doc.nodes).find((node) => node.type === 'image')?.id as string;
+    doc.nodes[imageId].props.src = 'https://cdn.example.com/a.jpg';
+    doc.nodes[imageId].props.alt = '<b>not bold</b>';
+    const html = fileNamed(doc, 'index.html');
+    // alt is an attribute: it must be escaped, never interpreted.
+    expect(html).toContain('alt="&lt;b&gt;not bold&lt;/b&gt;"');
+    expect(html).not.toContain('alt=""><b>');
   });
 });

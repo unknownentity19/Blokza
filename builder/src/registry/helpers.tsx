@@ -8,9 +8,28 @@
  *     contenteditable; components only declare which element edits which prop.
  */
 
-import { Fragment, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { FieldOption, RenderProps } from '../core/types';
-import { sanitizeHtml } from '../core/sanitize';
+import { sanitizeHtml, sanitizeInline } from '../core/sanitize';
+
+/**
+ * Read a prop by key or dotted path (`items.2.text`).
+ *
+ * List entries are addressed by path, because that is also how the canvas
+ * addresses the slot it is editing — both routes have to resolve the same value.
+ */
+export function readPath(props: Record<string, unknown>, path: string): string | undefined {
+  if (!path.includes('.')) {
+    const direct = props[path];
+    return typeof direct === 'string' ? direct : typeof direct === 'number' ? String(direct) : undefined;
+  }
+  let cursor: unknown = props;
+  for (const part of path.split('.')) {
+    if (cursor === null || typeof cursor !== 'object') return undefined;
+    cursor = (cursor as Record<string, unknown>)[part];
+  }
+  return typeof cursor === 'string' ? cursor : undefined;
+}
 
 export function str(props: Record<string, unknown>, key: string, fallback = ''): string {
   const value = props[key];
@@ -43,30 +62,33 @@ export function editSlot(p: RenderProps, key: string): Record<string, string> {
 }
 
 /**
- * Text node with an inline-edit slot.
+ * Props that render a text value as the element's own content.
  *
- * Two things it has to get right:
+ * Spread onto the element that also carries `editSlot`, so the editable host and
+ * the HTML host are the same node. They have to be the same: if the value were
+ * wrapped in an inner `<span>`, committing `innerHTML` from the host would store
+ * that wrapper and accumulate one more on every edit.
  *
- *  - **Line breaks survive.** HTML collapses newlines, so text typed across
- *    several lines (in the inspector's textarea, or with shift+enter on the
- *    canvas) would silently render as one run. Each newline becomes a `<br />`,
- *    which round-trips cleanly because `innerText` turns it back into `\n` when
- *    the inline editor commits.
- *  - **Empty text stays clickable.** A heading with no content has no height and
- *    cannot be selected or typed into, so the canvas renders a zero-width space.
+ * The value may contain inline markup — `<b>`, `<i>`, `<a>`, `<br>` — because
+ * formatting is applied on the canvas. Anything else is stripped, and a plain
+ * string (which is what every document stored until now) escapes to itself.
  */
-export function Txt({ p, k, fallback = '' }: { p: RenderProps; k: string; fallback?: string }): ReactNode {
-  const value = str(p.props, k, fallback);
-  if (!value) return p.mode === 'canvas' ? '\u200b' : null;
-  if (!value.includes('\n')) return value;
-
-  const lines = value.split('\n');
-  return lines.map((line, index) => (
-    <Fragment key={index}>
-      {index > 0 ? <br /> : null}
-      {line}
-    </Fragment>
-  ));
+export function textHtml(
+  p: RenderProps,
+  k: string,
+  fallback = '',
+): { dangerouslySetInnerHTML: { __html: string } } {
+  const value = readPath(p.props, k) ?? fallback;
+  if (!value) {
+    // A zero-width space keeps an empty slot clickable; without it an empty
+    // heading has no height and cannot be selected or typed into.
+    return { dangerouslySetInnerHTML: { __html: p.mode === 'canvas' ? '\u200b' : '' } };
+  }
+  return {
+    dangerouslySetInnerHTML: {
+      __html: sanitizeInline(value, { resolveHref: p.resolveHref as (href: string) => string }),
+    },
+  };
 }
 
 export function textOf(p: RenderProps, k: string, fallback = ''): string {

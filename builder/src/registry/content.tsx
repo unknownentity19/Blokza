@@ -3,7 +3,7 @@
  */
 
 import type { ComponentDef, RenderProps } from '../core/types';
-import { EmptySlot, RichHtml, Txt, cls, editSlot, list, num, options, str } from './helpers';
+import { EmptySlot, RichHtml, cls, editSlot, list, num, options, str, textHtml } from './helpers';
 import { iconPath, ICON_NAMES } from './icons';
 import { BUTTON_CSS } from './shared-css';
 
@@ -41,9 +41,7 @@ export const heading: ComponentDef = {
   render: (p) => {
     const Tag = levelOf(p);
     return (
-      <Tag {...p.attrs} {...editSlot(p, 'text')}>
-        <Txt p={p} k="text" />
-      </Tag>
+      <Tag {...p.attrs} {...editSlot(p, 'text')} {...textHtml(p, 'text')} />
     );
   },
 };
@@ -64,9 +62,7 @@ export const text: ComponentDef = {
     mobile: { fontSize: '16px' },
   },
   render: (p) => (
-    <p {...p.attrs} {...editSlot(p, 'text')}>
-      <Txt p={p} k="text" />
-    </p>
+    <p {...p.attrs} {...editSlot(p, 'text')} {...textHtml(p, 'text')} />
   ),
 };
 
@@ -154,9 +150,7 @@ export const button: ComponentDef = {
         href={p.resolveHref(p.props.href)}
         {...(target === '_blank' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       >
-        <span {...editSlot(p, 'label')}>
-          <Txt p={p} k="label" />
-        </span>
+        <span {...editSlot(p, 'label')} {...textHtml(p, 'label')} />
         {icon ? (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d={iconPath(icon)} />
@@ -184,10 +178,7 @@ export const link: ComponentDef = {
         {...p.attrs}
         href={p.resolveHref(p.props.href)}
         {...(target === '_blank' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        {...editSlot(p, 'label')}
-      >
-        <Txt p={p} k="label" />
-      </a>
+        {...editSlot(p, 'label')} {...textHtml(p, 'label')} />
     );
   },
 };
@@ -224,9 +215,7 @@ export const badge: ComponentDef = {
     },
   },
   render: (p) => (
-    <span {...p.attrs} {...editSlot(p, 'text')}>
-      <Txt p={p} k="text" />
-    </span>
+    <span {...p.attrs} {...editSlot(p, 'text')} {...textHtml(p, 'text')} />
   ),
 };
 
@@ -255,16 +244,10 @@ export const quote: ComponentDef = {
 .c-quote cite { display: block; font-style: normal; font-weight: 600; color: var(--color-ink); }`,
   render: (p) => (
     <figure {...p.attrs}>
-      <blockquote {...editSlot(p, 'text')}>
-        <Txt p={p} k="text" />
-      </blockquote>
+      <blockquote {...editSlot(p, 'text')} {...textHtml(p, 'text')} />
       <footer>
-        <cite {...editSlot(p, 'author')}>
-          <Txt p={p} k="author" />
-        </cite>
-        <span {...editSlot(p, 'role')}>
-          <Txt p={p} k="role" />
-        </span>
+        <cite {...editSlot(p, 'author')} {...textHtml(p, 'author')} />
+        <span {...editSlot(p, 'role')} {...textHtml(p, 'role')} />
       </footer>
     </figure>
   ),
@@ -315,16 +298,17 @@ export const bulletList: ComponentDef = {
     return (
       <Tag {...p.attrs} className={cls(p, `c-list--${marker.replace(/[^a-z]/gi, '') || 'check'}`)}>
         {items.length === 0 && p.mode === 'canvas' ? <EmptySlot p={p} label="Add list items" /> : null}
-        {items.map((item, index) => (
+        {items.map((_item, index) => (
           <li key={index}>
             {marker === 'check' ? (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M20 6L9 17l-5-5" />
               </svg>
             ) : null}
-            <span {...editSlot(p, `items.${index}.text`)}>
-              {typeof item.text === 'string' && item.text ? item.text : '\u200b'}
-            </span>
+            <span
+              {...editSlot(p, `items.${index}.text`)}
+              {...textHtml(p, `items.${index}.text`)}
+            />
           </li>
         ))}
       </Tag>

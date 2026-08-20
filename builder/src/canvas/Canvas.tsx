@@ -15,10 +15,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { Frame } from './Frame';
+import { InlineToolbar } from './InlineToolbar';
 import { Overlay, type SelectionActions } from './Overlay';
 import { asElement, nodeIdFromTarget, passedThreshold, resolveDropTarget, type Point } from './dnd';
 import { BEGIN_DRAG_EVENT, type BeginDragDetail } from './dragSource';
 import { buildCanvasCss } from '../core/canvas-css';
+import { sanitizeInline } from '../core/sanitize';
 import { deviceById, clampZoom, nextZoom } from '../core/devices';
 import { nodeLabel } from '../core/factory';
 import { canMutate, selectableAncestor } from '../core/tree';
@@ -464,7 +466,7 @@ export function Canvas() {
     // because `trim()` does not strip U+200B — the zero-width space `Txt` renders
     // so an empty slot stays clickable — merely clicking an empty heading wrote
     // the prop and pushed an undo entry.
-    const beforeValue = normaliseSlotText(readText(el));
+    const beforeValue = normaliseSlotHtml(el.innerHTML);
 
     // `setAttribute` rather than the `contentEditable` property: both work in a
     // browser, but the attribute is what `[contenteditable="true"]` selectors and
@@ -472,6 +474,15 @@ export function Canvas() {
     el.setAttribute('contenteditable', 'true');
     el.spellcheck = false;
     el.focus({ preventScroll: true });
+
+    // Emit tags rather than styled spans, so bold survives the sanitiser: a
+    // `<span style="font-weight:bold">` would lose its style attribute and the
+    // formatting with it.
+    try {
+      frameDoc.execCommand('styleWithCSS', false, 'false');
+    } catch {
+      /* not supported; the sanitiser still normalises whatever arrives */
+    }
 
     // Double-click asked for the whole slot; a single click wants the caret where
     // it landed. Selecting everything on a plain click would arm a full text wipe
@@ -506,7 +517,10 @@ export function Canvas() {
       settled = true;
 
       if (mode === 'commit') {
-        const value = normaliseSlotText(readText(el));
+        // Sanitised on the way in as well as the way out: this is what normalises
+        // whatever the browser's formatting commands emitted (Chrome's <b>,
+        // Safari's styled spans) down to the inline subset the document stores.
+        const value = normaliseSlotHtml(el.innerHTML);
         if (value !== beforeValue) setProp(editing.nodeId, editing.key, value);
       }
       // Revert writes nothing at all. Assigning `textContent` here used to
@@ -542,6 +556,10 @@ export function Canvas() {
     };
 
     const onBlur = () => {
+      // Focus moved into the canvas link popover, not away from the text. Its
+      // input has to be focusable to be typed into, and ending the session here
+      // would unmount the toolbar mid-interaction and drop the selection.
+      if (useEditor.getState().linkPopoverOpen) return;
       settle('commit');
       endEdit();
     };
@@ -627,6 +645,8 @@ export function Canvas() {
           <RenderPage ctx={ctx} rootId={page.rootId} />
         </Frame>
 
+        <InlineToolbar frame={frame} active={editing !== null} zoom={effectiveZoom} />
+
         <Overlay
           frame={frame}
           selectedId={selectedId}
@@ -638,6 +658,7 @@ export function Canvas() {
           rejection={drag?.rejection}
           zoom={effectiveZoom}
           actions={actions}
+          editing={editing !== null}
         />
       </div>
     </div>
@@ -645,24 +666,19 @@ export function Canvas() {
 }
 
 /**
- * Text of an editable slot.
+ * Canonical form of a slot's contents, used on both sides of the change test.
  *
- * `innerText` is the one that matters: it turns the `<br />` elements a multi-line
- * value renders as back into newlines, which is what makes the round-trip work.
- * It is not universally implemented, so `textContent` is the fallback.
+ * Sanitising both sides is what makes the comparison meaningful: the browser
+ * rewrites markup as the user types and formats, and only the normalised form is
+ * stable. `trim()` alone was never enough either — a non-breaking space is
+ * whitespace to a reader but not to `trim`, and U+200B is not whitespace at all.
  */
-function readText(el: HTMLElement): string {
-  return el.innerText ?? el.textContent ?? '';
-}
-
-/**
- * Canonical form of a slot's text, used on both sides of the change test.
- *
- * `trim()` alone is not enough: a non-breaking space is whitespace to a reader
- * but not to `trim`, and U+200B is not whitespace at all.
- */
-function normaliseSlotText(value: string): string {
-  return value.replace(/\u00a0/g, ' ').replace(/\u200b/g, '').trim();
+function normaliseSlotHtml(html: string): string {
+  return sanitizeInline(html)
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\u200b/g, '')
+    .trim();
 }
 
 /**

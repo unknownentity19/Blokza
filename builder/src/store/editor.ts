@@ -152,6 +152,14 @@ export interface EditorState {
     caretAt?: { x: number; y: number };
     selectAll?: boolean;
   } | null;
+  /**
+   * True while the canvas link popover has focus.
+   *
+   * Its text field has to take focus to be typed into, which blurs the element
+   * being edited — and blur commits and ends the session, unmounting the very
+   * toolbar the user is using. The edit session holds open while this is set.
+   */
+  linkPopoverOpen: boolean;
   drag: DragState | null;
   previewOpen: boolean;
   clipboard: PresetChild | null;
@@ -253,6 +261,7 @@ export interface EditorState {
     key: string,
     options?: { caretAt?: { x: number; y: number }; selectAll?: boolean },
   ) => void;
+  setLinkPopoverOpen: (open: boolean) => void;
   endEdit: () => void;
   startDrag: (payload: DragPayload, origin: { x: number; y: number }, template?: Template) => void;
   updateDrag: (patch: Partial<DragState>) => void;
@@ -353,6 +362,7 @@ export const useEditor = create<EditorState>((set, get) => {
     styleState: null,
 
     editing: null,
+    linkPopoverOpen: false,
     drag: null,
     previewOpen: false,
     clipboard: null,
@@ -1008,8 +1018,10 @@ export const useEditor = create<EditorState>((set, get) => {
     beginEdit: (nodeId, key, options) =>
       set({ editing: { nodeId, key, ...options }, selectedId: nodeId }),
     endEdit: () => {
-      if (get().editing) set({ editing: null });
+      if (get().editing) set({ editing: null, linkPopoverOpen: false });
     },
+
+    setLinkPopoverOpen: (open) => set({ linkPopoverOpen: open }),
 
     startDrag: (payload, origin, template) =>
       set({

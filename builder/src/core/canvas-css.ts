@@ -56,4 +56,20 @@ body { cursor: default; }
 /* Text selection inside the canvas belongs to inline editing only. */
 [data-node-id] { -webkit-user-select: none; user-select: none; }
 [contenteditable="true"] { -webkit-user-select: text; user-select: text; outline: none; cursor: text; }
+
+/*
+ * Editable text advertises itself.
+ *
+ * Everything on the canvas looked equally clickable, so there was no way to tell
+ * text you can type into from a box you can only select. A caret cursor and a
+ * soft tint say "click here and type"; the tint is a translucent brand colour so
+ * it reads on a light or a dark page alike, and it is suppressed once the element
+ * is actually being edited so it does not sit behind the caret.
+ */
+[data-edit]:not([contenteditable="true"]):hover {
+  cursor: text;
+  background-color: rgba(122, 95, 229, 0.11);
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px rgba(122, 95, 229, 0.11);
+}
 `;

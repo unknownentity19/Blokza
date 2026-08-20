@@ -44,14 +44,32 @@ const SAFE_URL = /^(?:https?:|mailto:|tel:|\/|\.\/|\.\.\/|#|data:image\/(?:png|j
 export interface SanitizeOptions {
   /** Allow iframe/video/audio/img. On for the embed component, off for rich text. */
   allowEmbeds?: boolean;
+  /**
+   * Restrict to inline markup only.
+   *
+   * Used for text that lives *inside* a heading or a paragraph: a nested `<h2>`
+   * or `<div>` there is invalid HTML, and browsers recover from it in ways that
+   * differ, so block tags are unwrapped rather than kept.
+   */
+  inline?: boolean;
+  /**
+   * Rewrites every `href` it keeps.
+   *
+   * Links authored inside a text value never pass through a component's
+   * `resolveHref`, so without this an internal link written on the canvas as
+   * `/work` would ship to the exported site verbatim and 404 — the export writes
+   * `work.html`.
+   */
+  resolveHref?: (href: string) => string;
 }
 
 function isUrlAttr(name: string): boolean {
   return name === 'href' || name === 'src' || name === 'srcset' || name === 'poster';
 }
 
-function allowedTag(tag: string, allowEmbeds: boolean): boolean {
-  if (INLINE_TAGS.has(tag) || BLOCK_TAGS.has(tag)) return true;
+function allowedTag(tag: string, allowEmbeds: boolean, inline: boolean): boolean {
+  if (INLINE_TAGS.has(tag)) return true;
+  if (!inline && BLOCK_TAGS.has(tag)) return true;
   return allowEmbeds && EMBED_TAGS.has(tag);
 }
 
@@ -70,6 +88,7 @@ export function sanitizeHtml(input: string, options: SanitizeOptions = {}): stri
     return escapeHtml(input);
   }
   const allowEmbeds = options.allowEmbeds === true;
+  const inline = options.inline === true;
   const doc = new DOMParser().parseFromString(`<body>${input}</body>`, 'text/html');
   const body = doc.body;
 
@@ -77,13 +96,15 @@ export function sanitizeHtml(input: string, options: SanitizeOptions = {}): stri
     el.remove();
   }
 
+  if (inline) normaliseStyledSpans(body, doc);
+
   // Depth-first over a static list so unwrapping does not disturb the walk.
   const elements = Array.from(body.querySelectorAll('*'));
   for (const el of elements) {
     if (!el.isConnected) continue;
     const tag = el.tagName.toLowerCase();
 
-    if (!allowedTag(tag, allowEmbeds)) {
+    if (!allowedTag(tag, allowEmbeds, inline)) {
       unwrap(el);
       continue;
     }
@@ -96,8 +117,13 @@ export function sanitizeHtml(input: string, options: SanitizeOptions = {}): stri
         el.removeAttribute(attr.name);
         continue;
       }
-      if (isUrlAttr(name) && !SAFE_URL.test(attr.value.trim())) {
-        el.removeAttribute(attr.name);
+      if (isUrlAttr(name)) {
+        const raw = attr.value.trim();
+        if (!SAFE_URL.test(raw)) {
+          el.removeAttribute(attr.name);
+        } else if (options.resolveHref && name === 'href') {
+          el.setAttribute('href', options.resolveHref(raw));
+        }
       }
     }
 
@@ -139,6 +165,43 @@ export function safeHref(value: unknown): string {
   return raw;
 }
 
+/**
+ * Turn the styled spans browsers emit into semantic tags.
+ *
+ * `execCommand('bold')` produces `<b>` in Chrome but a
+ * `<span style="font-weight: bold">` in Safari and in some Chrome paths. The
+ * `style` attribute is not on the allowlist — styling belongs to the style
+ * system, not to content — so without this the formatting would be stripped and
+ * the user's click would appear to do nothing.
+ *
+ * Only the bold/italic direction is converted. A span that *removes* emphasis
+ * has no semantic equivalent and is dropped; the toolbar does not offer the
+ * commands that produce those, because on text that is already bold by CSS there
+ * is nothing for them to do.
+ */
+function normaliseStyledSpans(body: HTMLElement, doc: Document): void {
+  for (const span of Array.from(body.querySelectorAll('span[style]'))) {
+    const style = (span.getAttribute('style') ?? '').toLowerCase();
+    const weight = /font-weight:\s*(bold|[6-9]00)/.test(style);
+    const italic = /font-style:\s*italic/.test(style);
+    if (!weight && !italic) continue;
+
+    // Build the wrapper chain first, then move the children into the innermost
+    // one exactly once. Wrapping in two steps replaced the outer tag instead of
+    // nesting inside it, which silently dropped the bold from bold-and-italic.
+    const wrappers: Element[] = [];
+    if (weight) wrappers.push(doc.createElement('b'));
+    if (italic) wrappers.push(doc.createElement('i'));
+
+    for (let depth = 0; depth < wrappers.length - 1; depth += 1) {
+      wrappers[depth].appendChild(wrappers[depth + 1]);
+    }
+    const innermost = wrappers[wrappers.length - 1];
+    while (span.firstChild) innermost.appendChild(span.firstChild);
+    span.replaceWith(wrappers[0]);
+  }
+}
+
 function unwrap(el: Element): void {
   const parent = el.parentNode;
   if (!parent) {
@@ -147,4 +210,21 @@ function unwrap(el: Element): void {
   }
   while (el.firstChild) parent.insertBefore(el.firstChild, el);
   parent.removeChild(el);
+}
+
+/**
+ * Sanitise a value that is rendered as the *content* of a text element.
+ *
+ * Inline tags only, and two conversions that keep older documents working:
+ * a value stored before rich text existed is plain text, so it arrives escaped
+ * (which is correct), and its newlines have to become `<br />` because HTML
+ * collapses them — that is how multi-line text was represented until now.
+ */
+export function sanitizeInline(
+  value: string,
+  options: { resolveHref?: (href: string) => string } = {},
+): string {
+  if (!value) return '';
+  const html = sanitizeHtml(value, { inline: true, ...options });
+  return html.includes('\n') ? html.replace(/\n/g, '<br />') : html;
 }

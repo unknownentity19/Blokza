@@ -30,6 +30,14 @@ export interface OverlayProps {
   zoom: number;
   /** Actions for the selected element, shown in the badge next to its name. */
   actions?: SelectionActions;
+  /**
+   * True while an inline text edit is open.
+   *
+   * The action row and the formatting toolbar both anchor above the element and
+   * would sit on top of each other. Restructuring is not what anyone is doing
+   * mid-sentence, so the row stands down and the formatting toolbar gets the space.
+   */
+  editing?: boolean;
 }
 
 /**
@@ -91,6 +99,7 @@ export function Overlay({
   rejection,
   zoom,
   actions,
+  editing = false,
 }: OverlayProps) {
   const [selected, setSelected] = useState<Rect | null>(null);
   const [hover, setHover] = useState<Rect | null>(null);
@@ -142,7 +151,7 @@ export function Overlay({
         <div className="cv-selected" style={{ ...box(selected), outlineWidth: ring }}>
           {/* Flips inside the element when there is no room above it. */}
           <div
-            className={`cv-bar ${selected.top < 30 / zoom ? 'is-inside' : ''}`}
+            className={`cv-bar ${selected.top < 30 / zoom ? 'is-inside' : ''} ${editing ? 'is-hidden' : ''}`}
             style={{ transform: `scale(${labelScale})` }}
           >
             <button
