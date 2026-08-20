@@ -59,3 +59,15 @@
   from = "/legacy/*"
   to = "/404.html"
   status = 404
+
+# With a relative asset base, the shell must be reached at a URL that ends in a
+# document. A bare `/app` would resolve `./assets/...` against `/`, so send it on.
+[[redirects]]
+  from = "/app"
+  to = "/app/index.html"
+  status = 301
+
+[[redirects]]
+  from = "/app/"
+  to = "/app/index.html"
+  status = 200

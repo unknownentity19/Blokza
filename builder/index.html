@@ -8,11 +8,50 @@
     <title>Altask Builder</title>
     <meta name="description" content="Altask visual builder — drag, drop and publish responsive websites." />
     <meta name="robots" content="noindex" />
-    <link rel="icon" href="/assets/images/favicon.svg?v=2" type="image/svg+xml" />
+    <link rel="icon" href="../assets/images/favicon.svg?v=2" type="image/svg+xml" />
   </head>
   <body>
     <div id="root"></div>
     <noscript>The Altask builder requires JavaScript.</noscript>
+
+    <!--
+      A blank page is the worst possible failure, and there is one way to reach it
+      that is nobody's mistake: opening this file from disk. The bundle is an ES
+      module, and browsers refuse to load module scripts from a `file://` origin
+      (it is opaque, so the CORS check can never pass). Nothing about the markup
+      can fix that — it needs to be served.
+
+      This is a classic script, not a module, precisely so it still runs in that
+      case. It waits for the app to mount rather than testing the protocol alone,
+      so it also catches any other boot failure instead of guessing.
+    -->
+    <script>
+      (function () {
+        var root = document.getElementById('root');
+        setTimeout(function () {
+          if (!root || root.childElementCount > 0) return;
+          var fromDisk = location.protocol === 'file:';
+          root.innerHTML =
+            '<div style="max-width:34rem;margin:16vh auto;padding:0 1.5rem;' +
+            'font:15px/1.65 system-ui,-apple-system,sans-serif;color:#2a1f3d">' +
+            '<h1 style="font-size:1.25rem;margin:0 0 .5rem">The editor could not start</h1>' +
+            (fromDisk
+              ? '<p style="margin:0 0 1rem;color:#5b5470">It was opened straight from' +
+                ' disk. The editor is an ES module, and browsers block those on' +
+                ' <code>file://</code>, so it has to be served over http.</p>' +
+                '<p style="margin:0 0 .4rem;color:#5b5470">From the project folder:</p>' +
+                '<pre style="margin:0 0 1rem;padding:.75rem 1rem;background:#f1f3f8;' +
+                'border:1px solid #e1e5ed;border-radius:6px;overflow:auto"><code>' +
+                'python3 -m http.server 8000</code></pre>' +
+                '<p style="margin:0;color:#5b5470">Then open' +
+                ' <code>http://localhost:8000/app/index.html</code>.</p>'
+              : '<p style="margin:0;color:#5b5470">The bundle did not load. Check the' +
+                ' browser console, and that <code>app/assets/</code> was deployed' +
+                ' alongside this page.</p>') +
+            '</div>';
+        }, 1500);
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -7,7 +7,22 @@ import { fileURLToPath, URL } from 'node:url';
 // so we emit the bundle into <repo>/app and commit it. That keeps the
 // zero-config static deploy working while giving the editor a real build step.
 export default defineConfig({
-  base: '/app/',
+  /*
+   * Relative, not '/app/'.
+   *
+   * The marketing site has no dev server — it is developed by opening the HTML
+   * files from disk — and an absolute base makes the built shell request
+   * `/app/assets/...`, which over `file://` resolves to the filesystem root and
+   * 404s. A relative base resolves against the document instead, so the editor
+   * opens both by double-clicking `index.html` and from any static host.
+   *
+   * This is why every link points at `app/index.html` rather than `app/`: with a
+   * relative base the asset URLs are resolved against the *document*, so landing
+   * on a bare `/app` (no trailing slash, no filename) would look for
+   * `/assets/...`. The redirects in netlify.toml and vercel.json cover that case
+   * for anyone who types the short URL.
+   */
+  base: './',
   plugins: [react()],
   resolve: {
     alias: {

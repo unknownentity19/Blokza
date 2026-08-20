@@ -74,6 +74,16 @@
       "source": "/editor",
       "destination": "/app/",
       "permanent": true
+    },
+    {
+      "source": "/app",
+      "destination": "/app/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/app/",
+      "destination": "/app/index.html",
+      "permanent": false
     }
   ]
 }
