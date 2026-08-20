@@ -1666,3 +1666,70 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
 .cx__share:focus-visible { outline: 2px solid var(--p-500); outline-offset: 1px; }
 .cx__note { border: 1px solid var(--border); background: var(--bg-soft); color: var(--fg-muted); }
 .cx__share svg, .cx__note svg { flex: none; }
+
+/* ---------------------------------------------------------------------------
+   Cloud panel — account, saved sites, and the one conflict the editor cannot
+   resolve on its own.
+   --------------------------------------------------------------------------- */
+
+.cl { display: flex; flex-direction: column; gap: 12px; padding: 14px; }
+.cl__hint {
+  display: flex; align-items: flex-start; gap: 6px;
+  margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--fg-muted);
+}
+.cl__hint svg { flex: none; margin-top: 3px; color: var(--p-600); }
+.cl__fine { font-size: 11.5px; color: var(--fg-faint); }
+.cl__error, .cl__notice {
+  margin: 0; padding: 7px 9px; border-radius: var(--r);
+  font-size: 12px; line-height: 1.5;
+}
+.cl__error { border: 1px solid #f3c9c5; background: var(--danger-soft); color: #8f2b24; }
+.cl__notice { border: 1px solid var(--p-200); background: var(--p-50); color: var(--p-700); }
+.cl__link {
+  align-self: flex-start; border: 0; background: none; padding: 0; cursor: pointer;
+  color: var(--p-600); font: inherit; font-size: 12px; text-decoration: underline;
+}
+
+.cl__cta {
+  display: flex; flex-direction: column; gap: 9px;
+  padding: 11px; border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--bg-soft);
+}
+
+/* The conflict block is the loudest thing in the panel on purpose: it is the
+   only state where work can be lost, and only the user can decide how. */
+.cl__conflict {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 11px; border: 1px solid #f3c9c5; border-radius: var(--r-lg);
+  background: var(--danger-soft);
+}
+.cl__conflict strong { font-size: 13px; color: #8f2b24; }
+.cl__conflict p { margin: 0; font-size: 12px; line-height: 1.55; color: var(--fg-2); }
+
+.cl__list {
+  display: flex; flex-direction: column; gap: 4px;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+.cl__legend {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--fg-faint); margin-bottom: 3px;
+}
+.cl__site { display: flex; align-items: stretch; gap: 3px; }
+.cl__open {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  flex: 1 1 auto; min-width: 0;
+  padding: 7px 9px; border: 1px solid var(--border); border-radius: var(--r);
+  background: var(--surface); color: var(--fg-2); font-size: 12.5px;
+  text-align: left; cursor: pointer;
+}
+.cl__open:hover:not(:disabled) { border-color: var(--border-2); background: var(--bg-soft); }
+.cl__site.is-open .cl__open { border-color: var(--p-300); background: var(--p-50); }
+.cl__open:disabled { cursor: default; }
+.cl__site-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 550; }
+.cl__site-meta { flex: none; font-size: 11px; color: var(--fg-faint); }
+.cl__del {
+  flex: none; width: 30px;
+  border: 1px solid var(--border); border-radius: var(--r);
+  background: var(--surface); color: var(--fg-dim); cursor: pointer;
+}
+.cl__del:hover { border-color: #e8b4af; background: var(--danger-soft); color: var(--danger); }

@@ -410,7 +410,7 @@ export interface DevicePreset {
   icon: string;
 }
 
-export type LeftPanelId = 'insert' | 'pages' | 'layers' | 'theme' | 'settings';
+export type LeftPanelId = 'insert' | 'pages' | 'layers' | 'theme' | 'cloud' | 'settings';
 
 /** Which workspace is on screen: the page designer, or the site map. */
 export type ViewId = 'design' | 'flow';

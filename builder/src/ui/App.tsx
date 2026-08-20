@@ -13,6 +13,7 @@ import { Inspector } from './inspector/Inspector';
 import { InsertPanel } from './panels/InsertPanel';
 import { LayersPanel } from './panels/LayersPanel';
 import { PagesPanel } from './panels/PagesPanel';
+import { CloudPanel } from './panels/CloudPanel';
 import { SettingsPanel } from './panels/SettingsPanel';
 import { ThemePanel } from './panels/ThemePanel';
 import { PreviewOverlay } from './PreviewOverlay';
@@ -50,6 +51,7 @@ export function App() {
           {panel === 'insert' ? <InsertPanel /> : null}
           {panel === 'layers' ? <LayersPanel /> : null}
           {panel === 'pages' ? <PagesPanel /> : null}
+          {panel === 'cloud' ? <CloudPanel /> : null}
           {panel === 'theme' ? <ThemePanel /> : null}
           {panel === 'settings' ? <SettingsPanel /> : null}
         </div>

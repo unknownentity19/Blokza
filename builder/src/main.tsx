@@ -13,6 +13,7 @@ import './registry';
 import './styles/app.css';
 import { App } from './ui/App';
 import { useEditor } from './store/editor';
+import { startCloudSync } from './store/account';
 import { TEMPLATES } from './registry/templates';
 import { PALETTES } from './registry/palettes';
 
@@ -31,6 +32,10 @@ if (import.meta.env.DEV) {
     void import('./dev/seedDemo').then(({ seedDemo }) => seedDemo(select ? { select } : {}));
   }
 }
+
+// Only does anything once a site is bound to an account; otherwise it is a
+// single comparison per edit.
+startCloudSync();
 
 const container = document.getElementById('root');
 if (!container) throw new Error('#root is missing from the document');

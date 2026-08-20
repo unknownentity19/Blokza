@@ -33,6 +33,14 @@ export interface TextControlProps {
   rows?: number;
   monospace?: boolean;
   disabled?: boolean;
+  /**
+   * Render as a password field.
+   *
+   * Also sets the autocomplete hint, so a password manager offers to fill and
+   * save it rather than treating the field as an ordinary text box.
+   */
+  password?: boolean;
+  autoComplete?: string;
 }
 
 export function TextControl({
@@ -44,6 +52,8 @@ export function TextControl({
   rows = 3,
   monospace,
   disabled,
+  password,
+  autoComplete,
 }: TextControlProps) {
   const id = useFieldId();
   const [draft, setDraft] = useState(value);
@@ -94,7 +104,8 @@ export function TextControl({
   return (
     <input
       {...shared}
-      type="text"
+      type={password ? 'password' : 'text'}
+      autoComplete={autoComplete ?? (password ? 'current-password' : undefined)}
       onKeyDown={(event) => {
         if (event.key === 'Enter') {
           event.preventDefault();
