@@ -964,6 +964,25 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   box-shadow: var(--shadow-md);
 }
 
+/* Shown in place of a canvas that never became reachable, so the failure is
+   legible rather than an empty white rectangle. */
+.cv-frameerror {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 2rem;
+  text-align: center;
+  background: var(--surface);
+  color: var(--fg-2);
+}
+.cv-frameerror strong { font-size: 14px; }
+.cv-frameerror p { max-width: 34rem; margin: 0; font-size: 12.5px; color: var(--fg-muted); line-height: 1.6; }
+
 .cv-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
 
 .cv-hover {
@@ -1303,6 +1322,87 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   pointer-events: none;
   z-index: 2;
 }
+
+/* Controls for the selected element, floating beside it on the canvas. Lives in
+   the overlay layer, which is pointer-events:none, so it opts back in. */
+.cx {
+  position: absolute;
+  z-index: 4;
+  transform-origin: top left;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font);
+  overflow: hidden;
+}
+
+.cx__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 6px 6px 10px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+}
+.cx__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cx__fold {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: var(--fg-faint);
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+}
+.cx__fold:hover { color: var(--fg); background: var(--bg-mute); }
+
+.cx__body { display: flex; flex-direction: column; }
+.cx__group { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; }
+.cx__group--style { border-top: 1px solid var(--border); }
+.cx__legend {
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+.cx__styles { display: flex; flex-direction: column; gap: 5px; }
+.cx__row { display: grid; grid-template-columns: 54px minmax(0, 1fr); align-items: center; gap: 7px; }
+.cx__row > span { font-size: 11px; color: var(--fg-muted); }
+
+/* The shared field renderer assumes the inspector's wider column. */
+.cx .ui-field { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+.cx .ui-field__label { font-size: 10.5px; }
+.cx .ui-field__hint { display: none; }
+.cx textarea.ui-input { min-height: 46px; }
+
+.cx__more {
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 550;
+  color: var(--p-700);
+  background: var(--p-50);
+  border: 0;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+.cx__more:hover { background: var(--p-100); }
 
 /* Formatting toolbar that follows a text selection in the canvas. Sits in the
    overlay layer, which is pointer-events:none, so it opts back in. */

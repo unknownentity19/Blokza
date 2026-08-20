@@ -31,10 +31,12 @@ export interface FrameProps {
   css: string;
   title: string;
   onReady?: (frame: HTMLIFrameElement) => void;
+  /** Called when the frame's document never becomes reachable. */
+  onUnavailable?: (reason: string) => void;
   children: ReactNode;
 }
 
-export function Frame({ width, height, css, title, onReady, children }: FrameProps) {
+export function Frame({ width, height, css, title, onReady, onUnavailable, children }: FrameProps) {
   const ref = useRef<HTMLIFrameElement>(null);
   const [body, setBody] = useState<HTMLElement | null>(null);
   const styleRef = useRef<HTMLStyleElement | null>(null);
@@ -46,13 +48,26 @@ export function Frame({ width, height, css, title, onReady, children }: FramePro
     if (!frame) return;
 
     let cancelled = false;
+    // Bounded. An unbounded retry turned "the frame is not reachable" into a
+    // silent busy loop at animation-frame rate, which is indistinguishable from
+    // a hung editor and gives nobody anything to debug.
+    let attempts = 0;
+    const MAX_ATTEMPTS = 120;
 
     const setup = () => {
       if (cancelled) return;
       const frameDoc = frame.contentDocument;
       if (!frameDoc?.body) {
-        // Very rare: the document is not attached yet. Try again next frame.
-        requestAnimationFrame(setup);
+        attempts += 1;
+        if (attempts <= MAX_ATTEMPTS) {
+          requestAnimationFrame(setup);
+          return;
+        }
+        onUnavailable?.(
+          'The canvas frame could not be reached. This happens when the page ' +
+            'cannot access its own iframe — check the browser console for a ' +
+            'security or CORS error.',
+        );
         return;
       }
 
@@ -114,10 +129,21 @@ export function Frame({ width, height, css, title, onReady, children }: FramePro
         className="cv-frame"
         title={title}
         style={{ width: `${width}px`, height: `${height}px` }}
-        // `allow-same-origin` is required: hit-testing reads the frame's DOM.
-        // `allow-scripts` is deliberately absent, so nothing inside the canvas
-        // can execute — the tree is rendered by React from the parent document.
-        sandbox="allow-same-origin allow-forms"
+        /*
+         * Deliberately not sandboxed.
+         *
+         * The editor's whole model depends on reading and writing this frame's
+         * DOM from the parent, which requires same-origin access. `sandbox`
+         * defeats that whenever the parent's origin is opaque — opening the built
+         * site from disk, most obviously — because `allow-same-origin` can only
+         * preserve an origin, and an opaque one stays opaque. The result was a
+         * completely dead canvas: `contentDocument` null, portal never mounted.
+         *
+         * Nothing inside is executable anyway: the document is `about:blank`
+         * populated by React from here, we never inject a script, and user HTML
+         * goes through `sanitizeHtml`, which drops `<script>` outright.
+         * Embedded third-party iframes get their own sandbox there instead.
+         */
       />
       {/* Sibling, not a child: the portal mounts into the frame's body, and
           nesting it under <iframe> would imply DOM children an iframe cannot have. */}

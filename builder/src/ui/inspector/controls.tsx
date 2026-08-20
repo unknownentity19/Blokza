@@ -397,6 +397,16 @@ export function SelectControl({
   emptyLabel?: string;
 }) {
   const id = useFieldId();
+  /*
+   * The placeholder usually carries the *inherited* value, which is raw CSS —
+   * `row`, `flex-start`, `cover`. Showing it verbatim next to friendly option
+   * labels produced menus like "row / Across / Down". Prefer this option set's
+   * own label for that value, and only fall back to the raw string.
+   */
+  const placeholderLabel =
+    placeholder === undefined
+      ? emptyLabel
+      : (options.find((option) => option.value === placeholder)?.label ?? placeholder);
   return (
     <select
       id={id}
@@ -404,7 +414,7 @@ export function SelectControl({
       value={value ?? ''}
       onChange={(event) => onCommit(event.target.value === '' ? null : event.target.value)}
     >
-      {allowEmpty ? <option value="">{placeholder ?? emptyLabel}</option> : null}
+      {allowEmpty ? <option value="">{placeholderLabel}</option> : null}
       {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}

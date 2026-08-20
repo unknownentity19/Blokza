@@ -43,7 +43,7 @@ function visible(field: FieldDef, node: SBNode): boolean {
   return field.showWhen.equals.includes(node.props[field.showWhen.key]);
 }
 
-function FieldEditor({ field, node, path }: { field: FieldDef; node: SBNode; path: string }) {
+export function FieldEditor({ field, node, path }: { field: FieldDef; node: SBNode; path: string }) {
   const setProp = useEditor((s) => s.setProp);
   const tokens = useEditor((s) => s.doc.theme.colors);
 

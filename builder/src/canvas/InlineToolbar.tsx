@@ -25,6 +25,8 @@ export interface InlineToolbarProps {
   /** Set while an inline edit session is open. */
   active: boolean;
   zoom: number;
+  /** Reports whether a text range is selected, so the context panel can stand down. */
+  onRangeChange?: (active: boolean) => void;
 }
 
 interface SelectionState {
@@ -91,7 +93,7 @@ function safeQuery(frameDoc: Document, command: string): boolean {
   }
 }
 
-export function InlineToolbar({ frame, active, zoom }: InlineToolbarProps) {
+export function InlineToolbar({ frame, active, zoom, onRangeChange }: InlineToolbarProps) {
   const [state, setState] = useState<SelectionState | null>(null);
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkValue, setLinkValue] = useState('');
@@ -170,6 +172,12 @@ export function InlineToolbar({ frame, active, zoom }: InlineToolbarProps) {
   }, [frame]);
 
   restoreRef.current = restore;
+
+  // Two floating surfaces over the same element would overlap, so the context
+  // panel is told when the formatting toolbar has taken over.
+  useEffect(() => {
+    onRangeChange?.(state !== null);
+  }, [state, onRangeChange]);
 
   /**
    * Apply a command to the frame's selection.

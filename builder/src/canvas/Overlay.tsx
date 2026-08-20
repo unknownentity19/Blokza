@@ -30,6 +30,8 @@ export interface OverlayProps {
   zoom: number;
   /** Actions for the selected element, shown in the badge next to its name. */
   actions?: SelectionActions;
+  /** Reports the measured selection rectangle, so the context panel can anchor. */
+  onSelectedRect?: (rect: Rect | null) => void;
   /**
    * True while an inline text edit is open.
    *
@@ -100,6 +102,7 @@ export function Overlay({
   zoom,
   actions,
   editing = false,
+  onSelectedRect,
 }: OverlayProps) {
   const [selected, setSelected] = useState<Rect | null>(null);
   const [hover, setHover] = useState<Rect | null>(null);
@@ -110,6 +113,12 @@ export function Overlay({
   }, [frame, selectedId, hoverId]);
 
   useEffect(measure, [measure, version]);
+
+  // Published upward rather than measured twice: the overlay already re-measures
+  // on scroll, resize and every reflow of the frame.
+  useEffect(() => {
+    onSelectedRect?.(selected);
+  }, [selected, onSelectedRect]);
 
   // Fonts and images change layout after the fact, so re-measure when the frame
   // itself reflows rather than only when React re-renders.

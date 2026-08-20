@@ -17,6 +17,11 @@ import { fileURLToPath, URL } from 'node:url';
 function classicEntryScript(): Plugin {
   return {
     name: 'altask-classic-entry',
+    // Build only. In dev the entry is `/src/main.tsx`, which Vite must serve as a
+    // real module — stripping `type="module"` there loads TypeScript as a classic
+    // script, so nothing runs and the dev server shows the boot guard instead of
+    // the editor.
+    apply: 'build',
     enforce: 'post',
     transformIndexHtml(html) {
       return html

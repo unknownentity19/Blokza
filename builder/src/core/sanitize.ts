@@ -134,6 +134,10 @@ export function sanitizeHtml(input: string, options: SanitizeOptions = {}): stri
     if (tag === 'iframe') {
       el.setAttribute('loading', 'lazy');
       el.setAttribute('referrerpolicy', 'no-referrer');
+      // The canvas frame itself cannot be sandboxed (it would stop being
+      // same-origin, which the editor depends on), so the untrusted thing —
+      // a third-party embed — is sandboxed here, where it belongs.
+      el.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
     }
   }
 

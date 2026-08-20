@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { Frame } from './Frame';
+import { ContextPanel } from './ContextPanel';
 import { InlineToolbar } from './InlineToolbar';
 import { Overlay, type SelectionActions } from './Overlay';
 import { asElement, nodeIdFromTarget, passedThreshold, resolveDropTarget, type Point } from './dnd';
@@ -27,7 +28,7 @@ import { canMutate, selectableAncestor } from '../core/tree';
 import { dropRules } from '../registry/registry';
 import { makeContext, RenderPage } from '../render/RenderNode';
 import { useEditor } from '../store/editor';
-import type { DragPayload } from '../core/types';
+import type { DragPayload, Rect } from '../core/types';
 import type { Template } from '../registry/templates';
 
 /** Padding around the device frame inside the scroll viewport. */
@@ -68,6 +69,12 @@ export function Canvas() {
   const [viewport, setViewport] = useState({ width: 0, height: 0 });
   /** Bumped when an edit session leaves DOM React did not create. See `settle`. */
   const [remount, setRemount] = useState<{ id: string; n: number } | null>(null);
+  /** Set when the canvas frame is unreachable, so the failure is visible. */
+  const [frameError, setFrameError] = useState<string | null>(null);
+  /** Selection rectangle, published by the overlay for the context panel. */
+  const [selectedRect, setSelectedRect] = useState<Rect | null>(null);
+  /** True while a text range is selected, so the two floating bars never stack. */
+  const [rangeActive, setRangeActive] = useState(false);
 
   const preset = deviceById(device);
   const page = doc.pages.find((candidate) => candidate.id === currentPageId) ?? doc.pages[0];
@@ -640,12 +647,33 @@ export function Canvas() {
           onReady={(el) => {
             frameRef.current = el;
             setFrame(el);
+            setFrameError(null);
           }}
+          onUnavailable={setFrameError}
         >
           <RenderPage ctx={ctx} rootId={page.rootId} />
         </Frame>
 
-        <InlineToolbar frame={frame} active={editing !== null} zoom={effectiveZoom} />
+        {frameError ? (
+          <div className="cv-frameerror" role="alert">
+            <strong>The canvas could not load</strong>
+            <p>{frameError}</p>
+          </div>
+        ) : null}
+
+        <InlineToolbar
+          frame={frame}
+          active={editing !== null}
+          zoom={effectiveZoom}
+          onRangeChange={setRangeActive}
+        />
+
+        <ContextPanel
+          rect={selectedRect}
+          frameSize={{ width: preset.width, height: frameHeight }}
+          zoom={effectiveZoom}
+          suppressed={rangeActive}
+        />
 
         <Overlay
           frame={frame}
@@ -659,6 +687,7 @@ export function Canvas() {
           zoom={effectiveZoom}
           actions={actions}
           editing={editing !== null}
+          onSelectedRect={setSelectedRect}
         />
       </div>
     </div>
