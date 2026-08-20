@@ -24,6 +24,7 @@ import { ColorControl, LengthControl, SelectControl } from '../ui/inspector/cont
 import { useStyleAccess } from '../ui/inspector/useStyle';
 import { options } from '../registry/helpers';
 import { getComponent } from '../registry/registry';
+import { countSharedInstances, sharedContaining } from '../core/doc';
 import { nodeLabel } from '../core/factory';
 import { useEditor } from '../store/editor';
 import type { ComponentGroup, Rect, StyleKey } from '../core/types';
@@ -106,6 +107,8 @@ export function ContextPanel({ rect, frameSize, zoom, suppressed }: ContextPanel
   const selectedId = useEditor((s) => s.selectedId);
   const setInspectorOpen = useEditor((s) => s.setInspectorOpen);
   const setInspectorTab = useEditor((s) => s.setInspectorTab);
+  const shareSection = useEditor((s) => s.shareSection);
+  const currentPageId = useEditor((s) => s.currentPageId);
   const access = useStyleAccess();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -140,6 +143,19 @@ export function ContextPanel({ rect, frameSize, zoom, suppressed }: ContextPanel
     GAP,
     Math.min(rect.top, Math.max(GAP, frameSize.height - scaledHeight - GAP)),
   );
+
+  /*
+   * Sharing is offered here because it could not be found anywhere else. It
+   * lives in the inspector too, three levels down — panel, Settings tab, a
+   * collapsed "Across pages" group — and building a seven-page site without
+   * noticing it is the default outcome. Editing a nav bar seven times is the
+   * single largest cost in a multi-page site, so the offer belongs on the thing
+   * itself, next to the page count it applies to.
+   */
+  const shared = sharedContaining(doc, node.id);
+  const pageRootId = doc.pages.find((page) => page.id === currentPageId)?.rootId;
+  const canShare = !shared && node.parent === pageRootId && doc.pages.length > 1;
+  const sharedPageCount = shared ? countSharedInstances(doc, shared.id) : 0;
 
   const offered = (def.fields ?? []).filter((field) => !PLUMBING_FIELDS.has(field.key));
   const fields = offered.slice(0, MAX_FIELDS);
@@ -309,6 +325,23 @@ export function ContextPanel({ rect, frameSize, zoom, suppressed }: ContextPanel
                 ))}
               </div>
             </div>
+          ) : null}
+
+          {shared ? (
+            <p className="cx__note">
+              <Icon path="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1" size={12} />
+              Shared — this edit changes {sharedPageCount === 1 ? 'the page' : `all ${sharedPageCount} pages`} using “{shared.name}”.
+            </p>
+          ) : canShare ? (
+            <button
+              type="button"
+              className="cx__share"
+              onClick={() => shareSection(node.id)}
+              title={`Use this section on all ${doc.pages.length} pages and edit it in one place`}
+            >
+              <Icon path="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1" size={12} />
+              Use on all {doc.pages.length} pages
+            </button>
           ) : null}
 
           <button

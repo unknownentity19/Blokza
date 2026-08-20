@@ -11,6 +11,7 @@
  * user can double-click and see working is worth more than pretty URLs.
  */
 
+import { defaultPageTitle } from './doc';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { compileCss } from './css';
 import { escapeHtml } from './sanitize';
@@ -63,7 +64,7 @@ function absoluteUrl(doc: SiteDoc, page: Page): string {
 function renderPageHtml(doc: SiteDoc, page: Page): string {
   const ctx = makeContext(doc, 'export');
   const body = formatHtml(renderToStaticMarkup(<RenderPage ctx={ctx} rootId={page.rootId} />), '    ');
-  const title = page.title.trim() || page.name || doc.name;
+  const title = page.title.trim() || defaultPageTitle(doc, page);
   const description = page.description.trim();
   const canonical = absoluteUrl(doc, page);
   const social = page.socialImage?.trim();

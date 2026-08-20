@@ -21,6 +21,15 @@ import { PALETTES } from './registry/palettes';
 // the branch from the production bundle.
 if (import.meta.env.DEV) {
   (window as unknown as Record<string, unknown>).__altask = { useEditor, TEMPLATES, PALETTES };
+
+  // `?seed=demo` rebuilds a seven-page site through the ordinary editor
+  // actions, so the UI can be reviewed and screenshotted at a realistic size
+  // instead of on the three-section page that hides every interesting bug.
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('seed') === 'demo') {
+    const select = params.get('select') === 'section' ? 'section' : undefined;
+    void import('./dev/seedDemo').then(({ seedDemo }) => seedDemo(select ? { select } : {}));
+  }
 }
 
 const container = document.getElementById('root');

@@ -50,7 +50,7 @@ export const pageRoot: ComponentDef = {
     },
   },
   css: `.c-page-root { isolation: isolate; }`,
-  render: (p) => <div {...p.attrs}>{p.children}<EmptySlot p={p} label="Drop a section to start" /></div>,
+  render: (p) => <div {...p.attrs}>{p.children}<EmptySlot p={p} label="Start your page" /></div>,
 };
 
 export const section: ComponentDef = {

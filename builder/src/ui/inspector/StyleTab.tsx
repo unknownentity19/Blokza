@@ -179,9 +179,17 @@ export function StyleTab() {
             ))
           : null}
 
-        {/* These describe how the element behaves as a *child*, so they matter
-            regardless of its own display value — that is why they are outside the
-            flex/grid branches above. */}
+      </Collapsible>
+
+      {/*
+        How the element behaves as a *child* of its parent, rather than how it
+        lays out its own children. Seven controls that are almost always "Not
+        set" used to sit directly under Layout, so the first thing anyone saw on
+        selecting a section was a wall of empty flex and grid fields. They are
+        still one click away, and they still apply whatever this element's own
+        display is — which is why they are outside the flex/grid branches above.
+      */}
+      <Collapsible title="Inside its parent" id="sty-child" defaultOpen={false}>
         {len('Grow', 'flexGrow', ['', 'px'])}
         {sel('Self align', 'alignSelf', options(
           ['auto', 'Auto'],

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import '../src/registry';
-import { addPage, createEmptyDoc, insertSubtree, setStyle } from '../src/core/doc';
+import { addPage, createEmptyDoc, insertSubtree, repairDoc, setStyle } from '../src/core/doc';
 import { spawnComponent, spawnTemplate } from '../src/core/factory';
 import { buildExport, buildStandalonePage } from '../src/core/export';
 import { buildCanvasCss } from '../src/core/canvas-css';
@@ -375,5 +375,65 @@ describe('inline rich text', () => {
     // alt is an attribute: it must be escaped, never interpreted.
     expect(html).toContain('alt="&lt;b&gt;not bold&lt;/b&gt;"');
     expect(html).not.toContain('alt=""><b>');
+  });
+});
+
+/**
+ * Page titles.
+ *
+ * The bug these pin: `title` used to be filled in with whatever the name was at
+ * creation time, so a seven-page site built by adding pages and renaming them
+ * published `<title>Page 4</title>` on four of them, and `Untitled site` on the
+ * home page. Nobody edits a field that already looks filled in.
+ */
+describe('page titles', () => {
+  it('leaves a new page title empty rather than copying the name', () => {
+    const doc = createEmptyDoc('Northwind');
+    expect(doc.pages[0].title).toBe('');
+    const page = addPage(doc, 'Work', '/work');
+    expect(page.title).toBe('');
+  });
+
+  it('derives the home title from the site name', () => {
+    const { doc } = heroDoc();
+    doc.name = 'Northwind Studio';
+    expect(fileNamed(doc, 'index.html')).toContain('<title>Northwind Studio</title>');
+  });
+
+  it('derives a sub-page title from the page and site names', () => {
+    const { doc } = heroDoc();
+    doc.name = 'Northwind Studio';
+    addPage(doc, 'Work', '/work');
+    expect(fileNamed(doc, 'work.html')).toContain('<title>Work — Northwind Studio</title>');
+  });
+
+  it('follows a rename, because nothing was copied', () => {
+    const { doc } = heroDoc();
+    doc.name = 'Northwind Studio';
+    const page = addPage(doc, 'Work', '/work');
+    page.name = 'Case studies';
+    expect(fileNamed(doc, 'work.html')).toContain('<title>Case studies — Northwind Studio</title>');
+  });
+
+  it('still honours a title the author wrote', () => {
+    const { doc } = heroDoc();
+    doc.name = 'Northwind Studio';
+    doc.pages[0].title = 'Design partner for ambitious teams';
+    expect(fileNamed(doc, 'index.html')).toContain('<title>Design partner for ambitious teams</title>');
+  });
+
+  it('clears titles an older version auto-filled', () => {
+    const doc = createEmptyDoc('Northwind Studio');
+    doc.pages[0].title = 'Untitled site';
+    const second = addPage(doc, 'Work', '/work');
+    second.title = 'Page 2';
+    const third = addPage(doc, 'About', '/about');
+    third.title = 'New page';
+    const fourth = addPage(doc, 'Press', '/press');
+    fourth.title = 'A title I chose myself';
+
+    repairDoc(doc);
+
+    expect(doc.pages.map((p) => p.title)).toEqual(['', '', '', 'A title I chose myself']);
   });
 });

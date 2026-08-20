@@ -6,10 +6,8 @@
  * rewrites them to real filenames.
  */
 
-import { Collapsible, Field, Icon, IconButton } from '../common';
+import { Collapsible, Icon, IconButton } from '../common';
 import { useEditor } from '../../store/editor';
-import { TextControl } from '../inspector/controls';
-import { pageFileName } from '../../render/RenderNode';
 import { countSharedInstances, sharedList } from '../../core/doc';
 
 export function PagesPanel() {
@@ -17,7 +15,6 @@ export function PagesPanel() {
   const currentPageId = useEditor((s) => s.currentPageId);
   const selectPage = useEditor((s) => s.selectPage);
   const addPage = useEditor((s) => s.addPage);
-  const updatePage = useEditor((s) => s.updatePage);
   const deletePage = useEditor((s) => s.deletePage);
   const duplicatePage = useEditor((s) => s.duplicatePage);
   const movePage = useEditor((s) => s.movePage);
@@ -128,40 +125,13 @@ export function PagesPanel() {
           </Collapsible>
         ) : null}
 
-        <Collapsible title="Page settings" id="page-settings">
-          <Field label="Name" hint="Used in the editor and the pages list.">
-            <TextControl value={page.name} onCommit={(value) => updatePage(page.id, { name: value })} />
-          </Field>
-          <Field label="Path" hint={`Exports as ${pageFileName(page.path)}`}>
-            <TextControl
-              value={page.path}
-              placeholder="/about"
-              onCommit={(value) => updatePage(page.id, { path: value })}
-            />
-          </Field>
-          <Field label="Title" hint="The <title> tag and the default social title.">
-            <TextControl
-              value={page.title}
-              placeholder={page.name}
-              onCommit={(value) => updatePage(page.id, { title: value })}
-            />
-          </Field>
-          <Field label="Description" hint="Meta description. Aim for 150 characters." wide>
-            <TextControl
-              multiline
-              rows={3}
-              value={page.description}
-              onCommit={(value) => updatePage(page.id, { description: value })}
-            />
-          </Field>
-          <Field label="Social image" hint="Absolute URL used for og:image." wide>
-            <TextControl
-              value={page.socialImage ?? ''}
-              placeholder="https://…/og.png"
-              onCommit={(value) => updatePage(page.id, { socialImage: value })}
-            />
-          </Field>
-        </Collapsible>
+        {/*
+          Name, path, title, description and the social image used to be
+          repeated here. They live in the properties panel on the right now:
+          this panel manages the set of pages, that one edits the page you are
+          on. Two editable copies of the same field, both on screen at once, is
+          how the title placeholder here drifted out of step with the exporter.
+        */}
       </div>
     </div>
   );

@@ -41,6 +41,7 @@ import {
   setProps,
   setPropPath,
   setStyle,
+  structureSignature,
   wrapNode,
   type StyleLayer,
 } from '../core/doc';
@@ -818,21 +819,68 @@ export const useEditor = create<EditorState>((set, get) => {
       }
 
       const label = nodeLabel(doc, node);
+      const signature = structureSignature(doc, targetId);
       let created: string | undefined;
+      let replaced = 0;
+      let added = 0;
       get().commit((draft) => {
         const shared = docMakeShared(draft, targetId, label);
         if (!shared) return;
         created = shared.id;
-        // Put it on every other page straight away — "share this" means "use it
-        // everywhere", and making the user visit five pages to add it would be
-        // the same chore in a different order.
+        /*
+         * Put it on every other page straight away — "share this" means "use it
+         * everywhere", and making the user visit five pages to add it would be
+         * the same chore in a different order.
+         *
+         * Those pages usually already carry their own copy: the way anyone
+         * builds a site is to drop a nav bar on every page and only later wish
+         * they were one. Adding an instance without taking that copy away left
+         * two identical nav bars stacked on six of seven pages, so a page whose
+         * own section has the same structure has it replaced in place, keeping
+         * the position the author chose.
+         */
         for (const other of draft.pages) {
-          if (other.id !== page.id) addSharedInstance(draft, shared.id, other.id);
+          if (other.id === page.id) continue;
+          const siblings = draft.nodes[other.rootId].children;
+          const twinId = siblings.find(
+            (id) =>
+              draft.nodes[id]?.type !== SHARED_TYPE &&
+              structureSignature(draft, id) === signature,
+          );
+          if (twinId) {
+            const at = siblings.indexOf(twinId);
+            docRemoveNode(draft, twinId);
+            addSharedInstance(draft, shared.id, other.id, at);
+            replaced += 1;
+          } else {
+            addSharedInstance(draft, shared.id, other.id);
+            added += 1;
+          }
         }
       });
       if (created) {
-        const count = get().doc.pages.length;
-        get().toast(`“${label}” is now shared across ${count} ${count === 1 ? 'page' : 'pages'}`, 'success');
+        /*
+         * Keep the section the user was looking at selected — which is now the
+         * shared master's root, still exactly where it was on screen.
+         *
+         * Selecting the *instance* instead seems more correct and is not: an
+         * instance renders its master's subtree without an element of its own,
+         * so it has no box on the canvas, and selecting it leaves the overlay
+         * and the context panel with nothing to measure or show.
+         */
+        // Say what actually happened. Replacing a copy and adding to a page that
+        // had none are different outcomes, and a section the user did not expect
+        // on six pages is worth being told about while undo is still one press
+        // away.
+        const used = replaced + added + 1;
+        const parts: string[] = [];
+        if (replaced) parts.push(`replaced ${replaced} ${replaced === 1 ? 'copy' : 'copies'}`);
+        if (added) parts.push(`added to ${added} ${added === 1 ? 'page' : 'pages'}`);
+        get().toast(
+          `“${label}” is now shared across ${used} ${used === 1 ? 'page' : 'pages'}` +
+            (parts.length ? ` — ${parts.join(', ')}` : ''),
+          'success',
+        );
       }
     },
 

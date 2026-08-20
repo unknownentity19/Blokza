@@ -8,7 +8,7 @@
  * and nothing explained why.
  */
 
-import { Collapsible, EmptyState, Field, Icon, Segmented } from '../common';
+import { Collapsible, Field, Icon, Segmented } from '../common';
 import { useEditor } from '../../store/editor';
 import { breakpointForDevice } from '../../core/devices';
 import { nodeLabel } from '../../core/factory';
@@ -16,6 +16,7 @@ import { getComponent } from '../../registry/registry';
 import { ancestorsOf } from '../../core/tree';
 import { BREAKPOINT_LABEL, type ComponentGroup, type InspectorTabId } from '../../core/types';
 import { ContentTab } from './ContentTab';
+import { PagePanel } from './PagePanel';
 import { StyleTab } from './StyleTab';
 import { TextControl, ToggleControl } from './controls';
 import { useStyleAccess } from './useStyle';
@@ -96,11 +97,7 @@ export function Inspector() {
             <Icon path="M9 6l6 6-6 6" size={14} strokeWidth={2} />
           </button>
         </div>
-        <EmptyState
-          title="Nothing selected"
-          body="Click an element on the canvas, or pick one from Layers, to edit it."
-          icon="M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"
-        />
+        <PagePanel />
       </aside>
     );
   }

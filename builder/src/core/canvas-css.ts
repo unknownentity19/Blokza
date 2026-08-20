@@ -39,6 +39,41 @@ body > .c-page-root { min-height: 100%; }
  * \`vh\` exactly the right unit here.
  */
 body > .c-page-root > .sb-empty { min-height: 100vh; }
+/*
+ * An empty page is the first thing a new user sees, and a full-height dashed box
+ * with eleven-pixel uppercase text in the middle of it reads as "something is
+ * broken" rather than "put something here". At page scale the placeholder gets
+ * room to say what to do: a headline, and a second line naming both ways to do
+ * it. The nested-container placeholder keeps its small quiet style.
+ */
+body > .c-page-root > .sb-empty {
+  flex-direction: column;
+  gap: 10px;
+  border-width: 2px;
+  border-radius: 10px;
+  font: 650 19px/1.3 var(--font-heading, var(--font-body, system-ui));
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+body > .c-page-root > .sb-empty::before {
+  content: '';
+  width: 44px; height: 44px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  opacity: 0.35;
+  background:
+    linear-gradient(currentColor, currentColor) 0 8px / 100% 2px no-repeat,
+    linear-gradient(currentColor, currentColor) 6px 20px / 60% 2px no-repeat,
+    linear-gradient(currentColor, currentColor) 6px 28px / 75% 2px no-repeat;
+  background-clip: content-box;
+}
+body > .c-page-root > .sb-empty::after {
+  content: 'Drag a section from the left panel, or click one to add it here.';
+  max-width: 30ch;
+  font: 400 13px/1.55 var(--font-body, system-ui);
+  letter-spacing: 0;
+  opacity: 0.75;
+}
 body { cursor: default; }
 .sb-hidden { opacity: 0.35; outline: 1px dashed rgba(122, 95, 229, 0.5); outline-offset: -1px; }
 .sb-unknown {

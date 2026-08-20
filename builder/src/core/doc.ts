@@ -82,7 +82,10 @@ export function createEmptyDoc(name = 'Untitled site'): SiteDoc {
         id: uid(),
         name: 'Home',
         path: '/',
-        title: name,
+        // Left empty on purpose: an explicit title is a user decision, and a
+        // copy of the name taken at creation goes stale the moment either is
+        // renamed. `defaultPageTitle` derives the effective title instead.
+        title: '',
         description: '',
         rootId: root.id,
         createdAt: now,
@@ -93,6 +96,40 @@ export function createEmptyDoc(name = 'Untitled site'): SiteDoc {
     theme: defaultTheme(),
     updatedAt: now,
   };
+}
+
+/**
+ * The title a page ships with when the author has not written one.
+ *
+ * Kept here rather than in the exporter so the Pages panel can show the very
+ * same string as the Title field's placeholder — the author sees what will be
+ * published instead of guessing.
+ */
+export function defaultPageTitle(doc: SiteDoc, page: Page): string {
+  const site = doc.name.trim();
+  const name = page.name.trim();
+  if (!site) return name;
+  if (!name || page.path === '/') return site;
+  return `${name} — ${site}`;
+}
+
+/**
+ * Pre-order list of node types in a subtree, ignoring ids, props and styles.
+ *
+ * Two sections spawned from the same template share a signature even after
+ * their text has been edited, which is what lets sharing recognise the copies
+ * of a nav bar a user has already put on every page.
+ */
+export function structureSignature(doc: SiteDoc, rootId: string): string {
+  const parts: string[] = [];
+  const walk = (id: string): void => {
+    const node = doc.nodes[id];
+    if (!node) return;
+    parts.push(node.type);
+    for (const child of node.children) walk(child);
+  };
+  walk(rootId);
+  return parts.join('>');
 }
 
 export function findPage(doc: SiteDoc, pageId: string): Page | undefined {
@@ -135,7 +172,8 @@ export function addPage(doc: SiteDoc, name = 'New page', path?: string): Page {
     id: uid(),
     name,
     path: `/${uniqueSlug(wanted, taken)}`,
-    title: name,
+    // See `createEmptyDoc` — derived, not copied.
+    title: '',
     description: '',
     rootId: root.id,
     createdAt: now,
@@ -342,6 +380,30 @@ export function sharedOfNode(doc: SiteDoc, nodeId: string): SharedSection | unde
   if (!node || node.type !== SHARED_TYPE) return undefined;
   const sharedId = node.props.sharedId;
   return typeof sharedId === 'string' ? findShared(doc, sharedId) : undefined;
+}
+
+/**
+ * The shared section a node belongs to, if any — by containment.
+ *
+ * `sharedOfNode` answers this for an *instance*, which is the pointer. This
+ * answers it for the markup: the master's root and everything under it. The
+ * canvas needs that form, because clicking a nav bar selects a heading inside
+ * the master, and whether an edit is about to change every page is the single
+ * most important thing to tell someone before they make it.
+ */
+export function sharedContaining(doc: SiteDoc, nodeId: string): SharedSection | undefined {
+  const masters = sharedList(doc);
+  if (!masters.length) return undefined;
+  const byRoot = new Map(masters.map((entry) => [entry.rootId, entry]));
+  let current: string | null | undefined = nodeId;
+  const seen = new Set<string>();
+  while (current && !seen.has(current)) {
+    seen.add(current);
+    const hit = byRoot.get(current);
+    if (hit) return hit;
+    current = doc.nodes[current]?.parent;
+  }
+  return undefined;
 }
 
 /** A placeholder node that renders a shared section. */
@@ -644,6 +706,29 @@ export function setNodeFlag(
  */
 export function repairDoc(doc: SiteDoc): number {
   let fixed = 0;
+
+  /*
+   * Older versions copied a name into `title` when a page was created, so every
+   * page of an existing document exports `<title>Page 4</title>` however often
+   * it has been renamed since. Clearing those auto-filled values hands the page
+   * back to `defaultPageTitle`; a title equal to what that would produce is
+   * cleared too, because doing so cannot change the output.
+   */
+  for (const page of doc.pages) {
+    const title = (page.title ?? '').trim();
+    if (!title) continue;
+    const autoFilled =
+      /^Page \d+$/.test(title) ||
+      title === 'New page' ||
+      // the name `createEmptyDoc` uses when the author has not named the site,
+      // which older versions copied onto the home page
+      title === 'Untitled site' ||
+      title === defaultPageTitle(doc, page);
+    if (autoFilled) {
+      page.title = '';
+      fixed += 1;
+    }
+  }
 
   for (const page of doc.pages) {
     if (!doc.nodes[page.rootId]) {

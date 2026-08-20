@@ -14,6 +14,7 @@ import {
   SHARED_TYPE,
   countSharedInstances,
   createEmptyDoc,
+  sharedContaining,
   sharedList,
   walkRendered,
 } from '../src/core/doc';
@@ -294,5 +295,152 @@ describe('shared sections are styled', () => {
     // inside the tablet and mobile media queries.
     const baseRules = css.split('\n').filter((line) => line === `.n-${master} {`);
     expect(baseRules).toHaveLength(1);
+  });
+});
+
+describe('sharing a section a user already copied onto every page', () => {
+  beforeEach(reset);
+
+  /**
+   * The bug this pins: anyone building a multi-page site drops a nav bar on
+   * every page first and only later wishes the copies were one. Sharing used to
+   * add an instance without removing the copy, leaving two identical nav bars
+   * stacked on every page but the one being shared from.
+   */
+  function threePagesEachWithTheirOwnNav(): void {
+    withNavbar();
+    for (const name of ['Work', 'About']) {
+      S().addPage();
+      S().updatePage(S().doc.pages[S().doc.pages.length - 1].id, { name });
+      S().insertTemplate(template('navbar'));
+    }
+    S().selectPage(S().doc.pages[0].id);
+  }
+
+  it('replaces the copies instead of stacking a second nav bar on each page', () => {
+    threePagesEachWithTheirOwnNav();
+    const navId = S().doc.nodes[S().pageRootId()].children[0];
+
+    S().shareSection(navId);
+
+    const doc = S().doc;
+    expect(sharedList(doc)).toHaveLength(1);
+    for (const page of doc.pages) {
+      const kids = doc.nodes[page.rootId].children.map((id) => doc.nodes[id]);
+      expect(kids.filter((k) => k.type === SHARED_TYPE)).toHaveLength(1);
+      // the whole point: exactly one nav bar per page, not two
+      expect(kids).toHaveLength(1);
+    }
+  });
+
+  it('keeps each page rendering a single header', () => {
+    threePagesEachWithTheirOwnNav();
+    S().shareSection(S().doc.nodes[S().pageRootId()].children[0]);
+
+    const { files } = buildExport(S().doc);
+    const pages = files.filter((f) => f.path.endsWith('.html'));
+    expect(pages).toHaveLength(3);
+    for (const file of pages) {
+      expect(file.content.split('<header').length - 1).toBe(1);
+    }
+  });
+
+  it('replaces in place, so a nav below a banner does not jump to the top', () => {
+    // page two puts something above its nav, which the replacement must respect
+    withNavbar();
+    S().addPage();
+    S().insertTemplate(template('hero-center'));
+    S().insertTemplate(template('navbar'));
+    const other = S().doc.pages[1];
+    const navIndexBefore = S().doc.nodes[other.rootId].children.length - 1;
+
+    S().selectPage(S().doc.pages[0].id);
+    S().shareSection(S().doc.nodes[S().pageRootId()].children[0]);
+
+    const kids = S().doc.nodes[other.rootId].children;
+    expect(S().doc.nodes[kids[navIndexBefore]].type).toBe(SHARED_TYPE);
+  });
+
+  it('still adds an instance to a page that has no matching section', () => {
+    withNavbar();
+    S().addPage();
+    S().insertTemplate(template('hero-center'));
+    const bare = S().doc.pages[1];
+
+    S().selectPage(S().doc.pages[0].id);
+    S().shareSection(S().doc.nodes[S().pageRootId()].children[0]);
+
+    const kids = S().doc.nodes[bare.rootId].children.map((id) => S().doc.nodes[id]);
+    expect(kids.filter((k) => k.type === SHARED_TYPE)).toHaveLength(1);
+    // the hero it already had is untouched
+    expect(kids.filter((k) => k.type === 'section')).toHaveLength(1);
+  });
+
+  it('says how many copies it replaced', () => {
+    threePagesEachWithTheirOwnNav();
+    S().shareSection(S().doc.nodes[S().pageRootId()].children[0]);
+    expect(S().toasts.at(-1)?.message).toContain('shared across 3 pages');
+    expect(S().toasts.at(-1)?.message).toContain('replaced 2 copies');
+  });
+
+  it('is undoable in one step', () => {
+    threePagesEachWithTheirOwnNav();
+    const before = JSON.stringify(S().doc.pages.map((p) => S().doc.nodes[p.rootId].children.length));
+    S().shareSection(S().doc.nodes[S().pageRootId()].children[0]);
+    S().undo();
+    expect(JSON.stringify(S().doc.pages.map((p) => S().doc.nodes[p.rootId].children.length))).toBe(before);
+    expect(sharedList(S().doc)).toHaveLength(0);
+  });
+});
+
+describe('what sharing leaves selected and says', () => {
+  beforeEach(reset);
+
+  /**
+   * Selecting the instance reads as the more correct choice and breaks the
+   * canvas: an instance renders its master's subtree without contributing an
+   * element of its own, so it has no box to outline and the overlay and context
+   * panel have nothing to attach to. The master's root is what is on screen.
+   */
+  it('keeps the section the user was looking at selected', () => {
+    const navId = withNavbar();
+    S().addPage();
+    S().selectPage(S().doc.pages[0].id);
+    // the path the UI takes: the section is selected, which is how the user
+    // reached the "use on all pages" button in the first place
+    S().select(navId);
+
+    S().shareSection(navId);
+
+    expect(S().selectedId).toBe(navId);
+    expect(S().doc.nodes[navId].type).not.toBe(SHARED_TYPE);
+    // it is the master now, reached through an instance rather than a page
+    expect(S().doc.nodes[navId].parent).toBeNull();
+    expect(sharedList(S().doc)[0].rootId).toBe(navId);
+  });
+
+  it('reports an edit inside a shared master as affecting every page', () => {
+    const navId = withNavbar();
+    S().addPage();
+    S().selectPage(S().doc.pages[0].id);
+    S().shareSection(navId);
+
+    // the heading inside the nav, which is what a click on the canvas selects
+    const brand = brandId(S().doc);
+    expect(sharedContaining(S().doc, brand)?.rootId).toBe(navId);
+    expect(countSharedInstances(S().doc, sharedList(S().doc)[0].id)).toBe(2);
+    // and a node outside any master is not reported as shared
+    S().selectPage(S().doc.pages[1].id);
+    S().insertTemplate(template('hero-center'));
+    expect(sharedContaining(S().doc, S().selectedId as string)).toBeUndefined();
+  });
+
+  it('reports adding separately from replacing', () => {
+    withNavbar();
+    S().addPage(); // a page with nothing on it
+    S().selectPage(S().doc.pages[0].id);
+    S().shareSection(S().doc.nodes[S().pageRootId()].children[0]);
+    expect(S().toasts.at(-1)?.message).toContain('added to 1 page');
+    expect(S().toasts.at(-1)?.message).not.toContain('replaced');
   });
 });

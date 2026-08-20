@@ -626,7 +626,13 @@ button { cursor: pointer; }
 .ui-field__hint code { font-family: var(--mono); font-size: 10px; }
 
 .ui-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 8px; }
-.ui-grid2 .ui-field { grid-template-columns: 40px minmax(0, 1fr); gap: 5px; }
+/*
+ * Paired rows stack their label instead of putting it in a 40px column: at that
+ * width "Row gap" clipped to "Row ga" and "Col span" to "Col spa", which reads
+ * as a rendering fault rather than a tight fit.
+ */
+.ui-grid2 .ui-field { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+.ui-grid2 .ui-field__label { font-size: 11px; }
 
 /* The override dot: small, but it is the difference between confidence and
    guesswork when a document has per-breakpoint styles. */
@@ -1600,3 +1606,63 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   .app[data-inspector='closed'] .ui-inspector { width: 30px; box-shadow: none; }
   .tb__center .ui-seg { display: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Page panel — the properties panel with nothing selected.
+
+   Replaces a "Nothing selected" message that left the widest column in the
+   editor blank for as long as the user was reading their page instead of
+   clicking it.
+   --------------------------------------------------------------------------- */
+
+.pg { display: flex; flex-direction: column; gap: 14px; padding: 14px; }
+
+.pg__head { display: flex; flex-direction: column; gap: 3px; }
+.pg__eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--fg-faint);
+}
+.pg__name { font-size: 15px; font-weight: 650; color: var(--fg); line-height: 1.25; }
+.pg__path {
+  align-self: flex-start;
+  font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--fg-muted); background: var(--bg-soft);
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 1px 6px;
+}
+
+.pg__sections {
+  display: flex; flex-direction: column; gap: 7px;
+  padding-top: 12px; border-top: 1px solid var(--border);
+}
+.pg__list { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.pg__item {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 6px 8px; border: 1px solid transparent; border-radius: var(--r);
+  background: none; color: var(--fg-2); font-size: 12.5px; text-align: left;
+  cursor: pointer;
+}
+.pg__item:hover { background: var(--bg-soft); border-color: var(--border); }
+.pg__item:focus-visible { outline: 2px solid var(--p-500); outline-offset: 1px; }
+.pg__item svg { color: var(--fg-faint); flex: none; }
+.pg__item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg__hint { margin: 0; font-size: 12.5px; color: var(--fg-muted); line-height: 1.55; }
+.pg__link {
+  border: 0; background: none; padding: 0; cursor: pointer;
+  color: var(--p-600); font: inherit; text-decoration: underline;
+}
+
+/* Share offer and shared-state note inside the canvas context panel. */
+.cx__share, .cx__note {
+  display: flex; align-items: center; gap: 6px;
+  margin: 0; padding: 6px 8px;
+  border-radius: var(--r); font-size: 11.5px; line-height: 1.4;
+}
+.cx__share {
+  border: 1px solid var(--p-200); background: var(--p-50);
+  color: var(--p-700); font-weight: 550; cursor: pointer; width: 100%;
+}
+.cx__share:hover { background: var(--p-100); border-color: var(--p-300); }
+.cx__share:focus-visible { outline: 2px solid var(--p-500); outline-offset: 1px; }
+.cx__note { border: 1px solid var(--border); background: var(--bg-soft); color: var(--fg-muted); }
+.cx__share svg, .cx__note svg { flex: none; }
