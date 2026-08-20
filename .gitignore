@@ -1,6 +1,7 @@
 # dependencies
 /node_modules
 legacy/node_modules
+builder/node_modules
 /.pnp
 .pnp.js
 
@@ -29,3 +30,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build output / caches that must never be committed
+.next/
+legacy/.next/
+*.tsbuildinfo
+/app/assets/*.map

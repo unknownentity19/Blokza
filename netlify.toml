@@ -15,6 +15,18 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# The builder bundle is content-hashed by Vite, so it is safe to cache forever.
+[[headers]]
+  for = "/app/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The app shell must always revalidate or a deploy leaves stale asset references.
+[[headers]]
+  for = "/app/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
 [[headers]]
   for = "/*.html"
   [headers.values]
@@ -24,3 +36,26 @@
   from = "/index"
   to = "/"
   status = 301
+
+[[redirects]]
+  from = "/editor.html"
+  to = "/app/"
+  status = 301
+
+[[redirects]]
+  from = "/editor"
+  to = "/app/"
+  status = 301
+
+# `publish = "."` serves the whole repository, which would expose the builder's
+# TypeScript source and the superseded `legacy/` prototype as browsable files.
+# Neither contains secrets, but neither belongs on the site either.
+[[redirects]]
+  from = "/builder/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/legacy/*"
+  to = "/404.html"
+  status = 404

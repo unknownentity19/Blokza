@@ -1,0 +1,9 @@
+# Vercel uploads only what it needs. The site is the repo root plus the built
+# builder in app/ — the builder's source, the superseded prototype and the local
+# tooling config are not part of the deployment.
+builder
+legacy
+.kiro
+.claude
+.github
+.vscode

@@ -14,5 +14,4 @@
   <url><loc>https://altask.dev/about.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://altask.dev/community.html</loc><priority>0.7</priority><changefreq>daily</changefreq></url>
   <url><loc>https://altask.dev/contact.html</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/editor.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
 </urlset>
