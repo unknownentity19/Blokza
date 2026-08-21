@@ -36,3 +36,6 @@ next-env.d.ts
 legacy/.next/
 *.tsbuildinfo
 /app/assets/*.map
+
+# Assembled by scripts/deploy.sh; rebuilt on every deploy.
+dist/
