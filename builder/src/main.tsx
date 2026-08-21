@@ -29,7 +29,19 @@ if (import.meta.env.DEV) {
   const params = new URLSearchParams(window.location.search);
   if (params.get('seed') === 'demo') {
     const select = params.get('select') === 'section' ? 'section' : undefined;
-    void import('./dev/seedDemo').then(({ seedDemo }) => seedDemo(select ? { select } : {}));
+    void import('./dev/seedDemo').then(({ seedDemo }) => {
+      seedDemo(select ? { select } : {});
+      // `view` and `device` exist so product screenshots for the marketing site
+      // are reproducible: the same URL always yields the same frame.
+      const view = params.get('view');
+      if (view === 'flow') useEditor.getState().setView('flow');
+      const device = params.get('device');
+      if (device === 'mobile' || device === 'tablet' || device === 'desktop') {
+        useEditor.getState().setDevice(device);
+      }
+      const panel = params.get('panel');
+      if (panel) useEditor.getState().setLeftPanel(panel as never);
+    });
   }
 }
 

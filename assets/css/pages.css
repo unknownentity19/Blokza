@@ -4384,3 +4384,107 @@
 
 @media (max-width: 900px) { .drag { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; } }
 @media (max-width: 520px) { .drag { grid-template-columns: minmax(0, 1fr); } }
+
+/* ===========================================================================
+   Feature-page heroes — three silhouettes, three real screenshots
+   ===========================================================================
+   All three feature pages shared one hero: centred kicker, a two-line headline
+   whose second line was purple, a paragraph, two buttons, then a full-width
+   drawing. Three pages selling three different capabilities opened identically.
+
+   Each now has a shape that comes from its own subject, and shows the editor
+   itself rather than an illustration of it — the product exists, so there is no
+   reason to draw a picture of it.
+   =========================================================================== */
+
+.phero { padding: 68px 0 0; overflow: hidden; }
+.phero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 48px;
+  align-items: center;
+}
+.phero__copy .kicker { display: inline-block; }
+.phero__copy h1 { text-align: left; }
+.phero__copy p {
+  margin-top: 18px;
+  max-width: 46ch;
+  text-align: left;
+  font-size: 17px;
+  line-height: 1.62;
+  color: var(--fg-muted);
+}
+.phero__copy .hero__ctas { justify-content: flex-start; }
+
+.phero__shot { margin: 0; }
+.phero__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 40px 90px -40px rgba(24, 16, 36, 0.34);
+}
+
+/* Builder: landscape, and it runs off the right edge so the tool reads as
+   bigger than the page rather than as a framed picture of itself. The copy
+   column is narrow and the bleed deep on purpose — at the first attempt the
+   whole editor was scaled into ~700px and every label in it turned to mush,
+   which reads as a low-quality image rather than a real product. */
+.phero--bleed .phero__grid { grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr); }
+.phero--bleed .phero__shot { margin-right: -18vw; }
+/*
+ * This headline is long, and at the display size the other heroes use it ran to
+ * five lines in a narrowed column and pushed the paragraph and buttons off the
+ * first screen. Slightly smaller here, so the whole proposition is visible at
+ * once — which is the only thing a hero has to do.
+ */
+.phero--bleed .phero__copy h1 { font-size: clamp(2.1rem, 3.4vw, 3.15rem); }
+
+/* Responsive: mirrored, and portrait — the shape of the thing it shows. */
+.phero--mirror .phero__grid { grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr); }
+.phero__shot--tall { max-width: 340px; margin-left: auto; }
+.phero__shot--tall img { border-radius: 14px; }
+
+/* Publish: centred copy, then the real export at full width. */
+.phero--stacked { text-align: center; }
+.phero--stacked .hero__ctas { justify-content: center; }
+.phero--stacked p { margin-left: auto; margin-right: auto; max-width: 60ch; }
+.phero__wide {
+  margin: 52px auto 0;
+  max-width: 1180px;
+  padding: 0 24px;
+}
+.phero__wide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px 14px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  box-shadow: 0 -10px 60px -30px rgba(24, 16, 36, 0.3);
+}
+
+/* The breakpoint row on the responsive hero: the numbers are the content. */
+.bpset { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+.bpset li {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.bpset b { font: 700 12.5px/1 var(--font-mono); color: var(--p-700); }
+
+@media (max-width: 900px) {
+  .phero { padding-top: 44px; }
+  .phero__grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .phero--mirror .phero__grid { grid-template-columns: minmax(0, 1fr); }
+  /* On one column the mirrored hero leads with its words, not its picture. */
+  .phero--mirror .phero__shot--tall { order: 2; margin: 0 auto; }
+  .phero--mirror .phero__copy { order: 1; }
+  .phero--bleed .phero__shot { margin-right: 0; }
+  .phero__shot--tall { max-width: 280px; }
+}

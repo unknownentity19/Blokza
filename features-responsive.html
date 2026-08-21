@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/css/base.css?v=19" />
-<link rel="stylesheet" href="assets/css/pages.css?v=32" />
+<link rel="stylesheet" href="assets/css/pages.css?v=35" />
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -133,68 +133,34 @@
   </header>
 <main id="main">
 
-<section class="page-hero">
-  <div class="container">
-    <span class="kicker" data-reveal>Responsive Controls</span>
-    <h1 class="reveal-words mt-3">Design once.<br/><span class="text-purple">Tune every breakpoint.</span></h1>
-    <p data-reveal style="transition-delay:.2s">Independent overrides per device. Tune typography, spacing, and layout for phones, tablets, and desktops without leaving the canvas, and without writing a single media query.</p>
-    <div class="hero__ctas mt-8" data-reveal style="transition-delay:.3s">
-      <a class="btn btn-primary btn-lg" href="app/index.html" data-magnetic="0.18">Try device preview</a>
-      <a class="btn btn-secondary btn-lg" href="features-builder.html">All features</a>
+<!--
+    Mirrored against the builder hero, and portrait against its landscape: the
+    subject is one design at a phone width, so the screenshot is the shape of a
+    phone. The breakpoint row replaces a second button because the widths are the
+    information.
+  -->
+  <section class="phero phero--mirror">
+    <div class="container phero__grid">
+      <figure class="phero__shot phero__shot--tall" data-reveal-left>
+        <img src="assets/images/product/editor-mobile.png" width="575" height="1040"
+             alt="The editor with the 390 pixel breakpoint selected, showing the same page reflowed to one column."
+             loading="eager" decoding="async">
+      </figure>
+      <div class="phero__copy">
+        <span class="kicker" data-reveal>Responsive controls</span>
+        <h1 class="reveal-words mt-3">Design once.<br/><span class="text-purple">Tune every breakpoint.</span></h1>
+        <p data-reveal style="transition-delay:.2s">Change type, spacing or layout for one device and leave the others exactly as they were. No media queries to write, and nothing to keep in step by hand.</p>
+        <ul class="bpset" data-reveal style="transition-delay:.28s">
+          <li><b>1440</b> Desktop</li>
+          <li><b>820</b> Tablet</li>
+          <li><b>390</b> Phone</li>
+        </ul>
+        <div class="hero__ctas mt-8" data-reveal style="transition-delay:.34s">
+          <a class="btn btn-primary btn-lg" href="app/index.html" data-magnetic="0.18">Try device preview</a>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
-
-<!-- Three-device showcase -->
-<section class="section-tight">
-  <div class="container">
-    <div class="card" data-reveal style="overflow:hidden;padding:0;">
-      <svg viewBox="0 0 1200 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-        <rect width="1200" height="480" fill="#f8f9fb"/>
-        <!-- Desktop -->
-        <g transform="translate(80, 60)">
-          <rect width="540" height="340" fill="#fff" stroke="#cdd2de" stroke-width="2" rx="4"/>
-          <rect width="540" height="32" fill="#d0c5fd" rx="4"/>
-          <circle cx="16" cy="16" r="4" fill="#fb7185"/>
-          <circle cx="32" cy="16" r="4" fill="#fbbf24"/>
-          <circle cx="48" cy="16" r="4" fill="#34d399"/>
-          <text x="200" y="20" font-family="Inter,sans-serif" font-size="11" fill="#4b5563">cilbs.dev</text>
-          <rect x="40" y="80" width="380" height="20" fill="#181024"/>
-          <rect x="40" y="108" width="280" height="14" fill="#9aa3b2"/>
-          <rect x="40" y="138" width="100" height="32" fill="#d0c5fd"/>
-          <rect x="40" y="200" width="150" height="100" fill="#d0c5fd" stroke="#d0c5fd"/>
-          <rect x="200" y="200" width="150" height="100" fill="#d0c5fd" stroke="#d0c5fd"/>
-          <rect x="360" y="200" width="140" height="100" fill="#d0c5fd" stroke="#d0c5fd"/>
-          <text x="270" y="332" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#9aa3b2" letter-spacing="2">DESKTOP, 1280px</text>
-        </g>
-        <!-- Tablet -->
-        <g transform="translate(680, 80)">
-          <rect width="280" height="320" fill="#fff" stroke="#cdd2de" stroke-width="2" rx="4"/>
-          <rect width="280" height="28" fill="#d0c5fd" rx="4"/>
-          <text x="100" y="18" font-family="Inter,sans-serif" font-size="10" fill="#4b5563">cilbs.dev</text>
-          <rect x="20" y="56" width="240" height="18" fill="#181024"/>
-          <rect x="20" y="80" width="180" height="12" fill="#9aa3b2"/>
-          <rect x="20" y="106" width="100" height="28" fill="#d0c5fd"/>
-          <rect x="20" y="156" width="118" height="80" fill="#d0c5fd" stroke="#d0c5fd"/>
-          <rect x="142" y="156" width="118" height="80" fill="#d0c5fd" stroke="#d0c5fd"/>
-          <text x="140" y="282" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#9aa3b2" letter-spacing="2">TABLET, 768px</text>
-        </g>
-        <!-- Mobile -->
-        <g transform="translate(1000, 100)">
-          <rect width="140" height="280" fill="#fff" stroke="#cdd2de" stroke-width="2" rx="6"/>
-          <rect width="140" height="24" fill="#d0c5fd" rx="6"/>
-          <text x="50" y="16" font-family="Inter,sans-serif" font-size="9" fill="#4b5563">cilbs.dev</text>
-          <rect x="14" y="40" width="112" height="14" fill="#181024"/>
-          <rect x="14" y="58" width="84" height="10" fill="#9aa3b2"/>
-          <rect x="14" y="78" width="70" height="22" fill="#d0c5fd"/>
-          <rect x="14" y="114" width="112" height="48" fill="#d0c5fd" stroke="#d0c5fd"/>
-          <rect x="14" y="170" width="112" height="48" fill="#d0c5fd" stroke="#d0c5fd"/>
-          <text x="70" y="252" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#9aa3b2" letter-spacing="2">MOBILE, 375px</text>
-        </g>
-      </svg>
-    </div>
-  </div>
-</section>
+  </section>
 
 <!-- 3 device pillars -->
 <section class="section">
