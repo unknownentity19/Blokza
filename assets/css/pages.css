@@ -3934,43 +3934,8 @@
 
 .template-meta { align-items: flex-end; gap: 16px; }
 
-.template-open {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  flex: none;
-  padding: 7px 11px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface, #fff);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--fg-2);
-  white-space: nowrap;
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease), color 0.3s var(--ease);
-}
-.template-open svg { transition: transform 0.3s var(--ease); }
-.template-card:hover .template-open {
-  border-color: var(--p-300);
-  background: var(--p-50);
-  color: var(--p-700);
-}
-.template-card:hover .template-open svg { transform: translateX(3px); }
 
-/* The only thing that still says "live", at the size that claim deserves. */
-.template-open__dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #2f8f6b;
-  box-shadow: 0 0 0 0 rgba(47, 143, 107, 0.4);
-  animation: tpl-live 2.4s var(--ease-in-out) infinite;
-}
-@keyframes tpl-live {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(47, 143, 107, 0.35); }
   50%      { box-shadow: 0 0 0 5px rgba(47, 143, 107, 0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .template-open__dot { animation: none; }
 }
 
 /* ===========================================================================
