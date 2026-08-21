@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/css/base.css?v=19" />
-<link rel="stylesheet" href="assets/css/pages.css?v=29" />
+<link rel="stylesheet" href="assets/css/pages.css?v=32" />
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -253,27 +253,52 @@
 <section class="section">
   <div class="container">
     <div class="section-head">
-      <span class="kicker" data-reveal>What you get</span>
-      <h2 class="reveal-words mt-3">A canvas built like real design tools</h2>
-      <p data-reveal style="transition-delay:.2s">Real keyboard shortcuts and live multiplayer, without much of a learning curve.</p>
+      <span class="kicker" data-reveal>How a drag works</span>
+      <h2 class="reveal-words mt-3">See where it lands before you let go</h2>
+      <p data-reveal style="transition-delay:.2s">Every drag shows the container that will accept the block, so nothing ends up somewhere you did not choose.</p>
     </div>
-    <div class="grid grid-3" data-reveal-stagger>
-      <article class="card card-hover feature-card">
-        <span class="icon-tile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h12M3 18h18M21 12h-3M21 18h-3"/></svg></span>
-        <h3>Smart snapping</h3>
-        <p>Components align to a flexible grid as you drag. Spacing guides appear automatically. Drop-zones highlight live so you always know where a block will land.</p>
-      </article>
-      <article class="card card-hover feature-card">
-        <span class="icon-tile alt-emerald"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span>
-        <h3>Drag to reorder</h3>
-        <p>Move blocks up, down, or into nested containers with a single drag. Or pick a block and use arrow keys for pixel-precise reordering with the keyboard.</p>
-      </article>
-      <article class="card card-hover feature-card">
-        <span class="icon-tile alt-amber"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 6v6h6"/></svg></span>
-        <h3>Full undo history</h3>
-        <p>80 levels of undo with redo. Every property change, every reorder, every duplicate, captured. Cmd+Z and Cmd+Shift+Z navigate any change.</p>
-      </article>
-    </div>
+    <!--
+      A drag, as the four moments it actually has. Numbering is justified here
+      because this is a sequence in time — unlike the three interchangeable
+      feature cards that used to sit in this slot, which were the same three-up
+      grid the responsive and publish pages also used.
+    -->
+    <ol class="drag" data-reveal-stagger>
+      <li class="drag__step">
+        <div class="drag__frame">
+          <span class="drag__tray"><i></i><i></i><i></i></span>
+          <span class="drag__block drag__block--tray"></span>
+        </div>
+        <h3><span class="drag__n">1</span> Pick it up</h3>
+        <p>Press on any component in the tray. Nothing is committed yet.</p>
+      </li>
+      <li class="drag__step">
+        <div class="drag__frame">
+          <span class="drag__tray"><i></i><i></i><i></i></span>
+          <span class="drag__block drag__block--lift"></span>
+        </div>
+        <h3><span class="drag__n">2</span> Move it</h3>
+        <p>The block follows the pointer and lifts off the canvas.</p>
+      </li>
+      <li class="drag__step">
+        <div class="drag__frame">
+          <span class="drag__tray"><i></i><i></i><i></i></span>
+          <span class="drag__guide drag__guide--y"></span>
+          <span class="drag__guide drag__guide--x"></span>
+          <span class="drag__block drag__block--snap"></span>
+        </div>
+        <h3><span class="drag__n">3</span> See where it lands</h3>
+        <p>Guides show the container that will accept it, before you let go.</p>
+      </li>
+      <li class="drag__step">
+        <div class="drag__frame">
+          <span class="drag__tray"><i></i><i></i><i></i></span>
+          <span class="drag__slot"><span class="drag__block drag__block--placed"></span></span>
+        </div>
+        <h3><span class="drag__n">4</span> Adjust it</h3>
+        <p>Released, selected, and ready to restyle from the panel beside it.</p>
+      </li>
+    </ol>
   </div>
 </section>
 
