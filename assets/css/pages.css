@@ -4731,3 +4731,90 @@
   background: var(--p-50);
   transform: translateX(3px);
 }
+
+/* ===========================================================================
+   Template gallery — the previews are the section
+   ===========================================================================
+   The previous version was a frame inside a frame: each preview already draws
+   its own window, complete with traffic lights and an address bar, and that was
+   then wrapped in a bordered white card. Four identical boxes in a rigid row,
+   each containing a smaller box.
+
+   The outer card is gone. Each preview sits on the page background lifted by a
+   shadow, the row is staggered so it reads as a contact sheet rather than a
+   grid, and the label is one line of type underneath. No arrow, no pill: the
+   whole preview is the link and it rises when you point at it.
+   =========================================================================== */
+
+.tpl-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 30px;
+  align-items: start;
+}
+
+/* The stagger is what stops this being another four-column card row. */
+.tpl-row .template-card:nth-child(even) { margin-top: 52px; }
+
+.template-card {
+  display: block;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-decoration: none;
+}
+
+.template-card .template-thumb {
+  border: 0;
+  border-radius: 9px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  /* No outline — the artwork's own window chrome is the frame. Depth instead. */
+  box-shadow:
+    0 1px 0 rgba(24, 16, 36, 0.06),
+    0 18px 34px -20px rgba(24, 16, 36, 0.26);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+.template-card:hover .template-thumb {
+  transform: translateY(-8px);
+  box-shadow:
+    0 1px 0 rgba(24, 16, 36, 0.06),
+    0 34px 60px -26px rgba(122, 95, 229, 0.4);
+}
+.template-card:focus-visible .template-thumb { outline: 2px solid var(--p-500); outline-offset: 3px; }
+
+.template-card .template-meta {
+  display: block;
+  padding: 18px 2px 0;
+}
+.template-card .template-meta .cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+.template-card .template-meta h3 {
+  margin-top: 5px;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  transition: color 0.3s var(--ease);
+}
+.template-card:hover .template-meta h3 { color: var(--p-700); }
+
+@media (max-width: 1000px) {
+  .tpl-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
+  .tpl-row .template-card:nth-child(even) { margin-top: 0; }
+  .tpl-row .template-card:nth-child(n+3) { margin-top: 14px; }
+}
+@media (max-width: 600px) {
+  .tpl-row { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .tpl-row .template-card:nth-child(n) { margin-top: 0; }
+}
