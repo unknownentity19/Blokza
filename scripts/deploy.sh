@@ -54,6 +54,9 @@ fi
 echo "==> Checked: no source, no node_modules, editor present"
 
 if [ "${1:-}" = "--deploy" ]; then
+  # Catches the two setup mistakes that only show up as a broken sign-in on the
+  # live site: an unauthorised CLI, and a build with no Supabase keys in it.
+  ./scripts/preflight.sh || { echo "Preflight failed — not publishing." >&2; exit 1; }
   echo
   echo "==> Publishing to Cloudflare Pages project '$PROJECT'"
   npx wrangler pages deploy "$DIST" --project-name "$PROJECT"
