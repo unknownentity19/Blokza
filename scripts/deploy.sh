@@ -39,6 +39,41 @@ done
 rsync -a --exclude '.DS_Store' assets "$DIST"/
 rsync -a --exclude '.DS_Store' app "$DIST"/
 
+# ---------------------------------------------------------------------------
+# Stamp every stylesheet and script reference with a hash of its own contents.
+#
+# The pages carry hand-maintained `?v=` numbers. Editing a stylesheet without
+# remembering to bump one is silent and total: returning visitors keep the old
+# file and see none of the change, which is indistinguishable from the edit not
+# having happened. Deriving the value from the file means it can never be stale
+# and never needs remembering.
+# ---------------------------------------------------------------------------
+echo "==> Stamping asset versions from file contents"
+python3 - "$DIST" <<'STAMP'
+import hashlib, pathlib, re, sys
+
+dist = pathlib.Path(sys.argv[1])
+digests = {}
+for asset in list(dist.glob("assets/css/*.css")) + list(dist.glob("assets/js/*.js")):
+    digests[asset.name] = hashlib.sha256(asset.read_bytes()).hexdigest()[:10]
+
+pattern = re.compile(r'(assets/(?:css|js)/([A-Za-z0-9_-]+\.(?:css|js)))(\?v=[^"\']*)?')
+
+def stamp(match):
+    path, name, _ = match.groups()
+    digest = digests.get(name)
+    return f"{path}?v={digest}" if digest else match.group(0)
+
+changed = 0
+for page in dist.glob("*.html"):
+    text = page.read_text(encoding="utf-8")
+    updated = pattern.sub(stamp, text)
+    if updated != text:
+        page.write_text(updated, encoding="utf-8")
+        changed += 1
+print(f"    {changed} pages stamped: " + ", ".join(f"{k}={v}" for k, v in sorted(digests.items())))
+STAMP
+
 echo
 echo "==> $DIST contains $(find "$DIST" -type f | wc -l | tr -d ' ') files, $(du -sh "$DIST" | cut -f1)"
 
