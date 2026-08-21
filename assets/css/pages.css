@@ -1,5 +1,5 @@
 /* =========================================================
-   Altask v3.1 — Page styles, refined
+   Cilbs v3.1 — Page styles, refined
    Focus on real product preview, richer animations,
    proper template + blog illustrations.
    ========================================================= */
@@ -3875,3 +3875,46 @@
 .how-end p { color: rgba(255, 255, 255, 0.78); margin-bottom: 24px; font-size: 15px; }
 .how-end .btn-primary { background: #fff; color: var(--p-700); }
 .how-end .btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.18); }
+
+/* ===========================================================================
+   Layout corrections — measured, not guessed
+   =========================================================================== */
+
+/*
+ * Floating chips belong beside the mockup, never on top of it.
+ *
+ * They were offset −12/−16px from the preview box, which straddles the stage
+ * edge, so at *every* viewport width the "Auto-saved" chip covered the
+ * "Components" label and the presence chip covered "Spacing" — sitting on the
+ * exact words they exist to draw attention to.
+ *
+ * Anchoring the chip's inner edge to the stage edge keeps it clear whatever the
+ * chip's own width. Below the width where the page has a gutter to hold them,
+ * they are dropped outright: an absent flourish beats one obscuring a label.
+ */
+.float-chip { display: none; }
+
+@media (min-width: 1340px) {
+  .float-chip { display: inline-flex; }
+  .float-chip--saved { top: 12%;    right: calc(100% - 14px); left: auto; }
+  .float-chip--users { top: 42%;    left:  calc(100% - 14px); right: auto; }
+  .float-chip--live  { bottom: 12%; right: calc(100% - 14px); left: auto; }
+}
+
+/*
+ * Reference tables scroll rather than widening the page.
+ *
+ * `.props` needs about 440px to lay out its four columns, so on a 375px screen
+ * it pushed the whole document sideways — every section then scrolled a little,
+ * which reads as a broken page rather than a wide table.
+ */
+@media (max-width: 720px) {
+  .props {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Illustrations inside cards scale with the card instead of setting its width. */
+.card svg[viewBox] { max-width: 100%; height: auto; }

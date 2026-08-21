@@ -59,10 +59,10 @@ It **ignores `netlify.toml`**, so the redirects that lived there are duplicated 
    ./scripts/deploy.sh --deploy
    ```
 
-   It publishes to a project called `altask`; set `CF_PAGES_PROJECT` to use
+   It publishes to a project called `cilbs`; set `CF_PAGES_PROJECT` to use
    another name. You get a `*.pages.dev` URL immediately.
 
-4. **Attach the domain** — *Workers & Pages → altask → Custom domains → Set up a
+4. **Attach the domain** — *Workers & Pages → cilbs → Custom domains → Set up a
    custom domain*. Because the zone is already yours, Cloudflare writes the DNS
    record itself and issues the certificate. An apex domain works through CNAME
    flattening.

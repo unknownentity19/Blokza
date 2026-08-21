@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Altask</title>
-<meta name="description" content="Altask developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
+<title>Cilbs</title>
+<meta name="description" content="Cilbs developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
 <meta name="theme-color" content="#5b3fd6" />
 <link rel="icon" href="assets/images/favicon.svg?v=2" type="image/svg+xml" />
-<link rel="canonical" href="https://altask.dev/docs.html" />
+<link rel="canonical" href="https://cilbs.dev/docs.html" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://altask.dev/docs.html" />
-<meta property="og:title" content="Documentation · Altask" />
-<meta property="og:description" content="Altask developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
-<meta property="og:image" content="https://altask.dev/assets/og-image.svg" />
+<meta property="og:url" content="https://cilbs.dev/docs.html" />
+<meta property="og:title" content="Documentation · Cilbs" />
+<meta property="og:description" content="Cilbs developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
+<meta property="og:image" content="https://cilbs.dev/assets/og-image.svg" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,8 +27,8 @@
 <!-- ========= NAV ========= -->
 <header class="site-nav">
   <div class="container site-nav__inner">
-    <a class="site-nav__brand" href="index.html" aria-label="Altask home">
-      <img src="assets/images/logo.svg" alt="Altask" class="logo-img" style="height: 48px; width: auto;">
+    <a class="site-nav__brand" href="index.html" aria-label="Cilbs home">
+      <span class="brand-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4" stroke="currentColor" stroke-width="1.7"/><rect x="10.6" y="10.6" width="8.2" height="8.2" rx="2.2" fill="currentColor"/></svg></span><span class="brand-name">Cilbs</span>
     </a>
     <nav aria-label="Primary"><ul class="site-nav__links">
   <li class="has-submenu has-mega has-mega--2col">
@@ -186,13 +186,13 @@
       <!-- Page hero -->
       <header class="docs-hero">
         <nav class="docs-crumbs" aria-label="Breadcrumb">
-          <a href="index.html">Altask</a>
+          <a href="index.html">Cilbs</a>
           <span>/</span>
           <a href="docs.html">Docs</a>
           <span>/</span>
           <span class="is-current">Quickstart</span>
         </nav>
-        <h1>Build with Altask</h1>
+        <h1>Build with Cilbs</h1>
         <p>The component library, REST API, webhooks, and embed snippets for shipping marketing sites that look like product. Less plumbing, more shipping.</p>
         <div class="docs-hero__chips">
           <span class="docs-chip">v3.0 · current</span>
@@ -218,11 +218,11 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
 <pre><span class="tc">// 1 · install</span>
-<span class="tk">npm</span> install <span class="ts">@altask/sdk</span>
+<span class="tk">npm</span> install <span class="ts">@cilbs/sdk</span>
 
 <span class="tc">// 2 · authenticate</span>
-<span class="tk">import</span> { <span class="tn">Altask</span> } <span class="tk">from</span> <span class="ts">"@altask/sdk"</span>;
-<span class="tk">const</span> client = <span class="tk">new</span> <span class="tn">Altask</span>({ token: <span class="tn">process</span>.env.<span class="tp">ALTASK_KEY</span> });
+<span class="tk">import</span> { <span class="tn">Cilbs</span> } <span class="tk">from</span> <span class="ts">"@cilbs/sdk"</span>;
+<span class="tk">const</span> client = <span class="tk">new</span> <span class="tn">Cilbs</span>({ token: <span class="tn">process</span>.env.<span class="tp">CILBS_KEY</span> });
 
 <span class="tc">// 3 · ship</span>
 <span class="tk">await</span> client.sites.deploy({ id: <span class="ts">"site_8aL2k9X"</span> });</pre>
@@ -233,11 +233,11 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
 <pre><span class="tc"># 1 · install</span>
-<span class="tk">pip</span> install <span class="ts">altask</span>
+<span class="tk">pip</span> install <span class="ts">cilbs</span>
 
 <span class="tc"># 2 · authenticate</span>
-<span class="tk">from</span> <span class="tn">altask</span> <span class="tk">import</span> <span class="tn">Altask</span>
-client = <span class="tn">Altask</span>(token=<span class="tn">os</span>.environ[<span class="ts">"ALTASK_KEY"</span>])
+<span class="tk">from</span> <span class="tn">cilbs</span> <span class="tk">import</span> <span class="tn">Cilbs</span>
+client = <span class="tn">Cilbs</span>(token=<span class="tn">os</span>.environ[<span class="ts">"CILBS_KEY"</span>])
 
 <span class="tc"># 3 · ship</span>
 client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
@@ -248,8 +248,8 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
 <pre><span class="tc"># deploy a site</span>
-<span class="tk">curl</span> -X POST https://api.altask.dev/v1/sites/site_8aL2k9X/deploys \
-  -H <span class="ts">"Authorization: Bearer $ALTASK_KEY"</span></pre>
+<span class="tk">curl</span> -X POST https://api.cilbs.dev/v1/sites/site_8aL2k9X/deploys \
+  -H <span class="ts">"Authorization: Bearer $CILBS_KEY"</span></pre>
           </div>
         </div>
 
@@ -262,7 +262,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- SDK install -->
       <section class="docs-section" id="install">
         <h2>SDK install</h2>
-        <p>Install the Altask SDK with your package manager of choice. The same client supports server, edge, and worker runtimes.</p>
+        <p>Install the Cilbs SDK with your package manager of choice. The same client supports server, edge, and worker runtimes.</p>
 
         <div class="docs-tabs" data-docs-tabs style="margin-top:18px;">
           <div class="docs-tabs__bar" role="tablist">
@@ -271,18 +271,18 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
             <button class="docs-tabs__btn"        data-target="ins-yarn" role="tab">yarn</button>
             <button class="docs-tabs__btn"        data-target="ins-bun"  role="tab">bun</button>
           </div>
-          <div class="devdocs-code" data-panel="ins-npm"  role="tabpanel"><pre><span class="tk">npm</span> install <span class="ts">@altask/sdk @altask/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-pnpm" role="tabpanel" hidden><pre><span class="tk">pnpm</span> add <span class="ts">@altask/sdk @altask/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-yarn" role="tabpanel" hidden><pre><span class="tk">yarn</span> add <span class="ts">@altask/sdk @altask/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-bun"  role="tabpanel" hidden><pre><span class="tk">bun</span> add <span class="ts">@altask/sdk @altask/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-npm"  role="tabpanel"><pre><span class="tk">npm</span> install <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-pnpm" role="tabpanel" hidden><pre><span class="tk">pnpm</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-yarn" role="tabpanel" hidden><pre><span class="tk">yarn</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-bun"  role="tabpanel" hidden><pre><span class="tk">bun</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
         </div>
 
         <table class="props">
           <thead><tr><th>Package</th><th>Description</th><th>Size (gz)</th></tr></thead>
           <tbody>
-            <tr><td><code>@altask/sdk</code></td><td>REST client + Webhook helpers</td><td>4.8 KB</td></tr>
-            <tr><td><code>@altask/components</code></td><td>React components used by the editor</td><td>21 KB</td></tr>
-            <tr><td><code>@altask/cli</code></td><td>CLI for local dev, preview, deploy</td><td></td></tr>
+            <tr><td><code>@cilbs/sdk</code></td><td>REST client + Webhook helpers</td><td>4.8 KB</td></tr>
+            <tr><td><code>@cilbs/components</code></td><td>React components used by the editor</td><td>21 KB</td></tr>
+            <tr><td><code>@cilbs/cli</code></td><td>CLI for local dev, preview, deploy</td><td></td></tr>
           </tbody>
         </table>
       </section>
@@ -290,7 +290,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- Authentication -->
       <section class="docs-section" id="auth">
         <h2>Authentication</h2>
-        <p>The Altask API uses Bearer tokens. Generate keys in <a href="#">Dashboard → Settings → API keys</a>. Tokens scope to a single workspace and rotate on demand.</p>
+        <p>The Cilbs API uses Bearer tokens. Generate keys in <a href="#">Dashboard → Settings → API keys</a>. Tokens scope to a single workspace and rotate on demand.</p>
 
         <div class="docs-grid-2">
           <div class="docs-info">
@@ -315,8 +315,8 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
 
         <div class="devdocs-code">
 <pre><span class="tc"># every request</span>
-<span class="tk">curl</span> https://api.altask.dev/v1/me \
-  -H <span class="ts">"Authorization: Bearer $ALTASK_KEY"</span>
+<span class="tk">curl</span> https://api.cilbs.dev/v1/me \
+  -H <span class="ts">"Authorization: Bearer $CILBS_KEY"</span>
 
 <span class="tc"># response</span>
 {
@@ -354,7 +354,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <button class="devdocs-code__copy" type="button" aria-label="Copy code">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
           </button>
-<pre><span class="tk">import</span> { <span class="tn">Hero</span> } <span class="tk">from</span> <span class="ts">"@altask/components"</span>;
+<pre><span class="tk">import</span> { <span class="tn">Hero</span> } <span class="tk">from</span> <span class="ts">"@cilbs/components"</span>;
 
 <span class="tk">export default function</span> <span class="tn">Page</span>() {
   <span class="tk">return</span> (
@@ -490,8 +490,8 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
           </button>
 <pre><span class="tc"># request</span>
-<span class="tk">curl</span> -X POST https://api.altask.dev/v1/sites \
-  -H <span class="ts">"Authorization: Bearer $ALTASK_KEY"</span> \
+<span class="tk">curl</span> -X POST https://api.cilbs.dev/v1/sites \
+  -H <span class="ts">"Authorization: Bearer $CILBS_KEY"</span> \
   -H <span class="ts">"Content-Type: application/json"</span> \
   -d <span class="ts">'{"name": "habits-app", "template": "lift"}'</span>
 
@@ -499,7 +499,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
 {
   <span class="tp">"id"</span>: <span class="ts">"site_8aL2k9X"</span>,
   <span class="tp">"name"</span>: <span class="ts">"habits-app"</span>,
-  <span class="tp">"url"</span>: <span class="ts">"https://habits-app.altask.dev"</span>,
+  <span class="tp">"url"</span>: <span class="ts">"https://habits-app.cilbs.dev"</span>,
   <span class="tp">"publish_token"</span>: <span class="ts">"pt_••••••••"</span>,
   <span class="tp">"created_at"</span>: <span class="ts">"2026-09-14T18:42:00Z"</span>
 }</pre>
@@ -522,10 +522,10 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
         </ul>
         <h3 class="docs-h3">Update SEO meta</h3>
         <div class="devdocs-code">
-<pre><span class="tk">curl</span> -X PATCH https://api.altask.dev/v1/pages/page_4Bz1 \
-  -H <span class="ts">"Authorization: Bearer $ALTASK_KEY"</span> \
+<pre><span class="tk">curl</span> -X PATCH https://api.cilbs.dev/v1/pages/page_4Bz1 \
+  -H <span class="ts">"Authorization: Bearer $CILBS_KEY"</span> \
   -H <span class="ts">"Content-Type: application/json"</span> \
-  -d <span class="ts">'{"seo": {"title": "Pricing, Altask", "description": "Plans for every team."}}'</span></pre>
+  -d <span class="ts">'{"seo": {"title": "Pricing, Cilbs", "description": "Plans for every team."}}'</span></pre>
         </div>
       </section>
 
@@ -558,7 +558,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- Webhooks -->
       <section class="docs-section" id="webhooks">
         <h2>Webhooks</h2>
-        <p>Subscribe to lifecycle events to keep your CMS, CI, or analytics in sync. Payloads are signed with HMAC-SHA256, verify with the <code>X-Altask-Signature</code> header.</p>
+        <p>Subscribe to lifecycle events to keep your CMS, CI, or analytics in sync. Payloads are signed with HMAC-SHA256, verify with the <code>X-Cilbs-Signature</code> header.</p>
         <table class="props">
           <thead><tr><th>Event</th><th>When it fires</th></tr></thead>
           <tbody>
@@ -574,17 +574,17 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- Embed -->
       <section class="docs-section" id="embed">
         <h2>Embed snippet</h2>
-        <p>Drop a single script tag into any HTML page to render an Altask block in place. Snippets render server-side at the edge and hydrate progressively.</p>
+        <p>Drop a single script tag into any HTML page to render an Cilbs block in place. Snippets render server-side at the edge and hydrate progressively.</p>
         <div class="devdocs-code">
           <button class="devdocs-code__copy" type="button" aria-label="Copy code">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
           </button>
-<pre><span class="tag">&lt;div</span> <span class="tp">id</span>=<span class="ts">"altask-pricing"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<pre><span class="tag">&lt;div</span> <span class="tp">id</span>=<span class="ts">"cilbs-pricing"</span><span class="tag">&gt;&lt;/div&gt;</span>
 <span class="tag">&lt;script</span>
-  <span class="tp">src</span>=<span class="ts">"https://embed.altask.dev/v1/altask.js"</span>
+  <span class="tp">src</span>=<span class="ts">"https://embed.cilbs.dev/v1/cilbs.js"</span>
   <span class="tp">data-block</span>=<span class="ts">"pricing"</span>
   <span class="tp">data-site</span>=<span class="ts">"site_8aL2k9X"</span>
-  <span class="tp">data-mount</span>=<span class="ts">"#altask-pricing"</span>
+  <span class="tp">data-mount</span>=<span class="ts">"#cilbs-pricing"</span>
   <span class="tk">defer</span>
 <span class="tag">&gt;&lt;/script&gt;</span></pre>
         </div>
@@ -625,7 +625,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <h2>Wire up a CMS</h2>
           <span class="docs-tag">Guide</span>
         </div>
-        <p>Pull content from any headless CMS and let editors update copy without touching layout. The block tree stays in Altask, the strings live in the CMS.</p>
+        <p>Pull content from any headless CMS and let editors update copy without touching layout. The block tree stays in Cilbs, the strings live in the CMS.</p>
         <ol class="docs-steps">
           <li><strong>Map fields.</strong> In the editor, mark text props as <em>bound</em> and pick a CMS path (e.g. <code>hero.title</code>).</li>
           <li><strong>Add a fetch hook.</strong> Server-side, fetch your CMS, then pass the JSON to <code>client.pages.render({ id, data })</code>.</li>
@@ -652,15 +652,15 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <thead><tr><th>Type</th><th>Record</th><th>Value</th></tr></thead>
           <tbody>
             <tr><td>Apex</td><td><code>A</code></td><td><code>76.76.21.21</code></td></tr>
-            <tr><td>Subdomain</td><td><code>CNAME</code></td><td><code>edge.altask.dev</code></td></tr>
-            <tr><td>Wildcard</td><td><code>CNAME</code> for <code>*</code></td><td><code>edge.altask.dev</code></td></tr>
+            <tr><td>Subdomain</td><td><code>CNAME</code></td><td><code>edge.cilbs.dev</code></td></tr>
+            <tr><td>Wildcard</td><td><code>CNAME</code> for <code>*</code></td><td><code>edge.cilbs.dev</code></td></tr>
           </tbody>
         </table>
 
         <div class="devdocs-code">
 <pre><span class="tc"># verify a domain after DNS update</span>
-<span class="tk">curl</span> -X POST https://api.altask.dev/v1/sites/site_8aL2k9X/domains/verify \
-  -H <span class="ts">"Authorization: Bearer $ALTASK_KEY"</span> \
+<span class="tk">curl</span> -X POST https://api.cilbs.dev/v1/sites/site_8aL2k9X/domains/verify \
+  -H <span class="ts">"Authorization: Bearer $CILBS_KEY"</span> \
   -d <span class="ts">'{"hostname": "habits-app.com"}'</span></pre>
         </div>
       </section>
@@ -671,7 +671,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <h2>CLI and CI</h2>
           <span class="docs-tag">Guide</span>
         </div>
-        <p>The Altask CLI runs the same build pipeline as the cloud, preview locally, lint your blocks, and ship from CI without leaving your terminal.</p>
+        <p>The Cilbs CLI runs the same build pipeline as the cloud, preview locally, lint your blocks, and ship from CI without leaving your terminal.</p>
 
         <div class="docs-tabs" data-docs-tabs>
           <div class="docs-tabs__bar" role="tablist">
@@ -679,16 +679,16 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
             <button class="docs-tabs__btn"        data-target="cli-ci"    role="tab">From CI</button>
           </div>
           <div class="devdocs-code" data-panel="cli-local" role="tabpanel">
-<pre><span class="tk">npx</span> @altask/cli login
-<span class="tk">npx</span> @altask/cli dev      <span class="tc"># preview at localhost:3010</span>
-<span class="tk">npx</span> @altask/cli build    <span class="tc"># static export to ./dist</span></pre>
+<pre><span class="tk">npx</span> @cilbs/cli login
+<span class="tk">npx</span> @cilbs/cli dev      <span class="tc"># preview at localhost:3010</span>
+<span class="tk">npx</span> @cilbs/cli build    <span class="tc"># static export to ./dist</span></pre>
           </div>
           <div class="devdocs-code" data-panel="cli-ci" role="tabpanel" hidden>
 <pre><span class="tc"># .github/workflows/deploy.yml</span>
 <span class="tp">- name</span>: Deploy
   <span class="tp">run</span>: |
-    npm i -g @altask/cli
-    altask deploy --site $SITE_ID --token $<span class="tp">{{ secrets.ALTASK_KEY }}</span></pre>
+    npm i -g @cilbs/cli
+    cilbs deploy --site $SITE_ID --token $<span class="tp">{{ secrets.CILBS_KEY }}</span></pre>
           </div>
         </div>
       </section>
@@ -705,7 +705,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <footer class="docs-footnav" aria-label="Page navigation">
         <a class="docs-footnav__prev" href="#">
           <small>← Previous</small>
-          <strong>Welcome to Altask</strong>
+          <strong>Welcome to Cilbs</strong>
         </a>
         <a class="docs-footnav__next" href="#">
           <small>Next →</small>
@@ -743,7 +743,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
   <div class="container">
     <div class="site-footer__grid">
       <div>
-        <a class="site-nav__brand" href="index.html"><img src="assets/images/logo.svg" alt="Altask" class="logo-img" style="height: 48px; width: auto;"></a>
+        <a class="site-nav__brand" href="index.html"><span class="brand-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4" stroke="currentColor" stroke-width="1.7"/><rect x="10.6" y="10.6" width="8.2" height="8.2" rx="2.2" fill="currentColor"/></svg></span><span class="brand-name">Cilbs</span></a>
         <p class="mt-4" style="max-width:280px;font-size:14px;">The visual website builder for teams who care about craft. Drag, drop, and ship.</p>
       </div>
       <div><h4>Product</h4><ul><li><a href="product.html">Overview</a></li><li><a href="features-builder.html">Features</a></li><li><a href="templates.html">Templates</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="app/index.html">Editor</a></li></ul></div>
@@ -753,7 +753,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <div><h4>Social</h4><ul><li><a href="#">Twitter</a></li><li><a href="#">GitHub</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">Dribbble</a></li></ul></div>
     </div>
     <div class="site-footer__bottom">
-      <span>© <span data-year>2026</span> Altask, Inc. All rights reserved.</span>
+      <span>© <span data-year>2026</span> Cilbs, Inc. All rights reserved.</span>
       <span><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Security</a></span>
     </div>
   </div>

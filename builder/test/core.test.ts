@@ -361,7 +361,7 @@ describe('project files', () => {
 
   it('reports a helpful error for junk', () => {
     expect(parseProject('not json')).toEqual({ error: 'That file is not valid JSON.' });
-    expect(parseProject('{"a":1}')).toEqual({ error: 'That file does not look like an Altask project.' });
+    expect(parseProject('{"a":1}')).toEqual({ error: 'That file does not look like an Cilbs project.' });
   });
 });
 

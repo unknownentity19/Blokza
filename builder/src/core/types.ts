@@ -1,5 +1,5 @@
 /**
- * Core document model for the Altask builder.
+ * Core document model for the Cilbs builder.
  *
  * Design notes
  * ------------

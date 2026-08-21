@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://altask.dev/sitemap.xml
+Sitemap: https://cilbs.dev/sitemap.xml

@@ -1,5 +1,5 @@
 /* =========================================================
-   Altask v3.1 — Site interactions
+   Cilbs v3.1 — Site interactions
    ========================================================= */
 (function () {
   "use strict";
@@ -328,59 +328,89 @@
 
   let marqueeId = 0;
 
-  function initMarquee(track, gapPx, speed) {
+  function initMarquee(track, speed) {
     if (!track || track.dataset.cloned) return;
 
     const items = Array.from(track.children);
     if (items.length === 0) return;
 
-    // Measure one full set width (all original items + their gaps)
-    let setWidth = 0;
-    items.forEach((item) => {
-      setWidth += item.offsetWidth + gapPx;
-    });
+    /*
+     * The gap is read from the stylesheet rather than passed in. It used to be
+     * hardcoded here as 20 and 56 to match pages.css, which meant the loop broke
+     * silently — and only visibly, as a jump — the moment either value changed.
+     */
+    function gapOf() {
+      const cs = getComputedStyle(track);
+      return parseFloat(cs.columnGap) || parseFloat(cs.gap) || 0;
+    }
 
-    // Clone sets until total width > viewport + one setWidth
-    // This guarantees no blank space is ever visible, even if the
-    // window is later resized wider than at load time.
+    function measureSet() {
+      const gap = gapOf();
+      let width = 0;
+      items.forEach((item) => { width += item.offsetWidth + gap; });
+      return width;
+    }
+
+    // Clone whole sets until the track is wider than the viewport plus one set,
+    // so no blank space can appear even if the window is later widened.
     const viewportW = Math.max(window.innerWidth, 1920);
-    const minWidth = viewportW + setWidth;
-    let currentWidth = setWidth;
-
+    let currentWidth = measureSet();
+    const minWidth = viewportW + currentWidth;
     while (currentWidth < minWidth) {
       items.forEach((item) => {
         const clone = item.cloneNode(true);
         clone.setAttribute("aria-hidden", "true");
         track.appendChild(clone);
       });
-      currentWidth += setWidth;
+      currentWidth += measureSet();
     }
-
     track.dataset.cloned = "true";
 
-    // Inject a unique @keyframes that scrolls exactly one set width
     const id = "marquee-" + (marqueeId++);
     const style = document.createElement("style");
-    style.textContent =
-      "@keyframes " + id +
-      " { from { transform: translate3d(0,0,0); }" +
-      " to { transform: translate3d(-" + setWidth + "px,0,0); } }";
     document.head.appendChild(style);
 
-    // Duration based on speed (px/s) so both marquees feel consistent
-    const dur = setWidth / speed;
-    track.style.animation = id + " " + dur + "s linear infinite";
+    /*
+     * Scroll by exactly one set width, so the reset lands on an identical frame.
+     * Re-applied whenever the measurement could have changed: a set measured
+     * before the webfont swapped was 6px narrower than the real thing, and that
+     *6px showed up as a visible jump on every single loop.
+     */
+    function apply() {
+      const setWidth = measureSet();
+      if (!setWidth) return;
+      style.textContent =
+        "@keyframes " + id +
+        " { from { transform: translate3d(0,0,0); }" +
+        " to { transform: translate3d(-" + setWidth + "px,0,0); } }";
+      track.style.animation = id + " " + (setWidth / speed) + "s linear infinite";
+    }
+
+    apply();
+
+    let resizeTimer = 0;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(apply, 200);
+    }, { passive: true });
   }
 
-  // Reviews: 30px/s
-  document.querySelectorAll(".reviews__rail").forEach((rail) => {
-    initMarquee(rail, 20, 30);
-  });
+  /*
+   * Measure once the fonts are settled. Text items are narrower in the fallback
+   * face, so measuring at parse time bakes the wrong loop distance into the
+   * keyframes. `document.fonts.ready` already resolves immediately when there is
+   * nothing left to load, and the `catch` covers browsers without the API.
+   */
+  function startMarquees() {
+    document.querySelectorAll(".reviews__rail").forEach((rail) => initMarquee(rail, 30));
+    document.querySelectorAll(".logos-marquee__track").forEach((track) => initMarquee(track, 35));
+  }
 
-  // Logos: 35px/s
-  document.querySelectorAll(".logos-marquee__track").forEach((track) => {
-    initMarquee(track, 56, 35);
-  });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(startMarquees).catch(startMarquees);
+  } else {
+    window.addEventListener("load", startMarquees);
+  }
 })();
 
 
@@ -389,6 +419,18 @@
   const pile = document.getElementById("hero-avpile");
   const countEl = document.getElementById("hero-user-count");
   if (!pile || !countEl) return;
+
+  /*
+   * Every other animation on the page checks this; this one did not, so a
+   * visitor who had asked their system for reduced motion still got a portrait
+   * sliding out and another sliding in every five seconds, indefinitely. Show
+   * the pile in its finished state and stop.
+   */
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const entering = pile.querySelector(".av--entering");
+    if (entering) entering.classList.remove("av--entering");
+    return;
+  }
 
   const portraits = [
     "https://randomuser.me/api/portraits/women/44.jpg",
@@ -495,6 +537,16 @@
     cycling = false;
   }
 
-  // Cycle every 5 seconds for a relaxed, natural feel
-  setInterval(cycle, 5000);
+  /*
+   * Cycle every 5 seconds for a relaxed, natural feel — but only while the tab
+   * is actually being looked at. Each cycle fetches a portrait, and a background
+   * tab kept doing that indefinitely for nobody's benefit.
+   */
+  let timer = 0;
+  function start() { if (!timer) timer = setInterval(cycle, 5000); }
+  function stop() { clearInterval(timer); timer = 0; }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") stop(); else start();
+  });
+  if (document.visibilityState !== "hidden") start();
 })();

@@ -1,9 +1,9 @@
 {
-  "name": "altask-builder",
+  "name": "cilbs-builder",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Altask visual website builder — production editor",
+  "description": "Cilbs visual website builder — production editor",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b --noEmit && vite build",

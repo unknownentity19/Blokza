@@ -1,5 +1,5 @@
 /* =========================================================
-   Altask v3.1 — Refined SaaSwise-style design
+   Cilbs v3.1 — Refined SaaSwise-style design
    ========================================================= */
 
 :root {
@@ -1011,4 +1011,79 @@ details > summary:focus-visible {
   color: #5b3fd6;
   background: #f4f1ff;
   border-color: #d0c5fd;
+}
+
+/*
+ * A reveal that has not fired yet must not widen the page.
+ *
+ * `[data-reveal-right]` waits at `translateX(32px)`. On a 375px screen the
+ * container's content box ends at 351px, so that offset put the element's right
+ * edge at 383px and the whole document scrolled sideways by 8px — before the
+ * user had scrolled far enough for the animation to run and remove it. The two
+ * pages using horizontal reveals were the only two overflowing on mobile.
+ *
+ * `clip` rather than `hidden`: `hidden` would make each container a scroll
+ * container, which silently breaks `position: sticky` on anything inside it.
+ * Scoped with `:has()` so containers *without* a horizontal reveal keep letting
+ * content overhang on purpose — the floating chips beside the hero mockup are
+ * meant to sit outside their container and must not be clipped.
+ */
+.container:has([data-reveal-left]),
+.container:has([data-reveal-right]) {
+  overflow-x: clip;
+}
+
+/* ---------------------------------------------------------------------------
+   Brand lockup
+
+   The header used a 97 KB SVG that was a raster trace of the wordmark: 254
+   unstructured paths, no viewBox, no groups. It could not be restyled, it did
+   not scale cleanly, and the name was welded into the artwork — a rename could
+   not touch it, so the header said one thing while the page said another.
+
+   The name is real text now, set in the display face, so it is selectable,
+   readable to a screen reader, sharp at any size, and changes in one place.
+
+   The mark is the product's own vocabulary rather than an abstract logo: a
+   canvas frame with a block snapped into one corner — the shape the editor
+   draws while you drag something into place. Guide lines crossing at the
+   block's corner were drawn first and cut: at 26px, a 0.9px hairline at 32%
+   opacity is not visible, so it was detail that cost bytes and read as noise.
+   It inherits `currentColor`, so it works on the light header and the dark
+   footer without a second asset.
+   --------------------------------------------------------------------------- */
+
+.site-nav__brand,
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+}
+.brand-glyph {
+  display: inline-flex;
+  flex: none;
+  color: var(--p-600);
+}
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--fg);
+}
+
+/*
+ * Chips are absolutely positioned with only `right` (or `left`) set, so their
+ * shrink-to-fit width is resolved against the containing block — which this
+ * positioning deliberately leaves at 14px. `nowrap` alone is not enough: the
+ * box itself was still being squeezed, so "Auto-saved" broke into two lines.
+ * `max-content` sizes the box to its contents and lets it overhang into the
+ * page gutter, which is exactly where it is meant to sit.
+ */
+.float-chip {
+  white-space: nowrap;
+  width: max-content;
+  max-width: none;
 }

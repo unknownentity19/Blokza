@@ -39,7 +39,7 @@ function readme(doc: SiteDoc, paths: string[]): string {
   return `${doc.name}
 ${'='.repeat(doc.name.length)}
 
-Exported from the Altask builder.
+Exported from the Cilbs builder.
 
 Contents
 --------

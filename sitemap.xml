@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://altask.dev/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://altask.dev/product.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/how.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/features-builder.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/features-responsive.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/features-publish.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/templates.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/templates-startup.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/templates-portfolio.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/pricing.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/docs.html</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://altask.dev/about.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://altask.dev/community.html</loc><priority>0.7</priority><changefreq>daily</changefreq></url>
-  <url><loc>https://altask.dev/contact.html</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cilbs.dev/product.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/how.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/features-builder.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/features-responsive.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/features-publish.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/templates.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/templates-startup.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/templates-portfolio.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/pricing.html</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/docs.html</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://cilbs.dev/about.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://cilbs.dev/community.html</loc><priority>0.7</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://cilbs.dev/contact.html</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
 </urlset>

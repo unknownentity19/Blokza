@@ -1,4 +1,4 @@
-# Altask — Marketing Site + Visual Editor
+# Cilbs — Marketing Site + Visual Editor
 
 Two things live in this repository:
 
@@ -76,7 +76,7 @@ are rewritten to relative filenames, which means the ZIP works from a local
 folder, an S3 bucket, GitHub Pages or Netlify without changes.
 
 Everything is client-side: work autosaves to `localStorage`, and the project can
-be downloaded as a `.altask.json` file to move between browsers.
+be downloaded as a `.cilbs.json` file to move between browsers.
 
 ## Production checklist
 

@@ -18,7 +18,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-PROJECT="${CF_PAGES_PROJECT:-altask}"
+PROJECT="${CF_PAGES_PROJECT:-cilbs}"
 DIST="dist"
 
 echo "==> Building the editor"

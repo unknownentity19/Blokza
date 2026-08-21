@@ -1,4 +1,4 @@
--- Altask cloud sites — run this once in the Supabase SQL editor.
+-- Cilbs cloud sites — run this once in the Supabase SQL editor.
 --
 -- The editor document is a single JSON blob, so there is nothing to shred into
 -- columns: one row per site, the whole document in `doc`.

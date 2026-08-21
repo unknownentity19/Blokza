@@ -1,5 +1,5 @@
 /* =========================================================
-   Altask demo landing pages — self-contained styling.
+   Cilbs demo landing pages — self-contained styling.
    Each demo theme overrides a few tokens at the body level.
    ========================================================= */
 *,*::before,*::after { box-sizing: border-box; }
@@ -420,3 +420,26 @@ button { font-family: inherit; cursor: pointer; }
 .mkt-end h2 { font-size: 32px; margin: 0; font-weight: 800; letter-spacing: -.01em; }
 .mkt-end p { color: rgba(253,248,242,.68); margin: 14px auto 22px; max-width: 480px; }
 .mkt-end a { background: #e8a06b; color: #1f1812; padding: 12px 22px; border-radius: 999px; font-weight: 700; font-size: 14px; }
+
+/* ===========================================================================
+   Demo mock frames on small screens
+   =========================================================================== */
+
+/*
+ * The mock navigation rows are `inline-flex` with a fixed gap and cannot
+ * shrink, so on a phone the brand, links and call to action together measured
+ * wider than the viewport and pushed the whole page sideways — 454px of
+ * scrollWidth on a 375px screen for the Lift demo, 510px for Stack.
+ *
+ * Dropping the link list below the point where it fits is also what the real
+ * sites these mock up would do: the brand and the primary action stay, which is
+ * exactly how a mobile header looks.
+ */
+@media (max-width: 640px) {
+  .lift-nav__links,
+  .show-nav__links,
+  .stack-nav__links,
+  .mkt-nav__links {
+    display: none;
+  }
+}

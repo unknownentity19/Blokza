@@ -68,7 +68,7 @@ export function save(doc: SiteDoc, ui: UiPrefs): void {
   } catch (error) {
     // Quota exceeded, private-mode restrictions, or a disabled storage API.
     // The editor keeps working from memory; the caller surfaces the warning.
-    if (typeof console !== 'undefined') console.warn('[altask] could not save', error);
+    if (typeof console !== 'undefined') console.warn('[cilbs] could not save', error);
     throw error;
   }
 }
@@ -159,11 +159,11 @@ export function clearStorage(): void {
 /* ------------------------------------------------------------------ */
 
 export function serialiseProject(doc: SiteDoc): string {
-  return JSON.stringify({ kind: 'altask-project', version: DOC_VERSION, doc }, null, 2);
+  return JSON.stringify({ kind: 'cilbs-project', version: DOC_VERSION, doc }, null, 2);
 }
 
 /**
- * Parse a `.altask.json` file. Returns a message instead of throwing so the
+ * Parse a `.cilbs.json` file. Returns a message instead of throwing so the
  * caller can show it directly.
  */
 export function parseProject(text: string): { doc: SiteDoc } | { error: string } {
@@ -175,7 +175,7 @@ export function parseProject(text: string): { doc: SiteDoc } | { error: string }
   }
   if (!parsed || typeof parsed !== 'object') return { error: 'That file does not contain a project.' };
   const candidate = (parsed as { doc?: unknown }).doc ?? parsed;
-  if (!isDoc(candidate)) return { error: 'That file does not look like an Altask project.' };
+  if (!isDoc(candidate)) return { error: 'That file does not look like an Cilbs project.' };
   const doc = candidate as SiteDoc;
   doc.version = DOC_VERSION;
   repairDoc(doc);

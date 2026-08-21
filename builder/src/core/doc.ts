@@ -76,7 +76,7 @@ export function createEmptyDoc(name = 'Untitled site'): SiteDoc {
     version: DOC_VERSION,
     id: uid(10),
     name,
-    siteUrl: `https://${slugify(name, 'site')}.altask.dev`,
+    siteUrl: `https://${slugify(name, 'site')}.cilbs.dev`,
     pages: [
       {
         id: uid(),
