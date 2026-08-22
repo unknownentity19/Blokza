@@ -4918,3 +4918,89 @@
   .ship { grid-template-columns: minmax(0, 1fr); gap: 26px; }
   .ship__step::before { display: none; }
 }
+
+/* ===========================================================================
+   Canvas and code, visibly the same thing
+   ===========================================================================
+   The panel asserts that what you drag is what publishes, then showed two
+   unrelated halves: nothing on the left corresponded to `padding: 32px` on the
+   right. The block carries the editor's own annotations now — the dashed padding
+   inset and the radius marker it really draws — and the three values they report
+   are marked in the listing, so the pairing is visible rather than claimed.
+
+   The three cards were empty outlined rectangles, which is the placeholder look
+   that made the Market template read as unfinished. They have content.
+   =========================================================================== */
+
+.pv__sel { position: relative; }
+
+/* The padding inset, drawn where the editor draws it. */
+.pv__pad {
+  position: absolute;
+  inset: 8px;
+  border: 1px dashed rgba(122, 95, 229, 0.55);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.pv__pad b,
+.pv__rad b {
+  position: absolute;
+  font: 600 9.5px/1 var(--font-mono);
+  letter-spacing: 0.03em;
+  color: var(--p-700);
+  background: #fff;
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+.pv__pad b { top: -6px; left: 50%; transform: translateX(-50%); }
+
+/* The radius marker: a quarter arc hugging the corner it describes. */
+.pv__rad {
+  position: absolute;
+  right: -1px; bottom: -1px;
+  width: 26px; height: 26px;
+  border-right: 1px solid rgba(122, 95, 229, 0.55);
+  border-bottom: 1px solid rgba(122, 95, 229, 0.55);
+  border-bottom-right-radius: 10px;
+  pointer-events: none;
+}
+.pv__rad b { right: -4px; bottom: -13px; }
+
+/* Cards with something in them. */
+.pv__row span {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  aspect-ratio: 4 / 3;
+  padding: 9px;
+  border-radius: 5px;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+.pv__row i {
+  display: block;
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  background: var(--p-100);
+  border: 1px solid var(--p-200);
+  flex: none;
+}
+.pv__row em { display: block; height: 4px; border-radius: 2px; background: var(--bg-mute); }
+.pv__row em.is-short { width: 62%; }
+
+.pv__note {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--fg-faint);
+}
+
+/* The three values the annotations report, marked in the listing. */
+.pv__code .c-tie {
+  color: var(--p-700);
+  font-weight: 600;
+  background: var(--p-50);
+  border-bottom: 1px solid var(--p-200);
+  padding: 0 2px;
+  border-radius: 2px;
+}
