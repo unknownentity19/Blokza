@@ -443,3 +443,38 @@ button { font-family: inherit; cursor: pointer; }
     display: none;
   }
 }
+
+/*
+ * Product tiles show the product.
+ *
+ * They were empty divs with a gradient — eight flat swatches in a row, which is
+ * what made this template read as unfinished rather than as a shop. A single
+ * stroke drawing per item is enough to say what is being sold, and it inherits
+ * its colour so it sits on any of the grounds.
+ */
+.mkt-card__img,
+.mkt-story__img {
+  display: grid;
+  place-items: center;
+}
+.mkt-card__img svg {
+  width: 46%;
+  max-width: 92px;
+  height: auto;
+  color: rgba(38, 28, 18, 0.42);
+}
+.mkt-story__img svg {
+  width: 30%;
+  max-width: 130px;
+  height: auto;
+  color: rgba(38, 28, 18, 0.34);
+}
+
+/* The banner tiles carry the same drawings, lighter, since they sit on dark. */
+.mkt-hero__visual span { display: grid; place-items: center; }
+.mkt-hero__visual span svg {
+  width: 42%;
+  max-width: 74px;
+  height: auto;
+  color: rgba(38, 28, 18, 0.34);
+}

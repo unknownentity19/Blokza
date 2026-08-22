@@ -4824,166 +4824,24 @@
 }
 
 
-/* ===========================================================================
-   Homepage hero
-   ===========================================================================
-   Keeps what the rewrite was actually for — a real screenshot of the editor
-   instead of a stock illustration, and no invented user counter — on the site's
-   own light ground. An earlier pass put this on ink; that was a theme change
-   nobody asked for, and it has been taken back out.
 
-   The annotations flanking the headline are the spacing overlay the editor draws
-   when a section is selected, at the values that section really uses.
-   =========================================================================== */
-
-.stage {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: 72px 0 0;
-  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
-}
-.stage__dots {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: radial-gradient(circle at 1px 1px, rgba(24, 16, 36, 0.07) 1px, transparent 0);
-  background-size: 15px 15px;
-  mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent);
-}
-
-.stage__inner {
-  display: grid;
-  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
-  gap: 52px;
-  align-items: center;
-}
-.stage__copy { position: relative; padding-left: 26px; }
-
-.stage__eyebrow {
+/*
+ * The badge that sits where the avatar pile used to.
+ *
+ * That pile showed four photographs of real people, fetched from a third party
+ * and captioned "2,847 Active Users" — a number that was hardcoded and nudged at
+ * random every five seconds. The slot says something true now.
+ */
+.hero__badge {
   display: inline-flex;
   align-items: center;
   gap: 9px;
   margin: 0 0 22px;
-  padding: 6px 12px 6px 10px;
+  padding: 6px 13px 6px 11px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: #fff;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 550;
   color: var(--fg-muted);
-}
-.stage__pip {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #2f8f6b;
-  box-shadow: 0 0 0 3px rgba(47, 143, 107, 0.14);
-}
-
-.stage__title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(2.4rem, 4.2vw, 3.9rem);
-  line-height: 1.0;
-  letter-spacing: -0.032em;
-  color: var(--fg);
-}
-.stage__line { display: block; }
-.stage__line--accent { color: var(--p-600); font-style: italic; }
-
-/* Spacing overlays, positioned against `.stage__copy` — which is why that
-   element carries the left padding the vertical rule sits in. */
-.stage__ruler { position: absolute; color: var(--p-500); }
-.stage__ruler b {
-  font: 600 10.5px/1 var(--font-mono);
-  letter-spacing: 0.04em;
-  background: var(--bg);
-  padding: 2px 4px;
-}
-.stage__ruler--v {
-  left: 0; top: 58px; bottom: 92px; width: 1px;
-  background: linear-gradient(180deg, transparent, rgba(122, 95, 229, 0.5) 12%, rgba(122, 95, 229, 0.5) 88%, transparent);
-  display: grid; place-items: center;
-}
-.stage__ruler--v b { transform: rotate(-90deg); }
-.stage__ruler--v::before, .stage__ruler--v::after {
-  content: ""; position: absolute; left: -3px; width: 7px; height: 1px;
-  background: rgba(122, 95, 229, 0.55);
-}
-.stage__ruler--v::before { top: 0; }
-.stage__ruler--v::after { bottom: 0; }
-.stage__ruler--h {
-  left: 26px; right: 36%; bottom: 112px; height: 1px;
-  background: linear-gradient(90deg, rgba(122, 95, 229, 0.45), transparent);
-  display: grid; place-items: center start;
-}
-.stage__ruler--h b { transform: translateY(-9px); }
-
-.stage__sub {
-  margin: 24px 0 0;
-  max-width: 46ch;
-  font-size: 16.5px;
-  line-height: 1.66;
-  color: var(--fg-muted);
-}
-.stage__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-.ink-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 14px 22px;
-  border-radius: 8px;
-  background: var(--p-600);
-  border: 1px solid var(--p-600);
-  color: #fff;
-  font-size: 14.5px; font-weight: 600;
-  text-decoration: none;
-  transition: background 0.25s var(--ease), transform 0.25s var(--ease);
-}
-.ink-btn:hover { background: var(--p-700); transform: translateY(-2px); }
-.ink-btn--quiet {
-  background: #fff; border-color: var(--border-2); color: var(--fg);
-}
-.ink-btn--quiet:hover { background: var(--bg-soft); }
-.ink-btn:focus-visible { outline: 2px solid var(--p-500); outline-offset: 3px; }
-
-.stage__facts {
-  display: flex; flex-wrap: wrap; gap: 10px 30px;
-  margin: 36px 0 0; padding: 20px 0 0;
-  border-top: 1px solid var(--border);
-  list-style: none;
-}
-.stage__facts li { font-size: 13px; color: var(--fg-muted); }
-.stage__facts b {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 25px; font-weight: 700;
-  color: var(--fg);
-  letter-spacing: -0.02em;
-}
-
-.stage__shot { margin: 0 calc(50% - 50vw) 0 0; align-self: end; }
-.stage__shot img {
-  display: block; width: 100%; height: auto;
-  border-radius: 12px 12px 0 0;
-  border: 1px solid var(--border);
-  border-bottom: 0;
-  box-shadow: 0 -8px 60px -28px rgba(24, 16, 36, 0.3), 0 30px 60px -30px rgba(24,16,36,0.22);
-}
-
-@media (max-width: 960px) {
-  .stage { padding-top: 48px; }
-  .stage__inner { grid-template-columns: minmax(0, 1fr); gap: 36px; }
-  .stage__ruler { display: none; }
-  .stage__copy { padding-left: 0; }
-}
-
-/*
- * Template previews are screenshots of the demo pages themselves, so they need
- * to fill the 4:3 frame regardless of the exact capture height.
- */
-.template-thumb img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
 }
