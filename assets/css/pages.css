@@ -4856,3 +4856,65 @@
   background: #fff;
   border: 1px solid var(--border);
 }
+
+/* ===========================================================================
+   Publishing, as the sequence it is
+   ===========================================================================
+   Replaces three cards in the same three-up grid two other feature pages used,
+   on the one page whose subject is explicitly a series of steps in order. The
+   rule running through the markers is the sequence; it is the only decoration
+   here and it carries the meaning.
+   =========================================================================== */
+
+.ship {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: ship;
+}
+.ship__step { position: relative; counter-increment: ship; padding-top: 34px; }
+
+/* The connecting rule, drawn between markers rather than under everything. */
+.ship__step::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 18px;
+  right: -28px;
+  height: 1px;
+  background: var(--border-2);
+}
+.ship__step:last-child::before { display: none; }
+
+.ship__dot {
+  position: absolute;
+  top: 0; left: 0;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1.5px solid var(--p-300);
+  display: grid;
+  place-items: center;
+}
+.ship__dot::after {
+  content: counter(ship);
+  font: 700 9.5px/1 var(--font-mono);
+  color: var(--p-700);
+}
+.ship__step.is-live .ship__dot { background: var(--p-600); border-color: var(--p-600); }
+.ship__step.is-live .ship__dot::after { color: #fff; }
+
+.ship__step h3 { font-size: 16px; font-weight: 650; color: var(--fg); }
+.ship__step p { margin-top: 8px; font-size: 14px; line-height: 1.65; color: var(--fg-muted); }
+
+@media (max-width: 900px) {
+  .ship { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 28px; }
+  .ship__step:nth-child(2)::before { display: none; }
+}
+@media (max-width: 560px) {
+  .ship { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .ship__step::before { display: none; }
+}
