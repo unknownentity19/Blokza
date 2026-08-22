@@ -5052,3 +5052,154 @@
   letter-spacing: 0.03em;
   flex: none;
 }
+
+/* ===========================================================================
+   Template gallery, on the canvas ground
+   ===========================================================================
+   Two problems with the previous pass. The stagger read as misalignment rather
+   than intent — four names at four different heights, so the eye has to zigzag
+   to read the list. And the section sat on a pale ground directly beneath an ink
+   hero, which made the new hero look bolted on rather than like the start of a
+   page.
+
+   The previews align on a common baseline now, and the band continues the
+   canvas: dark ground, dotted on the same lattice, with each preview reading as
+   a lit window on it. That is also the treatment that makes light UI artwork
+   look like a real screen rather than a drawing on paper.
+   =========================================================================== */
+
+.tpl-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(760px 420px at 78% 12%, rgba(122, 95, 229, 0.20), transparent 70%),
+    #0d0a14;
+  color: #f4f2fa;
+}
+.tpl-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 0);
+  background-size: 15px 15px;
+  mask-image: linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+}
+
+.tpl-band .kicker { color: #a996f5; }
+.tpl-band .section-head h2 { color: #fbfaff; }
+.tpl-band .section-head p { color: #b0aac6; }
+
+/* Aligned, not staggered: the names read as a list again. */
+.tpl-band .tpl-row .template-card:nth-child(even) { margin-top: 0; }
+.tpl-band .tpl-row { align-items: start; }
+
+.tpl-band .template-card .template-thumb {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.09),
+    0 26px 50px -24px rgba(0, 0, 0, 0.8);
+}
+.tpl-band .template-card:hover .template-thumb {
+  transform: translateY(-8px);
+  box-shadow:
+    0 0 0 1px rgba(185, 168, 255, 0.5),
+    0 40px 70px -26px rgba(122, 95, 229, 0.55);
+}
+.tpl-band .template-card .template-meta .cat { color: #8f89a8; }
+.tpl-band .template-card .template-meta h3 { color: #fbfaff; }
+.tpl-band .template-card:hover .template-meta h3 { color: #c9bcff; }
+.tpl-band .template-live { background: #8be0b8; }
+
+/* The section's own footer link, if present, needs to read on the dark. */
+.tpl-band .btn-secondary {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ded8f5;
+}
+.tpl-band .btn-secondary:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.34); }
+
+/* ===========================================================================
+   The closing run
+   ===========================================================================
+   The page was ink at the top, four pale sections, one ink band for templates,
+   then pale again to the footer — dark treated as an accent dropped in twice
+   rather than as structure. One ink band in the middle of a light page reads as
+   a mistake.
+
+   So the page now has an arc: it opens on the canvas, the middle explains itself
+   on white, and it closes back on the canvas. Everything from the template
+   gallery to the last call to action shares one ground, and the footer sits on
+   it rather than reverting.
+   =========================================================================== */
+
+.ink-run {
+  position: relative;
+  isolation: isolate;
+  background: #0d0a14;
+  color: #eae7f6;
+}
+/* One continuous dotted ground under the whole run, faded at the seams. */
+.ink-run::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.055) 1px, transparent 0);
+  background-size: 15px 15px;
+}
+
+.ink-run .kicker { color: #a996f5; }
+.ink-run h2, .ink-run h3, .ink-run h4 { color: #fbfaff; }
+.ink-run p, .ink-run li, .ink-run dd { color: #aca6c2; }
+.ink-run .text-muted { color: #8f89a8; }
+
+/* Cards become panels on the canvas rather than white boxes. */
+.ink-run .card,
+.ink-run .review-card,
+/* The FAQ is `details` elements, not a `.faq__item` — the first attempt styled a
+   class that does not exist here and left white boxes on the ink ground. */
+.ink-run .faq details {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #eae7f6;
+}
+.ink-run .card:hover,
+.ink-run .review-card:hover,
+.ink-run .faq details:hover { border-color: rgba(185, 168, 255, 0.42); }
+.ink-run .review-card__avatar--mono {
+  background: rgba(185, 168, 255, 0.14);
+  border-color: rgba(185, 168, 255, 0.34);
+  color: #cfc3ff;
+}
+.ink-run .review-card strong,
+.ink-run .review-card b { color: #fbfaff; }
+.ink-run .stars { color: #ffd479; }
+
+.ink-run .faq summary,
+.ink-run .faq details > summary { color: #fbfaff; }
+.ink-run .faq details[open] { background: rgba(255, 255, 255, 0.055); }
+.ink-run .faq__body { color: #aca6c2; }
+.ink-run .faq .chev { color: #a996f5; }
+
+.ink-run .btn-primary { background: #6b4ae0; border-color: #7f61ea; }
+.ink-run .btn-primary:hover { background: #7a5fe5; }
+.ink-run .btn-secondary {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ded8f5;
+}
+.ink-run .btn-secondary:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.34); }
+
+/* The footer belongs to the closing run on this page, not to a lighter band. */
+.has-ink-hero .site-footer {
+  margin-top: 0;
+  background: #0d0a14;
+  border-top-color: rgba(255, 255, 255, 0.09);
+  color: #a19bb8;
+}
+.has-ink-hero .site-footer h4 { color: #fbfaff; }
+.has-ink-hero .site-footer a { color: #b5aecd; }
+.has-ink-hero .site-footer a:hover { color: #fff; }
+.has-ink-hero .site-footer .brand-name { color: #fbfaff; }
+.has-ink-hero .site-footer .brand-glyph { color: #b9a8ff; }
