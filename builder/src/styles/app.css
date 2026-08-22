@@ -1191,8 +1191,10 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
 .fl__card {
   position: absolute;
   /* Fixed height on purpose: the wire anchors are computed from CARD_H, so a
-     card that grows with its content would detach the wires from their edges. */
-  height: 128px;
+     card that grows with its content would detach the wires from their edges.
+     The value comes from that same constant, set on `.fl`, so the two cannot
+     drift apart. */
+  height: var(--fl-card-h, 140px);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -1252,6 +1254,15 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   overflow: hidden;
 }
 .fl__outline li {
+  /*
+   * Never shrink. As a flex child with the default shrink these lines were
+   * squeezed from 14px to 10px whenever the list was a few pixels short of its
+   * content, which sliced horizontally through the middle of every glyph and
+   * read as a rendering fault. Holding the line height means a list that does
+   * not fit loses a whole line to `overflow: hidden` instead — legible, and an
+   * honest signal that there is more on the page.
+   */
+  flex: none;
   font-size: 10.5px;
   line-height: 1.35;
   color: var(--fg-muted);
@@ -1733,3 +1744,19 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   background: var(--surface); color: var(--fg-dim); cursor: pointer;
 }
 .cl__del:hover { border-color: #e8b4af; background: var(--danger-soft); color: var(--danger); }
+
+/* Path and nav membership share a row: the "in nav" chip replaces what used to
+   be a wire per page pair, so it has to sit where the eye already is. */
+.fl__meta { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.fl__meta .fl__path { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fl__navchip {
+  flex: none;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--p-700);
+  background: var(--p-50);
+  border-radius: 999px;
+}

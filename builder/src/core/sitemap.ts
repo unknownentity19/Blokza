@@ -7,7 +7,7 @@
  * node map, which is trivial at document scale.
  */
 
-import { walkRendered } from './doc';
+import { sharedContaining, walkRendered } from './doc';
 import type { Page, SiteDoc } from './types';
 
 export interface PageEdge {
@@ -17,6 +17,20 @@ export interface PageEdge {
   nodeIds: string[];
   /** Link text, for the edge label. Falls back to the target page's name. */
   label: string;
+  /**
+   * True when every link making up this edge lives inside a shared section.
+   *
+   * A shared nav bar links each page to all the others, so a seven-page site
+   * has thirty of these — the complete graph, drawn as thirty wires that
+   * overlap into noise and restate one fact: the nav is on every page. Marking
+   * them lets the map draw the links that are actually about *this* page and
+   * summarise the chrome once.
+   *
+   * One link on the page itself is enough to clear the flag, because a hero
+   * button pointing at a page that also happens to be in the nav is a real
+   * content link and has to stay drawn.
+   */
+  viaChrome: boolean;
 }
 
 /** Props that can hold a link. Kept in one place so the graph and the export agree. */
@@ -56,10 +70,21 @@ export function pageEdges(doc: SiteDoc): PageEdge[] {
       // Self-links are real markup but a self-loop tells the user nothing.
       if (!target || target.id === page.id) return;
 
+      // `walkRendered` descends into the shared master, so the nodes it yields
+      // for a nav link are the master's own — which is exactly what makes them
+      // recognisable as chrome by containment.
+      const isChrome = Boolean(sharedContaining(doc, node.id));
+
       const key = `${page.id}->${target.id}`;
       const existing = merged.get(key);
       if (existing) {
         existing.nodeIds.push(node.id);
+        // Any single link on the page itself makes the whole edge content.
+        if (!isChrome) {
+          existing.viaChrome = false;
+          // A page's own link names the edge better than a nav item does.
+          existing.label = labelOf(node.props) ?? existing.label;
+        }
         return;
       }
       merged.set(key, {
@@ -67,6 +92,7 @@ export function pageEdges(doc: SiteDoc): PageEdge[] {
         toPageId: target.id,
         nodeIds: [node.id],
         label: labelOf(node.props) ?? target.name,
+        viaChrome: isChrome,
       });
     });
   }

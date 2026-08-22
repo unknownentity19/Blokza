@@ -201,3 +201,86 @@ describe('card positions', () => {
     expect({ x: S().doc.pages[0].x, y: S().doc.pages[0].y }).toEqual({ x: 10, y: 21 });
   });
 });
+
+/**
+ * A shared nav bar links every page to every other page. On a seven-page site
+ * that is thirty edges, and drawing each one as its own wire produced a map you
+ * could not read and that said nothing: "the nav is on every page" is one fact,
+ * not thirty relationships.
+ *
+ * So an edge records where its links live. Chrome — anything inside a shared
+ * section — is site-wide navigation; a link sitting on the page itself is a
+ * content link, and those are the ones worth drawing.
+ */
+describe('nav links versus content links', () => {
+  function twoPagesWithSharedNav() {
+    S().addPage();
+    const other = S().doc.pages[1];
+    S().updatePage(other.id, { name: 'Work', path: '/work' });
+    S().selectPage(S().doc.pages[0].id);
+
+    const navbar = TEMPLATES.find((t) => t.id === 'navbar');
+    if (!navbar) throw new Error('no navbar');
+    const spawned = spawnTemplate(navbar);
+    if (!spawned) throw new Error('no navbar nodes');
+    const home = S().doc.pages[0];
+    useEditor.setState((state) => {
+      const doc = structuredCloneDoc(state.doc);
+      insertSubtree(doc, spawned.nodes, spawned.rootId, home.rootId, 0);
+      return { doc };
+    });
+    const inserted = spawned.rootId;
+    S().shareSection(inserted);
+
+    const link = Object.values(S().doc.nodes).find((node) => node.type === 'link');
+    S().setProp(link?.id as string, 'href', '/work');
+    return other;
+  }
+
+  it('marks an edge that exists only inside a shared section as chrome', () => {
+    const other = twoPagesWithSharedNav();
+    const edge = pageEdges(S().doc).find((e) => e.toPageId === other.id);
+    expect(edge).toBeDefined();
+    expect(edge?.viaChrome).toBe(true);
+  });
+
+  it('marks a link placed on the page itself as content', () => {
+    const doc = createEmptyDoc('S');
+    const about = addPage(doc, 'About');
+    linkOn(doc, doc.pages[0].id, about.path);
+    expect(pageEdges(doc)[0].viaChrome).toBe(false);
+  });
+
+  /**
+   * The case that decides the drawing. A hero button pointing at a page that is
+   * also in the nav is a real content link and has to stay visible, so one node
+   * on the page is enough to take the whole edge out of the chrome bucket.
+   */
+  it('treats an edge as content when only one of its links is on the page', () => {
+    const other = twoPagesWithSharedNav();
+    const home = S().doc.pages[0];
+    useEditor.setState((state) => {
+      const doc = structuredCloneDoc(state.doc);
+      const spawned = spawnPreset({ type: 'button', props: { label: 'See work', href: '/work' } });
+      if (!spawned) throw new Error('no button');
+      insertSubtree(doc, spawned.nodes, spawned.rootId, home.rootId, 1);
+      return { doc };
+    });
+
+    const edge = pageEdges(S().doc).find(
+      (e) => e.fromPageId === home.id && e.toPageId === other.id,
+    );
+    expect(edge?.nodeIds.length).toBeGreaterThan(1);
+    expect(edge?.viaChrome).toBe(false);
+  });
+
+  it('still counts a page reached only through the nav as linked, not orphaned', () => {
+    const other = twoPagesWithSharedNav();
+    expect(orphanPages(S().doc)).not.toContain(other.id);
+  });
+});
+
+/** Deep copy, so a test cannot mutate the store's document in place. */
+function structuredCloneDoc(doc: SiteDoc): SiteDoc {
+  return JSON.parse(JSON.stringify(doc)) as SiteDoc;
+}

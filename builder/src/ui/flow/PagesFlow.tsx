@@ -19,13 +19,15 @@ import { Icon } from '../common';
 import { useEditor } from '../../store/editor';
 import { orphanPages, pageEdges, type PageEdge } from '../../core/sitemap';
 import { pageFileName } from '../../render/RenderNode';
-import { walk } from '../../core/tree';
+import { nodeLabel } from '../../core/factory';
 import type { Page, SiteDoc } from '../../core/types';
 
 const CARD_W = 232;
-const CARD_H = 128;
+const CARD_H = 140;
 const GAP_X = 132;
 const GAP_Y = 56;
+/** Wrap a column after this many cards, so a flat site is not one tall stack. */
+const MAX_ROWS = 4;
 
 interface Point {
   x: number;
@@ -39,6 +41,10 @@ interface Point {
  * card's right edge and double back to the card below it — unreadable. Laying
  * pages out by link depth makes the map flow left to right, so the shape of the
  * graph is the shape of the navigation.
+ *
+ * Only content edges are passed in. Depth measured across a shared nav is
+ * meaningless — every page is one hop from every other, so every page lands in
+ * column one and the "shape of the navigation" is a single vertical stack.
  */
 function autoLayout(doc: SiteDoc, edges: PageEdge[]): Map<string, Point> {
   const out = new Map<string, Point>();
@@ -63,55 +69,97 @@ function autoLayout(doc: SiteDoc, edges: PageEdge[]): Map<string, Point> {
     }
   }
 
-  // Anything unreachable from home gets its own trailing column.
+  /*
+   * Anything unreachable from home trails the columns that mean something, and
+   * wraps once a column is full. Depth is a real statement about the graph, so
+   * those columns are never wrapped; the leftovers carry no depth to preserve,
+   * and a site with no content links at all is otherwise a single stack of
+   * cards taller than the viewport.
+   */
   const maxDepth = Math.max(0, ...depth.values());
-  for (const page of doc.pages) {
-    if (!depth.has(page.id)) depth.set(page.id, maxDepth + 1);
-  }
+  const loose = doc.pages.filter((page) => !depth.has(page.id));
 
   const perColumn = new Map<number, number>();
+  const place = (pageId: string, column: number, row: number) => {
+    out.set(pageId, { x: 60 + column * (CARD_W + GAP_X), y: 40 + row * (CARD_H + GAP_Y) });
+  };
+
   for (const page of doc.pages) {
-    const column = depth.get(page.id) ?? 0;
+    const column = depth.get(page.id);
+    if (column === undefined) continue;
     const row = perColumn.get(column) ?? 0;
     perColumn.set(column, row + 1);
-    out.set(page.id, {
-      x: 60 + column * (CARD_W + GAP_X),
-      y: 40 + row * (CARD_H + GAP_Y),
-    });
+    place(page.id, column, row);
   }
+  loose.forEach((page, index) => {
+    place(page.id, maxDepth + 1 + Math.floor(index / MAX_ROWS), index % MAX_ROWS);
+  });
   return out;
 }
 
-/** A one-line summary of what is on a page, for the card body. */
+/**
+ * The sections on a page, for the card body.
+ *
+ * `nodeLabel` rather than a local walk. The local one used `walk`, which stops
+ * at a shared reference and finds no heading inside it, so every card opened
+ * with the literal word "shared" — and a section with no heading read
+ * "section". `nodeLabel` resolves a shared instance through to its master
+ * ("Header", "Footer"), prefers the semantic tag, and only then falls back to
+ * the first heading, which is what a person would call the section anyway.
+ */
 function outlineOf(doc: SiteDoc, page: Page): string[] {
-  const names: string[] = [];
   const root = doc.nodes[page.rootId];
-  for (const childId of root?.children ?? []) {
-    const child = doc.nodes[childId];
-    if (!child) continue;
-    let label = child.type;
-    // A section is only meaningful by what it contains, so use its first heading.
-    walk(doc.nodes, childId, (node) => {
-      if (label !== child.type) return;
-      if (node.type === 'heading' && typeof node.props.text === 'string' && node.props.text.trim()) {
-        label = node.props.text.trim();
-      }
-    });
-    names.push(label);
+  return (root?.children ?? [])
     // Three is what fits in the fixed card height without clipping a line.
-    if (names.length >= 3) break;
-  }
-  return names;
+    .slice(0, 3)
+    .map((childId) => {
+      const child = doc.nodes[childId];
+      return child ? nodeLabel(doc, child) : '';
+    })
+    .filter(Boolean);
 }
 
-/** Cubic curve from the right edge of one card to the left edge of another. */
-function wirePath(from: Point, to: Point): string {
-  const x1 = from.x + CARD_W;
-  const y1 = from.y + CARD_H / 2;
-  const x2 = to.x;
-  const y2 = to.y + CARD_H / 2;
+/** Side-to-side cubic between two absolute points, with its midpoint. */
+function sideRoute(x1: number, y1: number, x2: number, y2: number): { d: string; mid: Point } {
   const bend = Math.max(48, Math.abs(x2 - x1) * 0.45);
-  return `M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`;
+  return {
+    d: `M ${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`,
+    mid: { x: (x1 + x2) / 2, y: (y1 + y2) / 2 },
+  };
+}
+
+/**
+ * A cubic curve between two cards, and the point halfway along it.
+ *
+ * Always leaving the right edge for the left edge only reads when the target is
+ * genuinely further right. For a link down its own column — a journal page whose
+ * call to action points at contact — it threw the curve out past both cards and
+ * doubled back, which is the unreadable shape the column layout exists to avoid.
+ * So a target that is not clear to the right is joined bottom-to-top instead,
+ * and the curve stays inside the space between the two cards.
+ *
+ * The midpoint is returned rather than recomputed by the caller: the label has
+ * to sit on the curve, and a caller assuming the horizontal route left every
+ * vertical edge's label floating in empty space.
+ */
+function wirePath(from: Point, to: Point): { d: string; mid: Point } {
+  // A target clear to the right keeps the side-to-side route.
+  if (to.x >= from.x + CARD_W + 24) {
+    return sideRoute(from.x + CARD_W, from.y + CARD_H / 2, to.x, to.y + CARD_H / 2);
+  }
+
+  // Vertical route: down out of the source, up into the target — or the reverse
+  // when the target sits above.
+  const downward = to.y >= from.y;
+  const x1 = from.x + CARD_W / 2;
+  const y1 = downward ? from.y + CARD_H : from.y;
+  const x2 = to.x + CARD_W / 2;
+  const y2 = downward ? to.y : to.y + CARD_H;
+  const bend = Math.max(36, Math.abs(y2 - y1) * 0.5) * (downward ? 1 : -1);
+  return {
+    d: `M ${x1} ${y1} C ${x1} ${y1 + bend}, ${x2} ${y2 - bend}, ${x2} ${y2}`,
+    mid: { x: (x1 + x2) / 2, y: (y1 + y2) / 2 },
+  };
 }
 
 export function PagesFlow() {
@@ -141,10 +189,21 @@ export function PagesFlow() {
   const [hoverTarget, setHoverTarget] = useState<string | null>(null);
 
   const edges = useMemo(() => pageEdges(doc), [doc]);
+  /*
+   * Wires are content links only. The shared nav puts every page one hop from
+   * every other, which on the seven-page demo was thirty crossing curves that
+   * hid the two links a reader actually needed — and said nothing beyond "there
+   * is a nav". The chrome is stated once instead, on the cards and in the bar.
+   */
+  const contentEdges = useMemo(() => edges.filter((edge) => !edge.viaChrome), [edges]);
+  const inChrome = useMemo(
+    () => new Set(edges.filter((edge) => edge.viaChrome).map((edge) => edge.toPageId)),
+    [edges],
+  );
   const orphans = useMemo(() => new Set(orphanPages(doc)), [doc]);
 
   const positions = useMemo(() => {
-    const auto = autoLayout(doc, edges);
+    const auto = autoLayout(doc, contentEdges);
     const map = new Map<string, Point>();
     for (const page of doc.pages) {
       // An explicit position always wins: once the user arranges a card, the
@@ -159,7 +218,7 @@ export function PagesFlow() {
     // While dragging, the dragged card follows the pointer rather than the document.
     if (dragCard) map.set(dragCard.pageId, dragCard.at);
     return map;
-  }, [doc, edges, dragCard]);
+  }, [doc, contentEdges, dragCard]);
 
   /** Client coordinates → world coordinates. */
   const toWorld = useCallback(
@@ -257,21 +316,47 @@ export function PagesFlow() {
     });
   }, [positions]);
 
-  // Re-fit when pages are added or removed, so a new card is never off-screen.
-  // Deliberately not on every `positions` change — that would fight the user
-  // while they drag.
-  useEffect(fit, [doc.pages.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  /*
+   * Re-fit whenever the automatic layout moves, and never once the user has
+   * arranged a card themselves.
+   *
+   * Keying on `doc.pages.length` alone was not enough: the columns come from the
+   * link graph, so adding the nav after the pages exist re-laid the whole map
+   * with no change in count, and two of three columns sat off the left edge with
+   * no way to know they were there. Keying on every `positions` change is the
+   * other failure — it would recentre the map under a card being dragged — so
+   * the box is measured from the document, and one manual position switches the
+   * automatic fit off for good. The Fit button stays.
+   */
+  const hasManualLayout = doc.pages.some((p) => typeof p.x === 'number' && typeof p.y === 'number');
+  const layoutBox = hasManualLayout
+    ? 'manual'
+    : [...autoLayout(doc, contentEdges).values()]
+        .map((p) => `${p.x},${p.y}`)
+        .join(' ');
+  useEffect(() => {
+    if (hasManualLayout) return;
+    fit();
+  }, [layoutBox]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const wireFrom = wire ? positions.get(wire.fromPageId) : undefined;
 
   return (
-    <div className="fl" ref={viewportRef}>
+    // The card height is published as a custom property rather than repeated in
+    // the stylesheet: the wire anchors are computed from CARD_H, so a card whose
+    // CSS height had drifted from it would detach every wire from every edge —
+    // silently, and only on the pages long enough to notice.
+    <div className="fl" ref={viewportRef} style={{ ['--fl-card-h' as string]: `${CARD_H}px` }}>
       <header className="fl__bar">
         <div className="fl__title">
           <strong>Site map</strong>
           <span>
-            {doc.pages.length} {doc.pages.length === 1 ? 'page' : 'pages'} · {edges.length}{' '}
-            {edges.length === 1 ? 'link' : 'links'}
+            {doc.pages.length} {doc.pages.length === 1 ? 'page' : 'pages'}
+            {/* One page has nothing to link between, and saying so reads as a fault. */}
+            {doc.pages.length > 1
+              ? ` · ${contentEdges.length} ${contentEdges.length === 1 ? 'link' : 'links'} between them`
+              : ''}
+            {inChrome.size ? ` · ${inChrome.size} in the shared nav` : ''}
           </span>
         </div>
         <div className="fl__tools">
@@ -294,21 +379,16 @@ export function PagesFlow() {
       >
         <div className="fl__world" style={{ transform: `translate(${pan.x}px, ${pan.y}px)` }}>
           <svg className="fl__wires" aria-hidden="true">
-            {edges.map((edge) => {
+            {contentEdges.map((edge) => {
               const from = positions.get(edge.fromPageId);
               const to = positions.get(edge.toPageId);
               if (!from || !to) return null;
-              const path = wirePath(from, to);
+              const { d, mid } = wirePath(from, to);
               return (
                 <g className="fl__wire" key={`${edge.fromPageId}->${edge.toPageId}`}>
-                  <path className="fl__wire-hit" d={path} />
-                  <path className="fl__wire-line" d={path} />
-                  <foreignObject
-                    x={(from.x + CARD_W + to.x) / 2 - 60}
-                    y={(from.y + to.y) / 2 + CARD_H / 2 - 13}
-                    width={120}
-                    height={26}
-                  >
+                  <path className="fl__wire-hit" d={d} />
+                  <path className="fl__wire-line" d={d} />
+                  <foreignObject x={mid.x - 60} y={mid.y - 13} width={120} height={26}>
                     <button
                       type="button"
                       className="fl__wire-label"
@@ -327,7 +407,23 @@ export function PagesFlow() {
             })}
 
             {wire && wireFrom ? (
-              <path className="fl__wire-draft" d={wirePath(wireFrom, { x: wire.to.x, y: wire.to.y - CARD_H / 2 })} />
+              /*
+               * The draft follows the pointer, so it always leaves the port on
+               * the right edge and ends exactly where the cursor is. Routing it
+               * through `wirePath` meant the vertical branch offset the end by
+               * half a card and the line stopped tracking the cursor.
+               */
+              <path
+                className="fl__wire-draft"
+                d={
+                  sideRoute(
+                    wireFrom.x + CARD_W,
+                    wireFrom.y + CARD_H / 2,
+                    wire.to.x,
+                    wire.to.y,
+                  ).d
+                }
+              />
             ) : null}
           </svg>
 
@@ -380,7 +476,14 @@ export function PagesFlow() {
                   ) : null}
                 </div>
 
-                <code className="fl__path">{pageFileName(page.path)}</code>
+                <div className="fl__meta">
+                  <code className="fl__path">{pageFileName(page.path)}</code>
+                  {inChrome.has(page.id) ? (
+                    <span className="fl__navchip" title="Reached from the shared navigation">
+                      in nav
+                    </span>
+                  ) : null}
+                </div>
 
                 <ul className="fl__outline">
                   {outlineOf(doc, page).map((name, i) => (
@@ -441,7 +544,8 @@ export function PagesFlow() {
       </div>
 
       <p className="fl__hint">
-        Drag a card to arrange · drag the dot on its right edge onto another page to add a nav link ·
+        Wires are links written on the page itself — pages in the shared nav are marked instead of
+        wired · drag the dot on a card's right edge onto another page to add a nav link ·
         double-click a card to edit it
       </p>
     </div>
