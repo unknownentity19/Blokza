@@ -4818,3 +4818,237 @@
   .tpl-row { grid-template-columns: minmax(0, 1fr); gap: 30px; }
   .tpl-row .template-card:nth-child(n) { margin-top: 0; }
 }
+
+/* ===========================================================================
+   Homepage hero — the editor's own surface
+   ===========================================================================
+   The previous hero was a white page with a stock illustration of someone
+   falling through space, a decorative star, and a live user counter whose value
+   was hardcoded to 2847 and nudged at random. It looked like every other tool's
+   landing page because nothing in it came from this product.
+
+   This one is the canvas: ink ground, dotted like the editor's own, with the
+   real interface lit on top of it. Purple appears as a selection ring rather
+   than a fill, and the annotations around the headline are the spacing overlay
+   the editor draws when you select a section — at the values that section
+   actually uses.
+   =========================================================================== */
+
+.stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 92px 0 0;
+  background:
+    radial-gradient(900px 520px at 22% 6%, rgba(122, 95, 229, 0.24), transparent 70%),
+    radial-gradient(760px 460px at 88% 34%, rgba(79, 48, 194, 0.20), transparent 72%),
+    #0d0a14;
+  color: #f4f2fa;
+}
+
+/* The canvas texture, the same 14px lattice the editor draws behind a page. */
+.stage__dots {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.075) 1px, transparent 0);
+  background-size: 15px 15px;
+  mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 100%);
+}
+
+.stage__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+  gap: 56px;
+  align-items: center;
+}
+
+.stage__copy { position: relative; padding-left: 26px; }
+
+.stage__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 22px;
+  padding: 6px 12px 6px 10px;
+  border: 1px solid rgba(179, 164, 249, 0.34);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 550;
+  letter-spacing: 0.01em;
+  color: #cfc6f7;
+}
+.stage__pip {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #8be0b8;
+  box-shadow: 0 0 0 3px rgba(139, 224, 184, 0.16);
+}
+
+.stage__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 4.6vw, 4.35rem);
+  line-height: 0.99;
+  letter-spacing: -0.032em;
+  color: #fbfaff;
+}
+.stage__line { display: block; }
+.stage__line--accent {
+  color: #b9a8ff;
+  font-style: italic;
+}
+
+/*
+ * Spacing overlays. Absolutely positioned against `.stage__copy`, which is why
+ * that element carries the left padding — the vertical rule sits in it.
+ */
+.stage__ruler { position: absolute; color: #a996f5; }
+.stage__ruler b {
+  font: 600 10.5px/1 var(--font-mono);
+  letter-spacing: 0.04em;
+  background: #0d0a14;
+  padding: 2px 4px;
+}
+.stage__ruler--v {
+  left: 0;
+  top: 62px;
+  bottom: 96px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(169, 150, 245, 0.65) 12%, rgba(169, 150, 245, 0.65) 88%, transparent);
+  display: grid;
+  place-items: center;
+}
+.stage__ruler--v b { transform: rotate(-90deg); }
+.stage__ruler--v::before,
+.stage__ruler--v::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  width: 7px; height: 1px;
+  background: rgba(169, 150, 245, 0.7);
+}
+.stage__ruler--v::before { top: 0; }
+.stage__ruler--v::after { bottom: 0; }
+
+.stage__ruler--h {
+  left: 26px;
+  right: 34%;
+  bottom: 118px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(169, 150, 245, 0.6), transparent);
+  display: grid;
+  place-items: center start;
+}
+.stage__ruler--h b { transform: translateY(-9px); }
+
+.stage__sub {
+  margin: 26px 0 0;
+  max-width: 46ch;
+  font-size: 16.5px;
+  line-height: 1.66;
+  color: #b9b3cd;
+}
+
+.stage__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+
+.ink-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 22px;
+  border-radius: 8px;
+  background: #6b4ae0;
+  border: 1px solid #7f61ea;
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s var(--ease), border-color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.ink-btn:hover { background: #7a5fe5; transform: translateY(-2px); }
+.ink-btn--quiet {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #ded8f5;
+}
+.ink-btn--quiet:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255,255,255,0.3); }
+.ink-btn:focus-visible { outline: 2px solid #b9a8ff; outline-offset: 3px; }
+
+.stage__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 30px;
+  margin: 40px 0 0;
+  padding: 22px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  list-style: none;
+}
+.stage__facts li { font-size: 13px; color: #9d97b4; }
+.stage__facts b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 700;
+  color: #fbfaff;
+  letter-spacing: -0.02em;
+}
+
+/* The product, lit, running off the bottom edge so the page continues into it. */
+/*
+ * Runs to the viewport edge. Stopping at the container's right edge left a hard
+ * vertical cut with page behind it, which reads as a broken image rather than a
+ * window continuing off-screen.
+ */
+.stage__shot { margin: 0 calc(50% - 50vw) 0 0; align-self: end; }
+.stage__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px 12px 0 0;
+  box-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.12),
+    0 -30px 90px -30px rgba(122, 95, 229, 0.55),
+    0 40px 80px -30px rgba(0, 0, 0, 0.7);
+}
+
+/*
+ * The header sits on the dark hero on this page only, so it needs light text
+ * until the page scrolls and it takes its normal white background back.
+ *
+ * Making it transparent is not enough on its own: the header is in normal flow
+ * *above* the hero, so transparency just revealed the white page behind it and
+ * the light text became unreadable. The hero is pulled up under the header by
+ * its own height and pads the difference back, which is why the nav's z-index
+ * matters — it stays above the section it now sits on.
+ */
+.has-ink-hero .stage { margin-top: -73px; padding-top: 165px; }
+.has-ink-hero .site-nav { background: transparent; backdrop-filter: none; }
+.has-ink-hero .site-nav:not(.is-stuck) .brand-name,
+.has-ink-hero .site-nav:not(.is-stuck) .site-nav__links > li > a,
+.has-ink-hero .site-nav:not(.is-stuck) .submenu-trigger { color: #ece8fb; }
+.has-ink-hero .site-nav:not(.is-stuck) .brand-glyph { color: #b9a8ff; }
+.has-ink-hero .site-nav:not(.is-stuck) .site-nav__cta { color: #ded8f5; border-color: rgba(255,255,255,0.22); }
+.has-ink-hero .site-nav.is-stuck { background: rgba(255, 255, 255, 0.92); backdrop-filter: saturate(180%) blur(14px); }
+
+@media (max-width: 960px) {
+  .stage { padding-top: 64px; }
+  .stage__inner { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .stage__ruler { display: none; }
+  .stage__copy { padding-left: 0; }
+}
+
+/* Initial avatars: no third-party request, and no real person's face against a
+   quote they did not give. */
+.review-card__avatar--mono {
+  display: inline-grid;
+  place-items: center;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--p-50);
+  border: 1px solid var(--p-200);
+  color: var(--p-700);
+  font: 700 13px/1 var(--font-mono);
+  letter-spacing: 0.03em;
+  flex: none;
+}
