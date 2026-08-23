@@ -53,11 +53,28 @@ python3 - "$DIST" <<'STAMP'
 import hashlib, pathlib, re, sys
 
 dist = pathlib.Path(sys.argv[1])
-digests = {}
-for asset in list(dist.glob("assets/css/*.css")) + list(dist.glob("assets/js/*.js")):
-    digests[asset.name] = hashlib.sha256(asset.read_bytes()).hexdigest()[:10]
 
-pattern = re.compile(r'(assets/(?:css|js)/([A-Za-z0-9_-]+\.(?:css|js)))(\?v=[^"\']*)?')
+# Images are stamped too, not just CSS and JS. `_headers` serves everything
+# under /assets/* as immutable for a year, and `immutable` means browsers will
+# not revalidate even on a forced reload — so an unstamped image URL is a
+# screenshot you cannot replace for twelve months without renaming the file.
+patterns = ["assets/css/*.css", "assets/js/*.js",
+            "assets/images/**/*", "assets/og-image.png"]
+digests = {}
+for pat in patterns:
+    for asset in dist.glob(pat):
+        if asset.is_file():
+            digests[asset.name] = hashlib.sha256(asset.read_bytes()).hexdigest()[:10]
+
+# Any asset path ending in a known extension, with or without an existing ?v=.
+# Two prefixes: `assets/...` as written in the HTML, and `../images/...` as
+# written by url() inside assets/css — the same file reached two ways.
+EXT = r'(?:css|js|png|jpe?g|webp|avif|svg|gif|ico|woff2?)'
+pattern = re.compile(
+    r'((?:assets/|\.\./)(?:[A-Za-z0-9_-]+/)*'
+    r'([A-Za-z0-9_.-]+\.' + EXT + r'))'
+    r'(\?v=[^"\'\)\s]*)?'
+)
 
 def stamp(match):
     path, name, _ = match.groups()
@@ -65,13 +82,26 @@ def stamp(match):
     return f"{path}?v={digest}" if digest else match.group(0)
 
 changed = 0
-for page in dist.glob("*.html"):
+# The stylesheets too: the hero background is referenced by url() from CSS, so
+# stamping only the HTML left that one image permanently uncacheable-bustable.
+for page in list(dist.glob("*.html")) + list(dist.glob("assets/css/*.css")):
     text = page.read_text(encoding="utf-8")
     updated = pattern.sub(stamp, text)
     if updated != text:
         page.write_text(updated, encoding="utf-8")
         changed += 1
-print(f"    {changed} pages stamped: " + ", ".join(f"{k}={v}" for k, v in sorted(digests.items())))
+
+# CSS is hashed by content, so stamping inside it changes it — rehash and
+# restamp the HTML that points at it, or every page would request the old digest.
+for asset in dist.glob("assets/css/*.css"):
+    digests[asset.name] = hashlib.sha256(asset.read_bytes()).hexdigest()[:10]
+for page in dist.glob("*.html"):
+    text = page.read_text(encoding="utf-8")
+    updated = pattern.sub(stamp, text)
+    if updated != text:
+        page.write_text(updated, encoding="utf-8")
+
+print(f"    {changed} files stamped, {len(digests)} assets hashed")
 STAMP
 
 echo

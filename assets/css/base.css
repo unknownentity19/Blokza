@@ -90,7 +90,6 @@ a { color: inherit; text-decoration: none; }
 /* Anchored sections shouldn't hide under the sticky nav */
 [id] { scroll-margin-top: 96px; }
 
-.logo-img { height: 48px; width: auto; }
 
 ::selection { background: var(--p-200); color: var(--p-800); }
 
@@ -149,7 +148,7 @@ p  { margin: 0; color: var(--fg-muted); }
 .text-purple { color: var(--p-700); }
 .text-muted { color: var(--fg-muted); }
 .text-dim { color: var(--fg-dim); }
-.text-balance { text-wrap: balance; }
+
 .text-center { text-align: center; }
 
 /* ----- Layout ----- */
@@ -225,8 +224,6 @@ p  { margin: 0; color: var(--fg-muted); }
   transform: translateY(-1px);
 }
 
-.btn-ghost { color: var(--fg-muted); background: transparent; }
-.btn-ghost:hover { color: var(--fg); }
 
 .btn-sm { padding: 10px 16px; font-size: 14px; border-radius: 0; }
 .btn-lg { padding: 16px 28px; font-size: 16px; border-radius: 0; }
@@ -273,14 +270,6 @@ p  { margin: 0; color: var(--fg-muted); }
 .icon-tile.alt-emerald { background: linear-gradient(160deg, #fff 0%, #ecfdf5 100%); border-color: #a7f3d0; color: #047857; }
 .icon-tile.alt-sky { background: linear-gradient(160deg, #fff 0%, #f0f9ff 100%); border-color: #bae6fd; color: #0369a1; }
 
-/* Kill any residual top bars */
-.topbar,
-.scroll-progress,
-div[class*="progress"] {
-  display: none !important;
-  height: 0 !important;
-  visibility: hidden !important;
-}
 
 /* ----- Nav ----- */
 .site-nav {
@@ -313,19 +302,7 @@ div[class*="progress"] {
   font-size: 20px;
   color: var(--fg);
 }
-.brand-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 34px; height: 34px;
-  border-radius: 4px;
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 19px;
-  line-height: 1;
-  background: linear-gradient(135deg, var(--p-500), var(--p-700));
-  box-shadow: 0 4px 14px -4px rgba(122, 95, 229, 0.5);
-}
+
 .site-nav__links {
   display: flex;
   align-items: center;
@@ -466,17 +443,12 @@ div[class*="progress"] {
   html { scroll-behavior: auto !important; }
 }
 
-/* ----- Utility ----- */
-.flex { display: flex; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.justify-center { justify-content: center; }
-.gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; }
-.mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; }
+
+   
+ .mt-3 { margin-top: 12px; }
 .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
-.mt-8 { margin-top: 32px; } .mt-10 { margin-top: 40px; } .mt-12 { margin-top: 48px; } .mt-16 { margin-top: 64px; }
+.mt-8 { margin-top: 32px; }   
 .full-w { width: 100%; }
-@media (max-width: 640px) { .hide-sm { display: none !important; } }
 
 
 /* =================== NAV SUBMENUS =================== */
@@ -512,22 +484,7 @@ div[class*="progress"] {
   opacity: 1;
 }
 
-.submenu {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  min-width: 220px;
-  padding: 8px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  box-shadow: var(--shadow-md);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-6px);
-  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s linear;
-  z-index: 60;
-}
+
 .has-submenu:hover .submenu,
 .has-submenu.is-open .submenu,
 .has-submenu:focus-within .submenu {
@@ -536,18 +493,8 @@ div[class*="progress"] {
   transform: translateY(0);
   transition-delay: 0s;
 }
-.submenu a {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 4px;
-  color: var(--fg-2);
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-.submenu a:hover { background: var(--p-50); color: var(--p-700); }
+
+
 .submenu a .ico {
   display: inline-grid;
   place-items: center;
@@ -620,19 +567,6 @@ details > summary:focus-visible {
   border-radius: 2px;
 }
 
-/* Visually hidden helper for screen readers */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 
 /* =========================================================
    Production animations — beyond simple reveal
@@ -688,12 +622,7 @@ details > summary:focus-visible {
 }
 .btn-primary:hover::after { left: 150%; }
 
-/* Animated gradient on hover for accent surfaces */
-.brand-mark {
-  background: linear-gradient(135deg, var(--p-500), var(--p-700), var(--p-500));
-  background-size: 200% 200%;
-  animation: brand-pan 8s linear infinite;
-}
+
 @keyframes brand-pan {
   0%   { background-position: 0% 50%; }
   100% { background-position: 200% 50%; }
@@ -704,7 +633,7 @@ details > summary:focus-visible {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-10px); }
 }
-.float-y { animation: float-y 6s ease-in-out infinite; }
+
 
 /* Magnetic buttons: use the independent `translate` property so the
    cursor attraction never fights hover/active `transform` states */
@@ -737,32 +666,7 @@ details > summary:focus-visible {
 .card-hover:hover::before { opacity: 1; }
 .card-hover > * { position: relative; z-index: 1; }
 
-/* Animated underline links */
-.link-underline {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.link-underline::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 1.5px;
-  background: currentColor;
-  transform-origin: left;
-  transform: scaleX(0);
-  transition: transform 0.4s var(--ease);
-}
-.link-underline:hover::after { transform: scaleX(1); }
 
-
-/* Submenu drop animation */
-.submenu {
-  transform-origin: top center;
-}
 .has-submenu:hover .submenu,
 .has-submenu.is-open .submenu,
 .has-submenu:focus-within .submenu {
@@ -879,65 +783,7 @@ details > summary:focus-visible {
 }
 .mega__link:hover .meta span { color: var(--fg-muted); }
 
-.mega__feature {
-  background: linear-gradient(165deg, var(--p-700) 0%, #d0c5fd 60%, #d0c5fd 100%);
-  color: #fff;
-  border-radius: 6px;
-  padding: 22px;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-}
-.mega__feature::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(50% 50% at 100% 0%, rgba(255,255,255,0.18), transparent 60%),
-    radial-gradient(60% 60% at 0% 100%, rgba(141, 171, 247, 0.25), transparent 60%);
-  z-index: -1;
-}
-.mega__feature__tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  align-self: flex-start;
-  padding: 4px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 999px;
-  backdrop-filter: blur(4px);
-}
-.mega__feature h4 {
-  margin: 14px 0 6px;
-  font-size: 18px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.01em;
-}
-.mega__feature p {
-  font-size: 13.5px;
-  color: rgba(255,255,255,0.78);
-  line-height: 1.55;
-  margin: 0 0 14px;
-}
-.mega__feature__visual {
-  margin: 12px 0 16px;
-  border-radius: 4px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 12px;
-  display: grid;
-  gap: 8px;
-  flex: 1;
-}
+
 .mega__feature__visual .row {
   display: grid;
   grid-template-columns: 28px 1fr 32px;
@@ -958,29 +804,13 @@ details > summary:focus-visible {
   background: rgba(255,255,255,0.45);
   border-radius: 4px;
 }
-.mega__feature__visual .ln--short { width: 60%; background: rgba(255,255,255,0.22); margin-top: 4px; }
+
 .mega__feature__visual .pill {
   height: 18px;
   background: #fff;
   border-radius: 4px;
 }
-.mega__feature__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: auto;
-  padding: 10px 14px;
-  background: #fff;
-  color: var(--p-700);
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 4px;
-  align-self: flex-start;
-  transition: background 0.15s ease, transform 0.2s var(--ease);
-}
-.mega__feature__cta:hover { background: var(--p-50); transform: translateX(2px); }
-.mega__feature__cta svg { transition: transform 0.2s var(--ease); }
-.mega__feature__cta:hover svg { transform: translateX(2px); }
+
 
 @keyframes mega-pop {
   0%   { opacity: 0; transform: translateX(-50%) translateY(-8px) scale(0.97); }
