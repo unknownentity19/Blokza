@@ -143,7 +143,7 @@
   width: 100%;
   max-width: 620px;
   aspect-ratio: 720 / 540;
-  background-image: url('../images/hero.png');
+  background-image: url('../images/hero.webp');
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -547,43 +547,6 @@
 .logos {
   text-align: center;
   padding: 80px 0 32px;
-}
-.logos__label {
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
-  font-weight: 600;
-}
-.logos__row {
-  margin-top: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px 36px;
-}
-.logos__row .logo,
-.logos-marquee .logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--fg-dim);
-  opacity: 0.9;
-  transition: opacity 0.3s ease, color 0.3s ease;
-}
-.logos__row .logo:hover,
-.logos-marquee .logo:hover { opacity: 1; color: var(--p-700); }
-.logos__row .logo svg,
-.logos-marquee .logo svg { color: currentColor; flex: 0 0 auto; }
-.logos__row .logo img,
-.logos-marquee .logo img {
-  height: 22px;
-  width: auto;
-  flex: 0 0 auto;
-  display: block;
 }
 
 /* =================== SECTION HEAD =================== */
@@ -1217,99 +1180,6 @@
 }
 @media (max-width: 720px) { .press-list time { text-align: left; } }
 
-/* =================== TESTIMONIALS — review cards (infinite marquee) =================== */
-.reviews {
-  position: relative;
-  margin-top: 56px;
-  padding: 8px 0 8px;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 80px, #000 calc(100% - 80px), transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 80px, #000 calc(100% - 80px), transparent);
-}
-.reviews__rail {
-  display: flex;
-  gap: 20px;
-  width: max-content;
-  padding: 4px 0;
-  will-change: transform;
-}
-.reviews:hover .reviews__rail { animation-play-state: paused; }
-
-.review-card {
-  position: relative;
-  flex: 0 0 320px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 30px 28px 24px;
-  transition: border-color 0.18s ease, box-shadow 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.review-card:hover { border-color: var(--border-2); box-shadow: 0 12px 28px -16px rgba(15, 16, 28, .14); }
-
-.review-card__quote {
-  position: absolute;
-  top: 16px;
-  left: 18px;
-  color: #d0c5fd;
-}
-.review-card__quote svg { display: block; }
-
-.review-card__stars {
-  display: inline-flex;
-  gap: 4px;
-  margin-top: 14px;
-  color: #fbbf24;
-}
-.review-card__stars svg { width: 16px; height: 16px; display: block; }
-
-.review-card__quote-text {
-  margin: 0;
-  font-size: 15.5px;
-  line-height: 1.6;
-  color: var(--fg);
-  font-weight: 500;
-  flex: 1;
-}
-
-.review-card__person {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-top: 18px;
-  border-top: 1px solid var(--border);
-  margin: 0;
-}
-.review-card__person > div { display: grid; gap: 1px; min-width: 0; }
-.review-card__person strong { font-size: 14px; font-weight: 700; color: var(--fg); }
-.review-card__person span   { font-size: 12.5px; color: var(--fg-muted); }
-.review-card__avatar {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  flex: 0 0 auto;
-  object-fit: cover;
-  background: var(--bg-soft);
-  border: 1px solid var(--border);
-}
-.review-card__verified {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11.5px !important;
-  color: #16a34a !important;
-  font-weight: 500;
-  margin-top: 2px;
-}
-.review-card__verified svg { color: #16a34a; flex: 0 0 auto; }
-
-@media (prefers-reduced-motion: reduce) {
-  .reviews__rail { animation: none; }
-}
-@media (max-width: 720px) {
-  .review-card { flex-basis: 86vw; }
-}
 .testimonials-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
@@ -1725,30 +1595,6 @@
 .muted-list strong { display: block; font-size: 14px; color: var(--fg); }
 .muted-list span { color: var(--fg-muted); font-size: 13px; }
 
-
-/* =================== LOGO MARQUEE =================== */
-.logos-marquee {
-  position: relative;
-  margin-top: 28px;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-}
-.logos-marquee__track {
-  display: inline-flex;
-  align-items: center;
-  gap: 56px;
-  padding: 16px 0;
-  white-space: nowrap;
-  width: max-content;
-  will-change: transform;
-}
-.logos-marquee:hover .logos-marquee__track { animation-play-state: paused; }
-
-@media (prefers-reduced-motion: reduce) {
-  .logos-marquee__track,
-  .reviews__rail { animation: none !important; }
-}
 
 
 /* =========================================================
@@ -4809,7 +4655,15 @@
 .template-card:focus-visible .template-thumb { outline: 2px solid var(--p-500); outline-offset: 3px; }
 
 .template-card .template-meta {
-  display: block;
+  /*
+   * A row, not a block. `display: block` here overrode the flex layout further
+   * up, which dropped the 34px arrow onto its own line under every template
+   * name where it read as a stray empty box.
+   */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
   padding: 18px 2px 0;
 }
 .template-card .template-meta .cat {
@@ -5104,4 +4958,16 @@
   color: var(--fg-faint);
   border-top: 1px solid var(--border);
   background: var(--bg-soft);
+}
+
+/* The template gallery. Four templates in a three-column grid left the fourth
+   stranded on a row of its own; two-up also gives the previews the size they
+   deserve on the page whose whole job is showing them. */
+.tpl-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px 32px;
+}
+@media (max-width: 760px) {
+  .tpl-gallery { grid-template-columns: 1fr; gap: 32px; }
 }

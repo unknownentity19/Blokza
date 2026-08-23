@@ -70,7 +70,7 @@ body {
 
 /* Selection off only for interactive chrome; content stays copyable */
 .btn, .site-nav__links a, .site-nav__cta, .brand-mark, .brand-name,
-.logos-marquee .logo, .float-chip {
+.float-chip {
   -webkit-user-select: none;
   user-select: none;
 }
