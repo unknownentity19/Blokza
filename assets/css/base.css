@@ -15,7 +15,10 @@
   --fg-2: #2a1f3d;
   --fg-muted: #5b5470;
   --fg-dim: #6b7280;
-  --fg-faint: #9aa3b2;
+  /* 2.41:1 against the page at #9aa3b2 — under the 4.5:1 AA needs, and this
+     token colours real text: breadcrumbs, section labels, timestamps, the
+     template categories. Same blue-grey hue, dark enough to read (4.72:1). */
+  --fg-faint: #667085;
 
   --p-50:  #f4f1ff;
   --p-75:  #ece6ff;
@@ -186,8 +189,20 @@ p  { margin: 0; color: var(--fg-muted); }
   isolation: isolate;
 }
 .btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--p-200);
+  /*
+   * A real ring, not a tint. This used to be `outline: none` plus a 3px
+   * --p-200 (#d0c5fd) glow, which is 1.52:1 against the page — below the 3:1
+   * WCAG 2.2 asks of a focus indicator, and in practice invisible, so a
+   * keyboard user could not tell which of a page's several CTAs was focused.
+   * The rule also beat the good generic ring below on specificity, so buttons
+   * were the *only* controls on the site without one.
+   *
+   * The white inner ring keeps the outline readable when the button's own fill
+   * is dark or when it sits on a tinted section.
+   */
+  outline: 2px solid var(--p-700);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff;
 }
 .btn:active { transform: translateY(1px); }
 
@@ -442,6 +457,13 @@ div[class*="progress"] {
     transition-duration: 0.001ms !important;
   }
   [data-reveal], [data-reveal-stagger] > * { opacity: 1 !important; transform: none !important; }
+  /*
+   * Smooth scrolling is motion too. Without this, every in-page anchor and the
+   * docs table of contents animates the viewport for a user who has asked the
+   * system for no animation - which is the population most likely to be made
+   * unwell by a long scroll.
+   */
+  html { scroll-behavior: auto !important; }
 }
 
 /* ----- Utility ----- */
@@ -581,7 +603,8 @@ div[class*="progress"] {
   top: 16px;
   clip: auto;
   overflow: visible;
-  outline: 3px solid var(--p-200);
+  /* Was --p-200, the same 1.52:1 lavender the buttons used. */
+  outline: 2px solid var(--fg);
   outline-offset: 2px;
 }
 
