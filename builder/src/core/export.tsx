@@ -15,6 +15,7 @@ import { defaultPageTitle } from './doc';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { compileCss } from './css';
 import { escapeHtml } from './sanitize';
+import { assetBase64, assetList, assetPath, base64Bytes, referencedAssets } from './assets';
 import { formatHtml } from './format-html';
 import { componentCss } from '../registry/registry';
 import { makeContext, pageFileName, RenderPage } from '../render/RenderNode';
@@ -23,6 +24,14 @@ import type { Page, SiteDoc } from './types';
 export interface ExportFile {
   path: string;
   content: string;
+  /**
+   * `content` is base64 rather than text, and the writer must decode it.
+   *
+   * Uploaded images are the only binary the export produces. Writing them as
+   * text would corrupt every one of them, so the flag travels with the file
+   * instead of the ZIP writer guessing from the extension.
+   */
+  base64?: boolean;
 }
 
 export interface ExportResult {
@@ -61,8 +70,12 @@ function absoluteUrl(doc: SiteDoc, page: Page): string {
   return file === 'index.html' ? `${base}/` : `${base}/${file}`;
 }
 
-function renderPageHtml(doc: SiteDoc, page: Page): string {
-  const ctx = makeContext(doc, 'export');
+function renderPageHtml(
+  doc: SiteDoc,
+  page: Page,
+  options: { inlineAssets?: boolean } = {},
+): string {
+  const ctx = makeContext(doc, 'export', null, options);
   const body = formatHtml(renderToStaticMarkup(<RenderPage ctx={ctx} rootId={page.rootId} />), '    ');
   const title = page.title.trim() || defaultPageTitle(doc, page);
   const description = page.description.trim();
@@ -134,9 +147,21 @@ export function buildExport(doc: SiteDoc): ExportResult {
     ...doc.pages.map((page) => ({ path: pageFileName(page.path), content: renderPageHtml(doc, page) })),
     { path: 'sitemap.xml', content: sitemapXml(doc) },
     { path: 'robots.txt', content: robotsTxt(doc) },
+    /*
+     * Only the images something actually points at. An asset left behind by a
+     * deleted node has no place in a published site, and shipping it would put
+     * a picture the user thought they had removed on a public URL.
+     */
+    ...assetList(doc)
+      .filter((asset) => referencedAssets(doc).has(asset.id))
+      .map((asset) => ({ path: assetPath(asset), content: assetBase64(asset), base64: true })),
   ];
 
-  const bytes = files.reduce((total, file) => total + new Blob([file.content]).size, 0);
+  const bytes = files.reduce(
+    (total, file) =>
+      total + (file.base64 ? base64Bytes(file.content) : new Blob([file.content]).size),
+    0,
+  );
   return { files, bytes };
 }
 
@@ -144,7 +169,8 @@ export function buildExport(doc: SiteDoc): ExportResult {
 export function buildStandalonePage(doc: SiteDoc, pageId: string): string {
   const page = doc.pages.find((candidate) => candidate.id === pageId) ?? doc.pages[0];
   const css = compileCss(doc, { componentCss, includeReset: true });
-  const html = renderPageHtml(doc, page);
+  // Self-contained: no stylesheet beside it, and no `assets/` folder either.
+  const html = renderPageHtml(doc, page, { inlineAssets: true });
   return html.replace(
     `  <link rel="stylesheet" href="${STYLESHEET}" />`,
     `  <style>\n${css}\n  </style>`,

@@ -22,7 +22,9 @@ export async function downloadSiteZip(doc: SiteDoc): Promise<ZipResult> {
   const { files, bytes } = buildExport(doc);
 
   const zip = new JSZip();
-  for (const file of files) zip.file(file.path, file.content);
+  // Uploaded images arrive as base64 and have to be told apart from text, or
+  // JSZip stores the base64 *characters* and every exported image is corrupt.
+  for (const file of files) zip.file(file.path, file.content, { base64: file.base64 === true });
 
   // A README earns its place here: the ZIP is the hand-off, and "which file do I
   // open" plus "how do I host this" are the only two questions it gets asked.

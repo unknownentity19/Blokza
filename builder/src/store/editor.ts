@@ -51,7 +51,15 @@ import { navRowOf, pageEdges } from '../core/sitemap';
 import { paletteById } from '../registry/palettes';
 import { ancestorsOf, canDrop, canMutate, indexOf, selectableAncestor } from '../core/tree';
 import { breakpointForDevice, clampZoom, deviceById, nextZoom } from '../core/devices';
-import { createSaver, load, type UiPrefs } from '../core/storage';
+import {
+  AssetError,
+  assetBytes,
+  assetRef,
+  importImageFile,
+  pruneAssets,
+  type Asset,
+} from '../core/assets';
+import { createSaver, load, saveErrorMessage, type UiPrefs } from '../core/storage';
 import { dropRules, getComponent } from '../registry/registry';
 import type { Template } from '../registry/templates';
 import type {
@@ -200,6 +208,12 @@ export interface EditorState {
 
   /* node data */
   setProp: (nodeId: string, key: string, value: unknown, coalesce?: boolean) => void;
+  /**
+   * Store a picked image and point a node's prop at it. Resolves to the new
+   * reference, or null when the file was refused — the caller has already been
+   * told why by a toast.
+   */
+  uploadImage: (nodeId: string, key: string, file: File) => Promise<string | null>;
   setStyleValue: (nodeId: string, key: StyleKey, value: string | null, coalesce?: boolean) => void;
   clearLayer: (nodeId: string, layer?: StyleLayer) => void;
   rename: (nodeId: string, name: string) => void;
@@ -272,7 +286,14 @@ export interface EditorState {
   dismissToast: (id: number) => void;
 }
 
-const saver = createSaver();
+/*
+ * A failed save is reported once, and as an error the user has to dismiss. It
+ * cannot be a quiet warning: the editor still looks completely normal while
+ * every subsequent edit is being lost.
+ */
+const saver = createSaver(600, (error) => {
+  useEditor.getState().toast(saveErrorMessage(error), 'error');
+});
 let toastId = 0;
 
 const initial = load();
@@ -390,6 +411,20 @@ export const useEditor = create<EditorState>((set, get) => {
       const state = get();
       const next = produce(state.doc, (draft) => {
         recipe(draft as SiteDoc);
+        /*
+         * Release the bytes of any image nothing points at any more.
+         *
+         * Here rather than in each removal path — delete, cut, page delete,
+         * replacing a src — because every one of them frees an image and missing
+         * one means the budget only ever climbs, until a user who deleted a
+         * photo is told there is no room for images they can no longer see.
+         * Undo is unaffected: history holds whole documents, so the asset comes
+         * back with the node.
+         *
+         * Skipped entirely when there are no assets, which is most documents,
+         * so the common keystroke pays nothing for it.
+         */
+        if (draft.assets && Object.keys(draft.assets).length) pruneAssets(draft as SiteDoc);
         draft.updatedAt = Date.now();
       });
       if (next === state.doc && options.select === undefined) return;
@@ -661,6 +696,26 @@ export const useEditor = create<EditorState>((set, get) => {
         },
         coalesce ? { coalesce: `prop:${nodeId}:${key}` } : {},
       );
+    },
+
+    uploadImage: async (nodeId, key, file) => {
+      let asset: Asset;
+      try {
+        asset = await importImageFile(file, { used: assetBytes(get().doc) });
+      } catch (error) {
+        get().toast(
+          error instanceof AssetError ? error.message : `${file.name} could not be added.`,
+          'error',
+        );
+        return null;
+      }
+
+      const ref = assetRef(asset.id);
+      get().commit((draft) => {
+        draft.assets = { ...(draft.assets ?? {}), [asset.id]: asset };
+        setProps(draft, nodeId, { [key]: ref });
+      });
+      return ref;
     },
 
     setStyleValue: (nodeId, key, value, coalesce = false) => {

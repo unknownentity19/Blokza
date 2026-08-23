@@ -10,6 +10,7 @@
 import { Fragment, type ReactNode } from 'react';
 import { nodeClass, typeClass } from '../core/css';
 import { SHARED_TYPE, sharedOfNode } from '../core/doc';
+import { assetPath, findAsset, parseAssetRef } from '../core/assets';
 import { safeHref } from '../core/sanitize';
 import type { RenderMode, RootAttrs, SBNode, SiteDoc } from '../core/types';
 import { getComponent } from '../registry/registry';
@@ -28,6 +29,16 @@ export interface RenderContext {
    * sets this.
    */
   remount?: { id: string; n: number } | null;
+  /**
+   * Carry uploaded images inside the markup instead of pointing at the files
+   * the export writes.
+   *
+   * For the one-file preview, which has no `assets/` folder beside it. Without
+   * it every uploaded image was blank in Preview — the one place someone looks
+   * to check their work before publishing, so it read as the upload having
+   * failed. Same reason the standalone page inlines the stylesheet.
+   */
+  inlineAssets?: boolean;
 }
 
 /** Filename for a page path in the exported site. Flat files keep `file://` working. */
@@ -40,16 +51,50 @@ export function makeContext(
   doc: SiteDoc,
   mode: RenderMode,
   remount?: { id: string; n: number } | null,
+  options: { inlineAssets?: boolean } = {},
 ): RenderContext {
   const byPath = new Map(doc.pages.map((page) => [page.path, page]));
   return {
     doc,
     mode,
     remount,
+    inlineAssets: options.inlineAssets === true,
     pageHref: (path: string) => {
       const page = byPath.get(path);
       return page ? pageFileName(page.path) : safeHref(path);
     },
+  };
+}
+
+/**
+ * `asset:<id>` becomes something the current mode can load.
+ *
+ * On the canvas that is the stored data URL. In the export it is the file path
+ * the asset is written to, so the page loads a real image instead of carrying
+ * a few hundred kilobytes of base64 inline — which would also be duplicated
+ * into every page that used it.
+ *
+ * A reference with no asset behind it resolves to empty rather than to the
+ * literal string, so the image component falls back to its placeholder instead
+ * of asking the browser to fetch `asset:abc123`.
+ *
+ * Sanitising happens here, because this is the only place that knows where the
+ * URL came from. A pasted URL is untrusted and goes through `safeHref`; the
+ * data URL and the export path are ours. Leaving it to the component meant the
+ * export path — a bare relative filename, which `safeHref` does not allow —
+ * came out as `#`, and every uploaded image in a published site was blank.
+ */
+function resolveAssetFor(ctx: RenderContext) {
+  return (value: unknown): string => {
+    const id = parseAssetRef(value);
+    if (id === undefined) {
+      const raw = typeof value === 'string' ? value.trim() : '';
+      return raw ? safeHref(raw) : '';
+    }
+    const asset = findAsset(ctx.doc, id);
+    if (!asset) return '';
+    const asFile = ctx.mode === 'export' && !ctx.inlineAssets;
+    return asFile ? assetPath(asset) : asset.data;
   };
 }
 
@@ -129,6 +174,7 @@ export function RenderNode({ ctx, id }: { ctx: RenderContext; id: string }): Rea
         children,
         mode: ctx.mode,
         resolveHref: resolveHrefFor(ctx),
+        resolveAsset: resolveAssetFor(ctx),
       })}
     </Fragment>
   );

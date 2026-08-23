@@ -57,7 +57,9 @@ export const image: ComponentDef = {
   },
   css: IMAGE_CSS,
   render: (p) => {
-    const src = str(p.props, 'src');
+    // Through the resolver: an uploaded image is stored as `asset:<id>` and has
+    // to become a data URL on the canvas and a file path in the export.
+    const src = p.resolveAsset(p.props.src);
     const alt = str(p.props, 'alt');
 
     // No source yet: a themed box rather than an <img> with a baked-in grey.
@@ -81,7 +83,7 @@ export const image: ComponentDef = {
     return (
       <img
         {...p.attrs}
-        src={safeHref(src)}
+        src={src}
         alt={alt}
         loading={str(p.props, 'loading', 'lazy') === 'eager' ? 'eager' : 'lazy'}
         decoding="async"
@@ -116,7 +118,11 @@ export const video: ComponentDef = {
       <video
         {...p.attrs}
         {...(src ? { src: safeHref(src) } : {})}
-        {...(str(p.props, 'poster') ? { poster: safeHref(str(p.props, 'poster')) } : {})}
+        {...(() => {
+          // The poster is an image field, so it can hold an uploaded asset too.
+          const poster = p.resolveAsset(p.props.poster);
+          return poster ? { poster } : {};
+        })()}
         controls={bool(p.props, 'controls', true)}
         loop={bool(p.props, 'loop')}
         // A muted track is required for autoplay to be allowed by browsers, so

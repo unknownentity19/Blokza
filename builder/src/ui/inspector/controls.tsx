@@ -14,6 +14,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Icon } from '../common';
+import { useEditor } from '../../store/editor';
+import { ASSET_BUDGET, MAX_EDGE, assetBytes, findAsset, parseAssetRef } from '../../core/assets';
 import { useFieldId } from '../fieldContext';
 import { LENGTH_UNITS } from './units';
 import type { FieldOption, StyleKey } from '../../core/types';
@@ -590,4 +592,137 @@ export function StyleRow({
       {hint ? <p className="ui-field__hint">{hint}</p> : null}
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/* Images                                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * An image field: pick a file, or paste a URL.
+ *
+ * The URL box stays. Pasting a link is the right answer for an image already on
+ * a CDN, and it is the only answer for one that would not fit the budget — so
+ * removing it in favour of an upload button would take away the escape hatch
+ * from the case most likely to need one.
+ *
+ * The preview is not decoration. `src` was a bare text input, so a typo or a
+ * dead link looked identical to a working image until the canvas was checked,
+ * and an uploaded file was an opaque `asset:` string with nothing to show that
+ * the right picture had arrived.
+ */
+export function ImageControl({
+  value,
+  placeholder,
+  nodeId,
+  propKey,
+  onCommit,
+}: {
+  value: string;
+  placeholder?: string;
+  nodeId: string;
+  propKey: string;
+  onCommit: (value: string) => void;
+}) {
+  const doc = useEditor((s) => s.doc);
+  const uploadImage = useEditor((s) => s.uploadImage);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  const assetId = parseAssetRef(value);
+  const asset = assetId ? findAsset(doc, assetId) : undefined;
+  const preview = asset ? asset.data : value.trim();
+  // A reference whose asset is gone would otherwise show an empty frame with no
+  // hint that the document is inconsistent.
+  const dangling = Boolean(assetId) && !asset;
+
+  const used = assetBytes(doc);
+  const left = Math.max(0, ASSET_BUDGET - used);
+
+  const pick = async (file: File | undefined) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      await uploadImage(nodeId, propKey, file);
+    } finally {
+      setBusy(false);
+      // Cleared so choosing the same file twice in a row still fires a change.
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
+  return (
+    <div className="ui-img">
+      <div
+        className={`ui-img__drop ${busy ? 'is-busy' : ''}`}
+        onDragOver={(event) => {
+          if (!event.dataTransfer.types.includes('Files')) return;
+          event.preventDefault();
+          event.dataTransfer.dropEffect = 'copy';
+        }}
+        onDrop={(event) => {
+          const file = event.dataTransfer.files?.[0];
+          if (!file) return;
+          event.preventDefault();
+          void pick(file);
+        }}
+      >
+        {preview && !dangling ? (
+          <img className="ui-img__thumb" src={preview} alt="" />
+        ) : (
+          <span className="ui-img__none">{dangling ? 'Image missing' : 'No image'}</span>
+        )}
+
+        <div className="ui-img__acts">
+          <button
+            type="button"
+            className="ui-minibtn"
+            disabled={busy}
+            onClick={() => fileRef.current?.click()}
+          >
+            {busy ? 'Adding…' : preview ? 'Replace' : 'Upload'}
+          </button>
+          {value ? (
+            <button type="button" className="ui-minibtn" onClick={() => onCommit('')}>
+              Remove
+            </button>
+          ) : null}
+        </div>
+
+        {/*
+          Driven by the Upload button, never reached directly: a file input
+          cannot be styled, so the visible control is a button that clicks this.
+          Out of the tab order and out of the accessibility tree, or a screen
+          reader announces an unlabelled second control for the same job.
+        */}
+        <input
+          ref={fileRef}
+          className="ui-img__file"
+          type="file"
+          accept="image/*"
+          tabIndex={-1}
+          aria-hidden="true"
+          onChange={(event) => void pick(event.target.files?.[0])}
+        />
+      </div>
+
+      <TextControl value={value} placeholder={placeholder} onCommit={onCommit} />
+
+      <p className="ui-img__note">
+        {asset ? (
+          <>
+            {asset.width && asset.height ? `${asset.width}×${asset.height}, ` : ''}
+            {formatBytes(asset.bytes)} · stored in this site
+          </>
+        ) : (
+          <>Uploads are resized to {MAX_EDGE}px and stored in this site · {formatBytes(left)} left</>
+        )}
+      </p>
+    </div>
+  );
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(1)} MB`;
+  return `${Math.max(1, Math.round(bytes / 1000))} KB`;
 }

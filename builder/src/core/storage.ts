@@ -73,14 +73,42 @@ export function save(doc: SiteDoc, ui: UiPrefs): void {
   }
 }
 
-/** Debounced saver. One instance per app; `flush` is wired to `beforeunload`. */
-export function createSaver(delay = 600): {
+/**
+ * Why a write failed, in words worth showing someone.
+ *
+ * The quota case is the one that matters and the one that is reachable by
+ * ordinary use — a few uploaded images — so it names the cause and the way out
+ * instead of reporting a DOMException.
+ */
+export function saveErrorMessage(error: unknown): string {
+  const name = error && typeof error === 'object' ? String((error as Error).name ?? '') : '';
+  if (/quota/i.test(name) || /quota/i.test(String(error))) {
+    return 'This browser is out of storage, so your changes are no longer being saved. Download the site or remove some images, then reload.';
+  }
+  return 'Your changes are no longer being saved in this browser. Download the site so the work is not lost.';
+}
+
+/**
+ * Debounced saver. One instance per app; `flush` is wired to `beforeunload`.
+ *
+ * `onError` is not optional in spirit. A failed write used to be swallowed here
+ * with nothing but a console warning, so a document over the storage quota
+ * carried on looking saved and the work was gone at the next reload — the worst
+ * failure this app can have, and completely silent. The callback fires on the
+ * first failure of a streak and again only once a write has succeeded in
+ * between, so a wall of toasts cannot replace the one message that matters.
+ */
+export function createSaver(
+  delay = 600,
+  onError?: (error: unknown) => void,
+): {
   schedule: (doc: SiteDoc, ui: UiPrefs) => void;
   flush: () => void;
   cancel: () => void;
 } {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let pending: { doc: SiteDoc; ui: UiPrefs } | undefined;
+  let failing = false;
 
   const write = () => {
     timer = undefined;
@@ -89,8 +117,12 @@ export function createSaver(delay = 600): {
     pending = undefined;
     try {
       save(doc, ui);
-    } catch {
-      /* already logged */
+      failing = false;
+    } catch (error) {
+      if (!failing) {
+        failing = true;
+        onError?.(error);
+      }
     }
   };
 

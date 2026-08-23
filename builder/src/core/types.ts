@@ -17,6 +17,8 @@
 
 import type { ReactNode } from 'react';
 
+import type { Asset } from './assets';
+
 export const DOC_VERSION = 3;
 
 /** Responsive breakpoints, ordered widest → narrowest. */
@@ -247,6 +249,12 @@ export interface SiteDoc {
   nodes: Record<string, SBNode>;
   /** Sections reused across pages. Optional so older documents still load. */
   shared?: SharedSection[];
+  /**
+   * Uploaded images, by id. Nodes point at these with `asset:<id>` so the bytes
+   * are stored once no matter how many places show the image. Optional so
+   * documents written before uploads existed still load.
+   */
+  assets?: Record<string, Asset>;
   theme: Theme;
   updatedAt: number;
 }
@@ -307,6 +315,12 @@ export interface RenderProps {
   mode: RenderMode;
   /** Resolved absolute href for link-ish props, mapped through page paths. */
   resolveHref: (value: unknown) => string;
+  /**
+   * Resolves an `asset:<id>` reference to something a browser can load: the
+   * stored data URL on the canvas, the exported file path on the way out. A
+   * plain URL passes straight through.
+   */
+  resolveAsset: (value: unknown) => string;
 }
 
 export type RenderMode = 'canvas' | 'export';

@@ -7,7 +7,14 @@ import { useState } from 'react';
 import { Field, Icon, EmptyState } from '../common';
 import { useEditor } from '../../store/editor';
 import { anchorsOnPage } from '../../core/doc';
-import { ColorControl, LengthControl, SelectControl, TextControl, ToggleControl } from './controls';
+import {
+  ColorControl,
+  ImageControl,
+  LengthControl,
+  SelectControl,
+  TextControl,
+  ToggleControl,
+} from './controls';
 import { ICON_NAMES, iconPath } from '../../registry/icons';
 import { getComponent } from '../../registry/registry';
 import type { FieldDef, SBNode } from '../../core/types';
@@ -71,8 +78,20 @@ export function FieldEditor({ field, node, path }: { field: FieldDef; node: SBNo
     case 'link':
       return <LinkField field={field} value={asString} onWrite={(value) => write(value)} />;
 
-    case 'url':
     case 'image':
+      return (
+        <Field label={field.label} hint={field.help} wide>
+          <ImageControl
+            value={asString}
+            placeholder={field.placeholder}
+            nodeId={node.id}
+            propKey={path}
+            onCommit={(value) => write(value)}
+          />
+        </Field>
+      );
+
+    case 'url':
       return (
         <Field label={field.label} hint={field.help} wide>
           <TextControl value={asString} placeholder={field.placeholder} onCommit={(value) => write(value)} />
