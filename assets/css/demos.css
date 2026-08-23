@@ -121,7 +121,7 @@ button { font-family: inherit; cursor: pointer; }
   padding: 18px 20px;
   backdrop-filter: blur(10px);
 }
-.lift-card-glass h3 { color: #fff; margin: 0 0 4px; font-size: 18px; font-weight: 700; }
+.lift-card-glass h2 { font-family: var(--font-sans); color: #fff; margin: 0 0 4px; font-size: 18px; font-weight: 700; }
 .lift-card-glass p  { color: rgba(255,255,255,.75); margin: 0 0 14px; font-size: 13px; }
 .lift-card-glass button {
   background: #fff; color: #5b3fd6; border: 0;
@@ -195,7 +195,7 @@ button { font-family: inherit; cursor: pointer; }
   position: relative; border-radius: 18px; overflow: hidden;
   aspect-ratio: 4/3; padding: 24px;
 }
-.show-tile h3 { font-family: 'Playfair Display', serif; color: #fff; margin: 0; font-size: 24px; font-weight: 700; }
+.show-tile h2 { font-family: 'Playfair Display', serif; color: #fff; margin: 0; font-size: 24px; font-weight: 700; }
 .show-tile p  { color: rgba(255,255,255,.78); margin: 6px 0 0; font-size: 13px; }
 .show-tile__caption {
   position: absolute; left: 24px; bottom: 24px;
@@ -293,7 +293,7 @@ button { font-family: inherit; cursor: pointer; }
   display: grid; place-items: center; width: 38px; height: 38px;
   background: #ecfeff; color: #06b6d4; border-radius: 10px; margin-bottom: 14px;
 }
-.stack-card h3 { margin: 0 0 6px; font-size: 17px; font-weight: 700; }
+.stack-card h2 { font-family: var(--font-sans); margin: 0 0 6px; font-size: 17px; font-weight: 700; }
 .stack-card p { margin: 0; color: #5b5470; font-size: 14px; }
 
 .stack-end { background: linear-gradient(135deg, #06b6d4, #7c3aed); color: #fff; padding: 80px 0; text-align: center; }

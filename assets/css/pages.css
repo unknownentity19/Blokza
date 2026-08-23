@@ -308,7 +308,7 @@
   padding: 14px 12px;
 }
 .mock-side.right { border-right: none; border-left: 1px solid var(--border); }
-.mock-side h5 {
+.mock-side__title {
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -930,7 +930,10 @@
   text-transform: uppercase;
   color: var(--p-500);
 }
-.template-meta h3 {
+.template-meta h2 {
+  /* Promoted to h2 for the document outline; the display serif that h2
+     normally carries is for section titles, not item titles. */
+  font-family: var(--font-sans);
   font-size: 17px;
   margin-top: 5px;
   font-weight: 700;
@@ -1016,7 +1019,7 @@
   font-weight: 700;
   box-shadow: var(--shadow-purple);
 }
-.price-card h3 { font-size: 18px; }
+.price-card h2 { font-size: 18px; font-family: var(--font-sans); }
 .price-card .price {
   display: flex;
   align-items: baseline;
@@ -2155,7 +2158,7 @@
   border-radius: 4px;
   color: var(--fg-dim);
 }
-.docs-side h5 {
+.docs-side__group {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -2366,7 +2369,7 @@
   width: 32px; height: 32px; border-radius: 8px;
   background: var(--p-50); color: var(--p-700); border: 1px solid var(--p-200);
 }
-.docs-info h4 { font-size: 14px; margin: 0 0 4px; font-weight: 700; }
+.docs-info h3 { font-size: 14px; margin: 0 0 4px; font-weight: 700; }
 .docs-info p { font-size: 13px !important; color: var(--fg-muted) !important; margin: 0 !important; max-width: none !important; }
 
 /* Endpoints */
@@ -2481,7 +2484,7 @@
 /* Right TOC */
 .docs-toc { position: sticky; top: 96px; align-self: start; font-size: 12.5px; }
 .docs-toc__inner { padding: 18px 4px 18px 16px; border-left: 1px solid var(--border); }
-.docs-toc h6 {
+.docs-toc__title {
   font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--fg-dim); margin: 0 0 10px;
 }
@@ -2767,7 +2770,7 @@
   border-radius: 4px;
   padding: 20px 22px;
 }
-.com-card h4 { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 14px; }
+.com-card h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 14px; font-family: var(--font-sans); }
 .com-card .tpl-row {
   display: flex;
   gap: 10px;
@@ -3215,7 +3218,10 @@
   color: var(--p-700);
   letter-spacing: 0.06em;
 }
-.ov-feature h3 {
+.ov-feature h2 {
+  /* Promoted to h2 for the document outline; the display serif that h2
+     normally carries is for section titles, not item titles. */
+  font-family: var(--font-sans);
   font-size: 26px;
   font-weight: 700;
   letter-spacing: -0.025em;
@@ -3754,7 +3760,9 @@
   padding: 32px;
   background: linear-gradient(180deg, var(--p-50), #fff);
 }
-.how-publishcard__page h4 {
+/* Scoped to beat `.how-publishcard__page p`, which is one type selector
+   stronger than a bare class and was overriding the title's size. */
+.how-publishcard__page .how-publishcard__title {
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -4704,7 +4712,7 @@
   letter-spacing: 0.12em;
   color: var(--fg-faint);
 }
-.template-meta h3 { margin-top: 3px; font-size: 18px; letter-spacing: -0.015em; }
+.template-meta h2 { font-family: var(--font-sans); margin-top: 3px; font-size: 18px; letter-spacing: -0.015em; }
 
 /* The live signal at the size the claim is worth: 5px, next to the category. */
 .template-live {
@@ -4802,7 +4810,7 @@
   text-transform: uppercase;
   color: var(--fg-faint);
 }
-.template-card .template-meta h3 {
+.template-card .template-meta h2 {
   margin-top: 5px;
   font-family: var(--font-display);
   font-size: 21px;
@@ -4811,7 +4819,7 @@
   color: var(--fg);
   transition: color 0.3s var(--ease);
 }
-.template-card:hover .template-meta h3 { color: var(--p-700); }
+.template-card:hover .template-meta h2 { color: var(--p-700); }
 
 @media (max-width: 1000px) {
   .tpl-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }

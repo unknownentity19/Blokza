@@ -382,11 +382,14 @@ div[class*="progress"] {
 .site-footer__grid {
   display: grid;
   gap: 36px;
-  grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
 }
 @media (max-width: 880px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 540px) { .site-footer__grid { grid-template-columns: 1fr; } }
-.site-footer h4 {
+.site-footer__coltitle {
+  /* h2 for the document outline, but the display serif h2 normally carries is
+     for section titles — a footer column label is not one. */
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   color: var(--fg);
@@ -793,7 +796,7 @@ details > summary:focus-visible {
 .mega__inner {
   display: block;
 }
-.mega__col h5 {
+.mega__coltitle {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;

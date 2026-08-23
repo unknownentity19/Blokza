@@ -159,7 +159,7 @@ Then visit http://localhost:8000.
 │   │   └── demos.css    ← template demo pages
 │   ├── js/
 │   │   └── site.js      ← reveals, submenus, pricing toggle, contact form
-│   └── og-image.svg     ← social share image
+│   └── og-image.png     ← social share card (1200×630; SVG is not rendered by any platform)
 ├── app/                                                  ← built builder (committed)
 ├── builder/                                              ← builder source
 │   ├── src/core/        ← document model, CSS compiler, export
