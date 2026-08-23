@@ -22,8 +22,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/css/base.css?v=25" />
-<link rel="stylesheet" href="assets/css/pages.css?v=61" />
+<link rel="stylesheet" href="assets/css/base.css?v=26" />
+<link rel="stylesheet" href="assets/css/pages.css?v=63" />
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -36,8 +36,8 @@
     </a>
     <nav aria-label="Primary"><ul class="site-nav__links">
   <li class="has-submenu has-mega has-mega--2col">
-    <button type="button" class="submenu-trigger" aria-expanded="false">Product <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
-    <div class="mega" role="menu"><div class="mega__inner mega__inner--2col">
+    <button type="button" class="submenu-trigger" aria-expanded="false" aria-controls="mega-product">Product <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="mega" id="mega-product"><div class="mega__inner mega__inner--2col">
       <div class="mega__col">
         <p class="mega__coltitle">Get started</p>
         <a class="mega__link" href="product.html">
@@ -71,8 +71,8 @@
     </div></div>
   </li>
   <li class="has-submenu has-mega">
-    <button type="button" class="submenu-trigger" aria-expanded="false">Features <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
-    <div class="mega" role="menu"><div class="mega__inner">
+    <button type="button" class="submenu-trigger" aria-expanded="false" aria-controls="mega-features">Features <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="mega" id="mega-features"><div class="mega__inner">
       <div class="mega__col">
         <p class="mega__coltitle">Features</p>
         <a class="mega__link" href="features-builder.html">
@@ -91,8 +91,8 @@
     </div></div>
   </li>
   <li class="has-submenu has-mega">
-    <button type="button" class="submenu-trigger" aria-expanded="false">Templates <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
-    <div class="mega" role="menu"><div class="mega__inner">
+    <button type="button" class="submenu-trigger" aria-expanded="false" aria-controls="mega-templates">Templates <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="mega" id="mega-templates"><div class="mega__inner">
       <div class="mega__col">
         <p class="mega__coltitle">Templates</p>
         <a class="mega__link" href="templates.html">
@@ -132,7 +132,7 @@
     <!-- ===== Sidebar ===== -->
     <aside class="docs-side" aria-label="Documentation navigation">
       <div class="docs-side__inner">
-        <button type="button" class="docs-search" aria-haspopup="dialog">
+        <button type="button" class="docs-search" aria-haspopup="dialog" aria-controls="docs-find">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>
           <span>Search docs</span>
           <kbd>⌘K</kbd>
@@ -203,13 +203,13 @@
         <p class="docs-lead">Three minutes from a clean install to a deployed page. Pick your runtime, the snippet stays the same.</p>
 
         <div class="docs-tabs" data-docs-tabs>
-          <div class="docs-tabs__bar" role="tablist">
-            <button class="docs-tabs__btn is-on" data-target="qs-js"   role="tab">JavaScript</button>
-            <button class="docs-tabs__btn"        data-target="qs-py"   role="tab">Python</button>
-            <button class="docs-tabs__btn"        data-target="qs-curl" role="tab">cURL</button>
+          <div class="docs-tabs__bar" role="tablist" aria-label="Code language">
+            <button class="docs-tabs__btn is-on" data-target="qs-js" role="tab" id="tab-qs-js" aria-controls="qs-js" aria-selected="true" tabindex="0">JavaScript</button>
+            <button class="docs-tabs__btn" data-target="qs-py" role="tab" id="tab-qs-py" aria-controls="qs-py" aria-selected="false" tabindex="-1">Python</button>
+            <button class="docs-tabs__btn" data-target="qs-curl" role="tab" id="tab-qs-curl" aria-controls="qs-curl" aria-selected="false" tabindex="-1">cURL</button>
           </div>
 
-          <div class="devdocs-code" data-panel="qs-js" role="tabpanel">
+          <div class="devdocs-code" data-panel="qs-js" role="tabpanel" id="qs-js" aria-labelledby="tab-qs-js" tabindex="0">
             <button class="devdocs-code__copy" type="button" aria-label="Copy code">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
@@ -224,7 +224,7 @@
 <span class="tk">await</span> client.sites.deploy({ id: <span class="ts">"site_8aL2k9X"</span> });</pre>
           </div>
 
-          <div class="devdocs-code" data-panel="qs-py" role="tabpanel" hidden>
+          <div class="devdocs-code" data-panel="qs-py" role="tabpanel" id="qs-py" aria-labelledby="tab-qs-py" tabindex="0" hidden>
             <button class="devdocs-code__copy" type="button" aria-label="Copy code">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
@@ -239,7 +239,7 @@ client = <span class="tn">Cilbs</span>(token=<span class="tn">os</span>.environ[
 client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           </div>
 
-          <div class="devdocs-code" data-panel="qs-curl" role="tabpanel" hidden>
+          <div class="devdocs-code" data-panel="qs-curl" role="tabpanel" id="qs-curl" aria-labelledby="tab-qs-curl" tabindex="0" hidden>
             <button class="devdocs-code__copy" type="button" aria-label="Copy code">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
@@ -261,16 +261,16 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
         <p>Install the Cilbs SDK with your package manager of choice. The same client supports server, edge, and worker runtimes.</p>
 
         <div class="docs-tabs" data-docs-tabs style="margin-top:18px;">
-          <div class="docs-tabs__bar" role="tablist">
-            <button class="docs-tabs__btn is-on" data-target="ins-npm"  role="tab">npm</button>
-            <button class="docs-tabs__btn"        data-target="ins-pnpm" role="tab">pnpm</button>
-            <button class="docs-tabs__btn"        data-target="ins-yarn" role="tab">yarn</button>
-            <button class="docs-tabs__btn"        data-target="ins-bun"  role="tab">bun</button>
+          <div class="docs-tabs__bar" role="tablist" aria-label="Code language">
+            <button class="docs-tabs__btn is-on" data-target="ins-npm" role="tab" id="tab-ins-npm" aria-controls="ins-npm" aria-selected="true" tabindex="0">npm</button>
+            <button class="docs-tabs__btn" data-target="ins-pnpm" role="tab" id="tab-ins-pnpm" aria-controls="ins-pnpm" aria-selected="false" tabindex="-1">pnpm</button>
+            <button class="docs-tabs__btn" data-target="ins-yarn" role="tab" id="tab-ins-yarn" aria-controls="ins-yarn" aria-selected="false" tabindex="-1">yarn</button>
+            <button class="docs-tabs__btn" data-target="ins-bun" role="tab" id="tab-ins-bun" aria-controls="ins-bun" aria-selected="false" tabindex="-1">bun</button>
           </div>
-          <div class="devdocs-code" data-panel="ins-npm"  role="tabpanel"><pre><span class="tk">npm</span> install <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-pnpm" role="tabpanel" hidden><pre><span class="tk">pnpm</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-yarn" role="tabpanel" hidden><pre><span class="tk">yarn</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-bun"  role="tabpanel" hidden><pre><span class="tk">bun</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-npm" role="tabpanel" id="ins-npm" aria-labelledby="tab-ins-npm" tabindex="0"><pre><span class="tk">npm</span> install <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-pnpm" role="tabpanel" id="ins-pnpm" aria-labelledby="tab-ins-pnpm" tabindex="0" hidden><pre><span class="tk">pnpm</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-yarn" role="tabpanel" id="ins-yarn" aria-labelledby="tab-ins-yarn" tabindex="0" hidden><pre><span class="tk">yarn</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-bun" role="tabpanel" id="ins-bun" aria-labelledby="tab-ins-bun" tabindex="0" hidden><pre><span class="tk">bun</span> add <span class="ts">@cilbs/sdk @cilbs/components</span></pre></div>
         </div>
 
         <table class="props">
@@ -670,16 +670,16 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
         <p>The Cilbs CLI runs the same build pipeline as the cloud, preview locally, lint your blocks, and ship from CI without leaving your terminal.</p>
 
         <div class="docs-tabs" data-docs-tabs>
-          <div class="docs-tabs__bar" role="tablist">
-            <button class="docs-tabs__btn is-on" data-target="cli-local" role="tab">Local preview</button>
-            <button class="docs-tabs__btn"        data-target="cli-ci"    role="tab">From CI</button>
+          <div class="docs-tabs__bar" role="tablist" aria-label="Code language">
+            <button class="docs-tabs__btn is-on" data-target="cli-local" role="tab" id="tab-cli-local" aria-controls="cli-local" aria-selected="true" tabindex="0">Local preview</button>
+            <button class="docs-tabs__btn" data-target="cli-ci" role="tab" id="tab-cli-ci" aria-controls="cli-ci" aria-selected="false" tabindex="-1">From CI</button>
           </div>
-          <div class="devdocs-code" data-panel="cli-local" role="tabpanel">
+          <div class="devdocs-code" data-panel="cli-local" role="tabpanel" id="cli-local" aria-labelledby="tab-cli-local" tabindex="0">
 <pre><span class="tk">npx</span> @cilbs/cli login
 <span class="tk">npx</span> @cilbs/cli dev      <span class="tc"># preview at localhost:3010</span>
 <span class="tk">npx</span> @cilbs/cli build    <span class="tc"># static export to ./dist</span></pre>
           </div>
-          <div class="devdocs-code" data-panel="cli-ci" role="tabpanel" hidden>
+          <div class="devdocs-code" data-panel="cli-ci" role="tabpanel" id="cli-ci" aria-labelledby="tab-cli-ci" tabindex="0" hidden>
 <pre><span class="tc"># .github/workflows/deploy.yml</span>
 <span class="tp">- name</span>: Deploy
   <span class="tp">run</span>: |
@@ -754,22 +754,178 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
   </div>
 </footer>
 
-<script src="assets/js/site.js?v=11" defer></script>
+<script src="assets/js/site.js?v=13" defer></script>
+<!-- The search the sidebar button has always advertised. Its index is built from
+     the page's own section links at runtime, so there is nothing to keep in step
+     when a section is added or renamed. -->
+<dialog class="docs-find" id="docs-find" aria-label="Search docs">
+  <form class="docs-find__form" method="dialog">
+    <div class="docs-find__bar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>
+      <input class="docs-find__input" type="search" id="docs-find-input" placeholder="Search sections…"
+             autocomplete="off" aria-controls="docs-find-list" aria-describedby="docs-find-help" />
+      <kbd>Esc</kbd>
+    </div>
+    <ul class="docs-find__list" id="docs-find-list" role="listbox" aria-label="Results"></ul>
+    <p class="docs-find__help" id="docs-find-help">Up and down to move, Enter to jump.</p>
+  </form>
+</dialog>
+
 <script>
   // Tabs + copy buttons + scrollspy for the docs page.
   (function(){
+    /*
+     * role="tab" is a promise: assistive technology will tell the user there are
+     * N tabs, which one is selected, and that the arrow keys move between them.
+     * The markup declared the roles and kept none of that, so a screen reader
+     * announced nine tabs with no selected state and the arrows did nothing.
+     * `select` now keeps aria-selected, the panels and a roving tabindex in step
+     * - only the selected tab is tabbable, which is what makes a tablist one
+     *   stop instead of nine.
+     */
     document.querySelectorAll('[data-docs-tabs]').forEach(function(group){
-      var btns = group.querySelectorAll('.docs-tabs__btn');
-      btns.forEach(function(btn){
-        btn.addEventListener('click', function(){
-          btns.forEach(function(b){ b.classList.toggle('is-on', b === btn); });
-          var target = btn.getAttribute('data-target');
-          group.querySelectorAll('[data-panel]').forEach(function(p){
-            p.hidden = p.getAttribute('data-panel') !== target;
-          });
+      var btns = Array.prototype.slice.call(group.querySelectorAll('.docs-tabs__btn'));
+      if (!btns.length) return;
+
+      function select(btn, moveFocus){
+        btns.forEach(function(b){
+          var on = b === btn;
+          b.classList.toggle('is-on', on);
+          b.setAttribute('aria-selected', String(on));
+          b.tabIndex = on ? 0 : -1;
         });
+        var target = btn.getAttribute('data-target');
+        group.querySelectorAll('[data-panel]').forEach(function(p){
+          p.hidden = p.getAttribute('data-panel') !== target;
+        });
+        if (moveFocus) btn.focus();
+      }
+
+      btns.forEach(function(btn){
+        btn.addEventListener('click', function(){ select(btn, false); });
+      });
+
+      group.querySelector('[role="tablist"]').addEventListener('keydown', function(e){
+        var i = btns.indexOf(document.activeElement);
+        if (i === -1) return;
+        var to = null;
+        if (e.key === 'ArrowRight') to = btns[(i + 1) % btns.length];
+        else if (e.key === 'ArrowLeft') to = btns[(i - 1 + btns.length) % btns.length];
+        else if (e.key === 'Home') to = btns[0];
+        else if (e.key === 'End') to = btns[btns.length - 1];
+        if (!to) return;
+        e.preventDefault();
+        select(to, true);
       });
     });
+
+    /*
+     * Docs search.
+     *
+     * The button carried aria-haspopup="dialog" and a visible ⌘K hint with
+     * nothing behind either, so both were claims the page could not keep. A
+     * native <dialog> is used deliberately: it gives modal semantics, focus
+     * containment and Escape without any of it being written here.
+     */
+    (function () {
+      var dlg = document.getElementById('docs-find');
+      var input = document.getElementById('docs-find-input');
+      var list = document.getElementById('docs-find-list');
+      var trigger = document.querySelector('.docs-search');
+      if (!dlg || !input || !list || !dlg.showModal) return;
+
+      // Built from the sidebar's own links, so a new section needs no bookkeeping.
+      var index = [];
+      document.querySelectorAll('.docs-side nav a[href^="#"]').forEach(function (a) {
+        // The group headings are flat siblings that precede their own links
+        // rather than wrapping them, so the label is the nearest one above.
+        var label = '';
+        for (var prev = a.previousElementSibling; prev; prev = prev.previousElementSibling) {
+          if (prev.classList.contains('docs-side__group')) { label = prev.textContent.trim(); break; }
+        }
+        index.push({
+          hash: a.getAttribute('href'),
+          text: (a.textContent || '').trim(),
+          group: label
+        });
+      });
+
+      var active = 0;
+
+      function render(q) {
+        var needle = q.trim().toLowerCase();
+        var hits = index.filter(function (item) {
+          return !needle || (item.text + ' ' + item.group).toLowerCase().indexOf(needle) !== -1;
+        });
+        active = 0;
+        list.innerHTML = '';
+        if (!hits.length) {
+          var none = document.createElement('li');
+          none.className = 'docs-find__none';
+          none.textContent = 'Nothing matches “' + q + '”.';
+          list.appendChild(none);
+          return;
+        }
+        hits.forEach(function (item, i) {
+          var li = document.createElement('li');
+          li.setAttribute('role', 'option');
+          li.setAttribute('aria-selected', String(i === 0));
+          li.className = 'docs-find__hit' + (i === 0 ? ' is-active' : '');
+          li.dataset.hash = item.hash;
+          li.innerHTML = '<span>' + item.text + '</span>' +
+            (item.group ? '<em>' + item.group + '</em>' : '');
+          li.addEventListener('click', function () { go(item.hash); });
+          list.appendChild(li);
+        });
+      }
+
+      function move(delta) {
+        var hits = list.querySelectorAll('.docs-find__hit');
+        if (!hits.length) return;
+        active = (active + delta + hits.length) % hits.length;
+        hits.forEach(function (li, i) {
+          li.classList.toggle('is-active', i === active);
+          li.setAttribute('aria-selected', String(i === active));
+        });
+        hits[active].scrollIntoView({ block: 'nearest' });
+      }
+
+      function go(hash) {
+        dlg.close();
+        var target = document.querySelector(hash);
+        if (!target) return;
+        target.scrollIntoView({ block: 'start' });
+        // Focus follows the jump, or a keyboard user is left where they started.
+        target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+        history.replaceState(null, '', hash);
+      }
+
+      function open() {
+        render('');
+        dlg.showModal();
+        input.value = '';
+        input.focus();
+      }
+
+      if (trigger) trigger.addEventListener('click', open);
+      input.addEventListener('input', function () { render(input.value); });
+      dlg.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+        else if (e.key === 'Enter') {
+          e.preventDefault();
+          var hit = list.querySelector('.docs-find__hit.is-active');
+          if (hit) go(hit.dataset.hash);
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          if (dlg.open) dlg.close(); else open();
+        }
+      });
+    })();
 
     document.querySelectorAll('.devdocs-code__copy').forEach(function(btn){
       btn.addEventListener('click', function(){
@@ -787,7 +943,10 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
     var byHash = {};
     spyLinks.forEach(function(a){
       var href = a.getAttribute('href');
-      if (!href || !href.startsWith('#')) return;
+      // `'#'` passes startsWith('#') and then blows up querySelector below with
+      // "'#' is not a valid selector", which threw before the observer was ever
+      // created - so the scrollspy silently did nothing on this page.
+      if (!href || href.length < 2 || href.charAt(0) !== '#') return;
       (byHash[href] = byHash[href] || []).push(a);
     });
     var sections = Object.keys(byHash)

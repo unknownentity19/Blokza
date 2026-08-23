@@ -96,7 +96,13 @@
     const targets = document.querySelectorAll("[data-monthly], [data-yearly]");
     buttons.forEach((b) => {
       b.addEventListener("click", () => {
-        buttons.forEach((x) => x.classList.toggle("is-on", x === b));
+        buttons.forEach((x) => {
+          const on = x === b;
+          x.classList.toggle("is-on", on);
+          // The visual state was carried by a class alone, so the control looked
+          // toggled and announced nothing.
+          x.setAttribute("aria-pressed", String(on));
+        });
         const mode = b.dataset.mode || "monthly";
         targets.forEach((t) => {
           if (t.hasAttribute("data-monthly") && t.hasAttribute("data-yearly")) {
@@ -185,6 +191,29 @@
         if (t) t.setAttribute("aria-expanded", "false");
       });
     }
+  });
+
+  /*
+   * The panel also opens on `:hover` and `:focus-within`, purely in CSS — and
+   * only the click path above told anyone about it, so `aria-expanded` stayed
+   * "false" while the panel was plainly open. Assistive technology reads the
+   * attribute, not the stylesheet, so it described a collapsed menu that was on
+   * screen. These mirror the two CSS conditions.
+   */
+  document.querySelectorAll(".has-submenu").forEach((li) => {
+    const trigger = li.querySelector(".submenu-trigger");
+    if (!trigger) return;
+    const sync = (open) => {
+      // A click-opened panel owns the state; do not let a passing pointer close it.
+      if (li.classList.contains("is-open")) return;
+      trigger.setAttribute("aria-expanded", String(open));
+    };
+    li.addEventListener("pointerenter", () => sync(true));
+    li.addEventListener("pointerleave", () => sync(false));
+    li.addEventListener("focusin", () => sync(true));
+    li.addEventListener("focusout", (e) => {
+      if (!li.contains(e.relatedTarget)) sync(false);
+    });
   });
 })();
 

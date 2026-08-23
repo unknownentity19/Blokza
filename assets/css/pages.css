@@ -5024,3 +5024,84 @@
   padding: 0 2px;
   border-radius: 2px;
 }
+
+/* ---------------------------------------------------------------- docs search */
+/*
+ * A native <dialog>, so the backdrop, modality, focus containment and Escape
+ * are the platform's job rather than this file's.
+ */
+.docs-find {
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(70vh, 560px);
+  padding: 0;
+  margin: 12vh auto auto;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 32px 80px -24px rgba(24, 16, 36, 0.4);
+  overflow: hidden;
+}
+.docs-find::backdrop { background: rgba(24, 16, 36, 0.4); }
+.docs-find__form { display: flex; flex-direction: column; max-height: inherit; }
+.docs-find__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-faint);
+}
+.docs-find__bar svg { flex: none; }
+.docs-find__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  font: 500 15px/1.4 var(--font-sans);
+  color: var(--fg);
+  background: none;
+}
+/* The dialog itself is the focus indicator here; a ring inside it would only
+   draw a box around the whole bar. */
+.docs-find__input:focus { outline: none; }
+.docs-find__input::placeholder { color: var(--fg-faint); font-weight: 400; }
+.docs-find__bar kbd {
+  flex: none;
+  padding: 2px 6px;
+  font: 600 10px/1.5 var(--font-mono);
+  color: var(--fg-faint);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.docs-find__list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  overflow-y: auto;
+}
+.docs-find__hit {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  font-size: 14px;
+  color: var(--fg);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.docs-find__hit em { font-style: normal; font-size: 11px; color: var(--fg-faint); }
+.docs-find__hit.is-active { background: var(--p-50); color: var(--p-700); }
+.docs-find__hit.is-active em { color: var(--p-600); }
+.docs-find__none { padding: 18px 11px; font-size: 13px; color: var(--fg-faint); }
+.docs-find__help {
+  margin: 0;
+  padding: 9px 15px;
+  font-size: 11px;
+  color: var(--fg-faint);
+  border-top: 1px solid var(--border);
+  background: var(--bg-soft);
+}
