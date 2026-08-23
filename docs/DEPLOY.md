@@ -25,9 +25,15 @@ repository root. That is not tidiness:
 - Listing what belongs on the site is the only way to be sure the TypeScript
   source is not on it.
 
-The result is about 60 files and 9 MB: the marketing pages, `assets/`, the built
+The result is about 53 files and 2 MB: the marketing pages, `assets/`, the built
 editor in `app/`, and the four files a host reads from the root (`_headers`,
 `_redirects`, `robots.txt`, `sitemap.xml`).
+
+`sitemap.xml` is *generated* during assembly by `scripts/sitemap.py`, not
+copied. Its membership comes from which pages carry `noindex` and its
+`lastmod` dates from the files themselves, so neither can drift out of step
+with what is actually being published. Editing the committed copy by hand
+has no effect on a deploy.
 
 The script refuses to continue if `dist/` ever contains `node_modules`, `src` or
 `legacy`, or if the editor did not build.
@@ -111,3 +117,8 @@ without it.
 - **Cache headers assume content hashing.** `app/assets/*` is immutable for a
   year and safe because Vite hashes those filenames; `app/index.html` and the
   marketing HTML always revalidate. Do not add long caching to an unhashed file.
+- **Everything under `assets/` is stamped with a content digest at deploy time**
+  — stylesheets, scripts and images, including the `url()` references inside the
+  stylesheets. That is what makes `immutable` safe there: without a stamp, a
+  replaced screenshot would stay cached for up to a year with no way to push the
+  new one short of renaming the file.

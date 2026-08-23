@@ -30,9 +30,15 @@ mkdir -p "$DIST"
 
 # The marketing pages, and the files a host reads from the site root.
 cp ./*.html "$DIST"/
-for f in robots.txt sitemap.xml site.webmanifest _headers _redirects; do
+for f in robots.txt site.webmanifest _headers _redirects; do
   [ -f "$f" ] && cp "$f" "$DIST"/
 done
+
+# Generated, not copied. A hand-kept sitemap drifts: its lastmod dates said the
+# pages were older than they were, which is the one signal crawlers use to
+# decide whether to refetch. Built from the assembled dist so its membership and
+# its dates describe exactly what is being published.
+python3 scripts/sitemap.py "$DIST"
 
 # Shared assets and the built editor. `.DS_Store` is excluded everywhere: it is
 # noise, and it lists filenames that are nobody else's business.
