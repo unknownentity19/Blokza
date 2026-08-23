@@ -197,11 +197,26 @@
   const errorEl = form.querySelector("[data-error]");
   const btn = form.querySelector("button[type='submit']");
 
+  // The form action ships with a placeholder that has to be replaced with a real
+  // endpoint id. Until it is, every submit would spend a few seconds saying
+  // "Sending..." and then fail — so the fallback (which names a real address) is
+  // shown straight away instead of after a pointless round-trip.
+  const unconfigured = /YOUR_FORM_ID/.test(form.getAttribute("action") || "");
+  if (unconfigured) {
+    console.warn(
+      "[cilbs] contact form has no endpoint: replace YOUR_FORM_ID in the form action."
+    );
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (successEl) successEl.hidden = true;
     if (errorEl) errorEl.hidden = true;
     if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (unconfigured) {
+      if (errorEl) errorEl.hidden = false;
+      return;
+    }
     const originalLabel = btn.textContent;
     btn.disabled = true;
     btn.textContent = "Sending...";

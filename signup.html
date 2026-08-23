@@ -4,24 +4,25 @@
 <!-- @prod-pass v1 -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sign Up · Cilbs</title>
-<meta name="description" content="Create your Cilbs account and start building." />
+<title>Get started · Cilbs</title>
+<meta name="description" content="Open the Cilbs editor and start building — no sign-up required. An account is only needed to sync sites between devices." />
+<meta name="robots" content="noindex, follow" />
 <meta name="theme-color" content="#ffffff" />
 <link rel="icon" href="assets/images/favicon.svg?v=2" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/css/base.css?v=22" />
-<link rel="stylesheet" href="assets/css/pages.css?v=58" />
+<link rel="stylesheet" href="assets/css/base.css?v=23" />
+<link rel="stylesheet" href="assets/css/pages.css?v=59" />
 <link rel="canonical" href="https://cilbs.dev/signup.html" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://cilbs.dev/signup.html" />
-<meta property="og:title" content="Sign Up · Cilbs" />
-<meta property="og:description" content="Create your Cilbs account and start building." />
+<meta property="og:title" content="Get started · Cilbs" />
+<meta property="og:description" content="Open the Cilbs editor and start building — no sign-up required. An account is only needed to sync sites between devices." />
 <meta property="og:site_name" content="Cilbs" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Sign Up · Cilbs" />
-<meta name="twitter:description" content="Create your Cilbs account and start building." />
+<meta name="twitter:title" content="Get started · Cilbs" />
+<meta name="twitter:description" content="Open the Cilbs editor and start building — no sign-up required. An account is only needed to sync sites between devices." />
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
 <style>
@@ -72,8 +73,25 @@
   .form-group input:focus {
     outline: none;
     border-color: var(--p-500);
-    box-shadow: 0 0 0 3px rgba(59, 98, 196, 0.1);
+    box-shadow: 0 0 0 3px rgba(122, 95, 229, 0.18);
   }
+  /* Also used on the anchor that replaced the submit button. */
+  a.btn-submit { display: block; text-align: center; text-decoration: none; }
+  .auth-note {
+    margin: 0 0 26px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    text-align: left;
+    color: var(--fg-muted);
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .auth-note strong { color: var(--fg); font-weight: 650; }
+  .auth-list { margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.7; text-align: left; }
+  .auth-list li { color: var(--fg-muted); }
+  .auth-list li + li { margin-top: 6px; }
   .btn-submit {
     width: 100%;
     padding: 12px 14px;
@@ -113,40 +131,31 @@
   <main id="main">
     <div class="auth-container">
       <div class="auth-card">
-        <h1>Sign Up</h1>
-        <p>Create your account and start building</p>
-        
-        <form method="post">
-          <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" placeholder="John Doe" required>
-          </div>
+<h1>Get started</h1>
+<p>There is nothing to sign up for first.</p>
 
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Create a password" required>
-          </div>
+<div class="auth-note">
+  <strong>Open the editor and start building.</strong> Your work saves in your
+  browser as you go, and you can export the finished site as plain HTML and CSS
+  whenever you like.
+</div>
 
-          <div class="form-group">
-            <label for="confirm">Confirm Password</label>
-            <input type="password" id="confirm" name="confirm" placeholder="Confirm password" required>
-          </div>
+<a class="btn-submit" href="app/index.html">Open the editor</a>
 
-          <button type="submit" class="btn-submit">Create Account</button>
-        </form>
+<div class="auth-footer">
+  <p style="margin: 20px 0 12px; text-align: left;">An account only becomes useful once
+  you want the same sites on another machine. When you do:</p>
+  <ul class="auth-list">
+    <li>Open the editor and find the account panel.</li>
+    <li>Create an account there, and your sites sync as you edit.</li>
+  </ul>
+  <p style="margin: 18px 0 0;"><a href="index.html">Back to the site</a> ·
+  <a href="pricing.html">See pricing</a></p>
+</div>
+</div>
+</div>
+</main>
 
-        <div class="auth-footer">
-          <p style="margin: 0 0 12px;">Already have an account? <a href="signin.html">Sign In</a></p>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <script src="assets/js/site.js?v=10"></script>
+  <script src="assets/js/site.js?v=11"></script>
 </body>
 </html>

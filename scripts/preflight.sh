@@ -122,6 +122,17 @@ fi
 # ---------------------------------------------------------------- the build
 echo
 echo "Build"
+# The contact form ships with a placeholder endpoint. It fails gracefully — the
+# error state names a real address — but a live site whose contact form cannot
+# deliver a message is worth catching before the deploy, not after.
+if grep -q 'YOUR_FORM_ID' contact.html 2>/dev/null; then
+  bad "the contact form has no endpoint (action is still YOUR_FORM_ID)"
+  info "Visitors get the 'email us instead' fallback rather than a delivered message."
+  todo "Create a form at https://formspree.io (free), then replace YOUR_FORM_ID in contact.html"
+else
+  ok "contact form has a real endpoint"
+fi
+
 if [ -f _redirects ]; then
   ok "_redirects present (Cloudflare ignores netlify.toml)"
 else
