@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="assets/images/hero.webp" type="image/webp" fetchpriority="high" />
 <link rel="stylesheet" href="assets/css/base.css?v=28" />
-  <link rel="stylesheet" href="assets/css/pages.css?v=66" />
+  <link rel="stylesheet" href="assets/css/pages.css?v=69" />
 <link rel="canonical" href="https://cilbs.dev/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://cilbs.dev/" />
@@ -383,11 +383,11 @@
                 <span class="tab__chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
               </div>
               <div class="tab__body"><div>
-                <p>Live cursors, presence, and inline comments built in. Reviews happen on the canvas, not in a long email thread.</p>
+                <p>Sign in and your sites follow you to any machine. Without an account the editor still works, saving everything in your browser.</p>
                 <ul>
-                  <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg> Sign in and your sites follow you</li>
-                  <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg> Threaded inline comments</li>
-                  <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg> Roles and permissions</li>
+                  <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg> Sites synced across your devices</li>
+                  <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg> Works with no account at all</li>
+                  <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6"/></svg> Conflicts caught before they overwrite</li>
                 </ul>
               </div></div>
             </button>
@@ -509,31 +509,65 @@
       </div>
     </section>
 
-    <!-- ========= FEATURES ========= -->
+    <!-- ========= OUTPUT =========
+     Replaces a three-up feature grid that restated the showcase directly above
+     it, almost word for word: "Compose pages by dragging premium components
+     onto a flexible canvas" up there, "…premium blocks onto a flexible canvas"
+     down here, two hundred pixels apart. This says the thing the page never
+     said instead — what you actually get out — and says it as a file listing,
+     because a folder is the honest shape for it. Every number below is measured
+     from a real export.
+     ========================================================================= -->
     <section class="section" id="features">
       <div class="container">
         <div class="section-head" data-reveal>
-          <span class="kicker">Features</span>
-          <h2 class="reveal-words mt-3">Everything you need to ship a beautiful site</h2>
-          <p>A drag-and-drop canvas, sensible defaults, and enough control underneath for the edge cases.</p>
+          <span class="kicker">The output</span>
+          <h2 class="reveal-words mt-3">What you publish is a folder you own</h2>
+          <p>No runtime, no build step, no framework. Cilbs writes plain files and
+            hands them over.</p>
         </div>
 
-        <div class="grid grid-3" data-reveal-stagger>
-          <article class="card card-hover feature-card">
-            <span class="icon-tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17h7M17.5 13.5L21 17l-3.5 3.5"/></svg></span>
-            <h3>Drag and Drop Builder</h3>
-            <p>Compose pages by dragging premium blocks onto a flexible canvas. Snap, align, and rearrange in seconds.</p>
-          </article>
-          <article class="card card-hover feature-card">
-            <span class="icon-tile alt-sky"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="11" rx="1.5"/><rect x="13" y="9" width="9" height="13" rx="1.5"/><path d="M6 18h6"/></svg></span>
-            <h3>Responsive Controls</h3>
-            <p>Design once and tune every breakpoint with intuitive responsive overrides, phones, tablets, and desktops.</p>
-          </article>
-          <article class="card card-hover feature-card">
-            <span class="icon-tile alt-amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M6 9l6-6 6 6"/><rect x="3" y="15" width="18" height="6" rx="1.5"/></svg></span>
-            <h3>One-click Publish</h3>
-            <p>Push to a global edge in one click. Custom domains, SSL, and analytics included on every plan.</p>
-          </article>
+        <div class="out">
+          <div class="out__facts" data-reveal>
+            <dl>
+              <div>
+                <dt>One stylesheet, every page</dt>
+                <dd>Styles compile to a single <code>styles.css</code> file, and not one
+                  <code>style</code> attribute is emitted anywhere &mdash; so a change
+                  to your type scale is one line, not a search across pages.</dd>
+              </div>
+              <div>
+                <dt>Zero JavaScript</dt>
+                <dd>The exported HTML contains no <code>&lt;script&gt;</code> tag at all:
+                  nothing to hydrate, nothing to wait for, nothing that can break in
+                  a browser you did not test.</dd>
+              </div>
+              <div>
+                <dt>Opens from a folder</dt>
+                <dd>Links between pages are flat filenames, so double-clicking
+                  <code>index.html</code> just works &mdash; no server, and no host
+                  that has to understand your routing.</dd>
+              </div>
+            </dl>
+            <p class="out__note">A three-page site with a nav, hero, feature
+              section and footer exports to <b>24 KB</b> in six files, before
+              images.</p>
+          </div>
+
+          <figure class="out__tree" data-reveal style="transition-delay:.08s;">
+            <figcaption>northwind-studio.zip</figcaption>
+            <ol>
+              <li><span class="out__f">index.html</span><em>page</em></li>
+              <li><span class="out__f">about.html</span><em>page</em></li>
+              <li><span class="out__f">pricing.html</span><em>page</em></li>
+              <li><span class="out__f is-css">styles.css</span><em>all three pages</em></li>
+              <li><span class="out__f">sitemap.xml</span><em>generated</em></li>
+              <li><span class="out__f">robots.txt</span><em>generated</em></li>
+              <li class="is-dir"><span class="out__f">assets/</span><em>your images</em></li>
+            </ol>
+            <p class="out__host">Upload it to Netlify, Vercel, Cloudflare Pages,
+              GitHub Pages, S3 &mdash; or keep it.</p>
+          </figure>
         </div>
       </div>
     </section>
