@@ -1,12 +1,17 @@
 {
-  "name": "SAASWISE — Build websites visually",
+  "name": "SAASWISE \u2014 Build websites visually",
   "short_name": "SAASWISE",
   "description": "Visual website builder with drag-and-drop editor, no code, full control.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8f9fb",
-  "theme_color": "#4f30c2",
+  "theme_color": "#ffffff",
   "icons": [
-    { "src": "/assets/images/favicon.svg?v=2", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    {
+      "src": "/assets/images/favicon.svg?v=3",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }

@@ -39,6 +39,11 @@ button { font-family: inherit; cursor: pointer; }
   background: #34d399; box-shadow: 0 0 0 3px rgba(52,211,153,.25);
 }
 .demo-bar a, .demo-bar button {
+  /* inline-flex, not inline: as inline elements their padding and border did not
+     contribute to line height, so the two buttons overlapped each other the
+     moment the bar wrapped on a narrow screen. */
+  display: inline-flex;
+  align-items: center;
   color: #fff; opacity: .8; font-size: 13px; padding: 6px 12px;
   border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
   background: transparent;
@@ -123,7 +128,10 @@ button { font-family: inherit; cursor: pointer; }
 }
 .lift-card-glass h2 { font-family: var(--font-sans); color: #fff; margin: 0 0 4px; font-size: 18px; font-weight: 700; }
 .lift-card-glass p  { color: rgba(255,255,255,.75); margin: 0 0 14px; font-size: 13px; }
-.lift-card-glass button {
+/* A span now: it sits inside an aria-hidden decorative visual, so it must not
+   be a tab stop. */
+.lift-card-glass .lift-fakebtn {
+  display: inline-block;
   background: #fff; color: #5b3fd6; border: 0;
   padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
 }
@@ -190,6 +198,10 @@ button { font-family: inherit; cursor: pointer; }
   padding: 12px 22px; border-radius: 999px; font-size: 14px; font-weight: 600;
 }
 .show-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; padding-bottom: 96px; }
+/* Every sibling demo section has an 880px breakpoint; this grid had none, so
+   at phone width the four tiles shrank to ~135px and each tile's caption pill
+   sat on top of its own heading. */
+@media (max-width: 880px) { .show-grid { grid-template-columns: 1fr; } }
 .show-grid__col { display: grid; gap: 18px; }
 .show-tile {
   position: relative; border-radius: 18px; overflow: hidden;

@@ -90,7 +90,9 @@ def stamp(match):
 changed = 0
 # The stylesheets too: the hero background is referenced by url() from CSS, so
 # stamping only the HTML left that one image permanently uncacheable-bustable.
-for page in list(dist.glob("*.html")) + list(dist.glob("assets/css/*.css")):
+# The manifest references the favicon too, so it drifts out of step with the
+# pages if it is not stamped alongside them.
+for page in list(dist.glob("*.html")) + list(dist.glob("assets/css/*.css")) + list(dist.glob("*.webmanifest")):
     text = page.read_text(encoding="utf-8")
     updated = pattern.sub(stamp, text)
     if updated != text:
@@ -101,7 +103,7 @@ for page in list(dist.glob("*.html")) + list(dist.glob("assets/css/*.css")):
 # restamp the HTML that points at it, or every page would request the old digest.
 for asset in dist.glob("assets/css/*.css"):
     digests[asset.name] = hashlib.sha256(asset.read_bytes()).hexdigest()[:10]
-for page in dist.glob("*.html"):
+for page in list(dist.glob("*.html")) + list(dist.glob("*.webmanifest")):
     text = page.read_text(encoding="utf-8")
     updated = pattern.sub(stamp, text)
     if updated != text:

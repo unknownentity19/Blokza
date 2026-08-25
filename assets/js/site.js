@@ -83,22 +83,15 @@
         tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
         const id = tab.dataset.tabFor;
         panels.forEach((p) => {
-          const match = p.dataset.tabPanel === id;
-          p.hidden = !match;
-          // re-trigger metric bar fill animation
-          if (match) {
-            p.classList.remove("is-visible");
-            void p.offsetWidth;
-            p.classList.add("is-visible");
-          } else {
-            p.classList.remove("is-visible");
-          }
+          // `is-visible` on a tab panel drove exactly one CSS rule, and that
+          // rule targeted `.metric .bar i`, which appears in no page's markup.
+          // The remove / read offsetWidth / add dance existed only to restart
+          // that animation, so it was forcing a synchronous layout on every tab
+          // click to re-trigger nothing.
+          p.hidden = p.dataset.tabPanel !== id;
         });
       });
     });
-    // initialize first panel as visible
-    const first = root.parentElement.querySelector('[data-tab-panel]:not([hidden])');
-    if (first) first.classList.add("is-visible");
   });
 
   // Pricing toggle

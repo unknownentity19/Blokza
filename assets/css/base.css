@@ -296,6 +296,10 @@ p  { margin: 0; color: var(--fg-muted); }
 .site-nav__brand {
   display: inline-flex;
   align-items: center;
+  /* Never compress the lockup: as a flex item it was shrinking below its own
+     content width, so "SAASWISE" overflowed the anchor and collided with the
+     first nav link in the ~24px band above the mobile breakpoint. */
+  flex-shrink: 0;
   gap: 12px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -621,14 +625,17 @@ details > summary:focus-visible {
   content: "";
   position: absolute;
   top: 0;
-  left: -150%;
+  left: 0;
   width: 60%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
-  transition: left 0.6s var(--ease);
+  /* Swept with transform rather than `left`: the same movement, composited,
+     instead of a layout pass per frame for the whole hover. */
+  transform: translateX(-250%);
+  transition: transform 0.6s var(--ease);
   pointer-events: none;
 }
-.btn-primary:hover::after { left: 150%; }
+.btn-primary:hover::after { transform: translateX(250%); }
 
 
 @keyframes brand-pan {
@@ -842,10 +849,15 @@ details > summary:focus-visible {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
-@media (max-width: 720px) {
-  .has-mega--2col .mega { min-width: 320px; max-width: 400px; }
+/* Shrinks at 1040px, not 720px. The desktop nav survives down to 881px, so a
+   560px panel anchored under "Product" hung off the left edge of the viewport
+   for the whole 881-1030px band. The viewport clamp is a second belt: whatever
+   the breakpoints say, the panel can never be wider than the window. */
+@media (max-width: 1040px) {
+  .has-mega--2col .mega { min-width: 320px; max-width: min(400px, calc(100vw - 32px)); }
   .mega__inner--2col { grid-template-columns: 1fr; }
 }
+.mega { max-width: calc(100vw - 32px); }
 
 
 /* =========================================================

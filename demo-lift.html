@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0f101c" />
+<link rel="icon" href="assets/images/favicon.svg?v=3" type="image/svg+xml" />
   <title>Lift — startup landing template · SAASWISE</title>
   <meta name="description" content="A startup landing page built in SAASWISE: hero, feature grid, and a closing call to action. One of four editable starting points." />
 <link rel="canonical" href="https://saaswise.dev/demo-lift.html" />
@@ -23,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/demos.css?v=10" />
+  <link rel="stylesheet" href="assets/css/demos.css?v=11" />
   <style>
     /* ---- Trusted-by strip ---- */
     .lift-trusted {
@@ -238,7 +240,8 @@
         <div class="lift-card-glass">
           <h2>This week&rsquo;s releases</h2>
         <p>Four services, one timeline. Sign-off, rollout, and rollback together.</p>
-        <button>Open the timeline &rarr;</button>
+        <!-- Inside an aria-hidden decorative visual, so not a tab stop. -->
+          <span class="lift-fakebtn">Open the timeline &rarr;</span>
         </div>
         <span class="lift-chip">Live now</span>
       </div>
@@ -306,7 +309,7 @@
     <!-- ==================== TESTIMONIAL ==================== -->
     <section class="lift-testimonial" aria-label="Customer testimonial">
       <div class="lift-testimonial__card">
-        <p class="lift-testimonial__quote">Lift cut our launch time from weeks to hours. The drag-and-drop editor is genuinely the best I've used.</p>
+        <p class="lift-testimonial__quote">Lift cut our release reviews from a Friday afternoon to ten minutes. I have not had to ask who deployed what since.</p>
         <div class="lift-testimonial__author">
           <div class="lift-testimonial__avatar" aria-hidden="true">SC</div>
           <div class="lift-testimonial__meta">

@@ -366,6 +366,15 @@
   animation: cursor-loop 9s var(--ease-in-out) infinite;
   will-change: transform;
 }
+/*
+ * The collaborator cursor fades in and out inside its own keyframes, so with the
+ * duration clamped under prefers-reduced-motion it sat on the 0% frame - opacity
+ * 0 - and vanished from the mock entirely. Reduced motion should remove the
+ * movement, not the content.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .mock-cursor { opacity: 1 !important; }
+}
 .mock-cursor svg { color: var(--p-700); }
 .mock-cursor .label {
   font-size: 10px;
@@ -412,13 +421,22 @@
   top: 0; left: 0; bottom: 0;
   border-radius: inherit;
   background: var(--p-600);
-  width: 0;
+  /*
+   * Rests filled, and animates *from* empty. It used to rest at width 0, so
+   * under prefers-reduced-motion - where the duration is clamped to ~0 - all
+   * three bars in the hero mock rendered as empty tracks.
+   *
+   * scaleX rather than width: animating width on an infinite loop relayouts the
+   * subtree on every frame, forever, even scrolled off-screen.
+   */
+  width: var(--w, 70%);
+  transform-origin: left center;
   animation: bar-fill 2.4s var(--ease-in-out) infinite;
 }
 @keyframes bar-fill {
-  0%   { width: 0; }
-  60%  { width: var(--w, 70%); }
-  100% { width: var(--w, 70%); opacity: 0.6; }
+  0%   { transform: scaleX(0); }
+  60%  { transform: scaleX(1); }
+  100% { transform: scaleX(1); opacity: 0.6; }
 }
 
 /* Floating chips around hero preview */
@@ -509,7 +527,12 @@
 /* =================== STAT CARDS =================== */
 .stat-card {
   padding: 28px 30px;
-  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  /* `opacity` belongs in this list. Without it the card's own shorthand
+     replaced the reveal transition inherited from [data-reveal-stagger] and
+     dropped opacity from it, so the card snapped to full opacity while its
+     transform still slid - a pop instead of a fade. */
+  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease),
+              transform 0.3s var(--ease), opacity 0.7s var(--ease);
 }
 .stat-card:hover {
   border-color: var(--p-200);
@@ -642,7 +665,6 @@
 .metric .label-row .name { color: var(--fg-2); font-weight: 500; }
 
 
-[data-tab-panel].is-visible .metric .bar i { width: var(--w, 80%); }
 
 
 .preview-dots i.is-on { background: var(--p-600); width: 24px; }
@@ -658,7 +680,8 @@
   cursor: pointer;
   transition: box-shadow 0.35s var(--ease),
               border-color 0.35s var(--ease),
-              transform 0.35s var(--ease);
+              transform 0.35s var(--ease),
+              opacity 0.7s var(--ease);
 }
 .template-card:hover {
   transform: translateY(-6px);
@@ -782,7 +805,8 @@
   flex-direction: column;
   height: 100%;
   position: relative;
-  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease),
+              transform 0.3s var(--ease), opacity 0.7s var(--ease);
 }
 .price-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
 .price-card.is-highlight {
@@ -899,7 +923,10 @@
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--r-xl, 14px);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  /* Both opacity and transform were missing, so the FAQ stagger arrived as one
+     instant pop rather than a sequence. */
+  transition: border-color 0.18s ease, box-shadow 0.18s ease,
+              opacity 0.7s var(--ease), transform 0.7s var(--ease);
 }
 .faq details:hover { border-color: var(--border-2); }
 .faq details[open] { border-color: var(--border-2); }
@@ -983,7 +1010,8 @@
 @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 .stat {
   padding: 24px 26px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s var(--ease);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease,
+              transform 0.3s var(--ease), opacity 0.7s var(--ease);
 }
 .stat:hover { border-color: var(--p-200); transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .stat strong {
@@ -1834,7 +1862,11 @@
 .ov-stack__chrome i:nth-child(2) { background: #fbbf24; }
 .ov-stack__chrome i:nth-child(3) { background: #34d399; }
 .ov-stack__chrome span {
-  margin-left: auto;
+  /* Was `margin-left: auto`, i.e. hard right — exactly where the rotated
+     "Add section" card overlaps this one, so the URL was completely hidden
+     behind it. Next to the traffic lights instead, which is where a browser
+     puts it anyway. */
+  margin-left: 8px;
   font-size: 10px;
   color: var(--fg-dim);
   font-family: ui-monospace, monospace;
@@ -2385,14 +2417,16 @@
   font-size: 11px;
   align-items: center;
 }
-.how-dragscene__floating button {
+/* Spans, not buttons — they were never interactive, and as <button> they put
+   three dead stops in the keyboard tab order. */
+.how-dragscene__floating span {
+  display: inline-block;
   background: rgba(255,255,255,0.1);
   color: #fff;
-  border: 0;
   padding: 4px 8px;
   font-size: 11px;
   font-family: inherit;
-  cursor: pointer;
+  border-radius: 3px;
 }
 
 /* Step 3 visual: live publish */
@@ -3123,6 +3157,14 @@
   /* On one column the mirrored hero leads with its words, not its picture. */
   .phero--mirror .phero__shot--tall { order: 2; margin: 0 auto; }
   .phero--mirror .phero__copy { order: 1; }
+  /*
+   * `.phero--bleed .phero__grid` above is (0,2,0) and sits outside any media
+   * query, so the single-column rule two lines up — (0,1,0) — never beat it and
+   * this one hero stayed two columns on every phone: a 127px copy column with
+   * the headline wrapping to one word per line. `.phero--mirror` was reset here
+   * and `--bleed` was not.
+   */
+  .phero--bleed .phero__grid { grid-template-columns: minmax(0, 1fr); }
   .phero--bleed .phero__shot { margin-right: 0; }
   .phero__shot--tall { max-width: 280px; }
 }
@@ -3874,3 +3916,9 @@
   text-transform: uppercase;
   color: var(--fg-faint);
 }
+
+/* The plan-comparison table. A four-column table cannot fit a phone, so it
+   scrolls sideways rather than having its last column clipped off by the card's
+   own rounded overflow. `min-width` on the table is what gives it something to
+   scroll. */
+.cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }

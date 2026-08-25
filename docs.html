@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Documentation · SAASWISE</title>
 <meta name="description" content="SAASWISE developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
-<meta name="theme-color" content="#5b3fd6" />
+<meta name="theme-color" content="#ffffff" />
 <link rel="icon" href="assets/images/favicon.svg?v=3" type="image/svg+xml" />
 <link rel="canonical" href="https://saaswise.dev/docs.html" />
 <meta property="og:type" content="website" />
@@ -22,8 +22,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/css/base.css?v=30" />
-<link rel="stylesheet" href="assets/css/pages.css?v=70" />
+<link rel="stylesheet" href="assets/css/base.css?v=31" />
+<link rel="stylesheet" href="assets/css/pages.css?v=71" />
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -286,7 +286,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- Authentication -->
       <section class="docs-section" id="auth">
         <h2>Authentication</h2>
-        <p>The SAASWISE API uses Bearer tokens. Generate keys in <a href="#">Dashboard → Settings → API keys</a>. Tokens scope to a single workspace and rotate on demand.</p>
+        <p>The SAASWISE API uses Bearer tokens. Generate keys in <b>Dashboard → Settings → API keys</b>. Tokens scope to a single workspace and rotate on demand.</p>
 
         <div class="docs-grid-2">
           <div class="docs-info">
@@ -699,11 +699,13 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       </section>
 
       <footer class="docs-footnav" aria-label="Page navigation">
-        <a class="docs-footnav__prev" href="#">
+        <!-- One scrolling page, so these move between sections that exist rather
+             than sitting on href="#" and naming a page that does not. -->
+        <a class="docs-footnav__prev" href="#quickstart">
           <small>← Previous</small>
-          <strong>Welcome to SAASWISE</strong>
+          <strong>Quickstart</strong>
         </a>
-        <a class="docs-footnav__next" href="#">
+        <a class="docs-footnav__next" href="#auth">
           <small>Next →</small>
           <strong>Authentication</strong>
         </a>
@@ -723,10 +725,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <li><a href="#embed">Embed snippet</a></li>
         </ul>
         <hr/>
-        <a class="docs-toc__edit" href="#">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
-          Edit on GitHub
-        </a>
+        <!-- "Edit on GitHub" removed: no public repository exists to edit in. -->
       </div>
     </aside>
 
@@ -744,8 +743,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       </div>
       <div><h2 class="site-footer__coltitle">Product</h2><ul><li><a href="product.html">Overview</a></li><li><a href="features-builder.html">Features</a></li><li><a href="templates.html">Templates</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="app/index.html">Editor</a></li></ul></div>
       <div><h2 class="site-footer__coltitle">Company</h2><ul><li><a href="about.html">About</a></li><li><a href="careers.html">Careers</a></li><li><a href="contact.html">Contact</a></li></ul></div>
-      <div><h2 class="site-footer__coltitle">Resources</h2><ul><li><a href="docs.html">Docs</a></li>
-  <li><a href="about.html">About</a></li><li><a href="community.html">Community</a></li><li><a href="support.html">Support</a></li></ul></div>
+      <div><h2 class="site-footer__coltitle">Resources</h2><ul><li><a href="docs.html">Docs</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="community.html">Community</a></li><li><a href="support.html">Support</a></li></ul></div>
     </div>
     <div class="site-footer__bottom">
       <span>© <span data-year>2026</span> SAASWISE, Inc. All rights reserved.</span>
@@ -754,7 +752,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
   </div>
 </footer>
 
-<script src="assets/js/site.js?v=15" defer></script>
+<script src="assets/js/site.js?v=16" defer></script>
 <!-- The search the sidebar button has always advertised. Its index is built from
      the page's own section links at runtime, so there is nothing to keep in step
      when a section is added or renamed. -->
