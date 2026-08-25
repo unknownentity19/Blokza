@@ -1,9 +1,9 @@
 {
-  "name": "cilbs-builder",
+  "name": "saaswise-builder",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Cilbs visual website builder — production editor",
+  "description": "SAASWISE visual website builder — production editor",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b --noEmit && vite build",

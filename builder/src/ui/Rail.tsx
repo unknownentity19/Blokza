@@ -22,12 +22,12 @@ export function Rail({ onHelp }: { onHelp: () => void }) {
 
   return (
     <nav className="rail" aria-label="Editor panels">
-      <a className="rail__brand" href="/" title="Cilbs">
+      <a className="rail__brand" href="/" title="SAASWISE">
         <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
           <rect width="32" height="32" rx="8" fill="currentColor" />
           <path d="M9 22.5L16 9.5l7 13" stroke="#fff" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <span className="sr-only">Cilbs home</span>
+        <span className="sr-only">SAASWISE home</span>
       </a>
 
       <div className="rail__group">

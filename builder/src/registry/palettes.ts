@@ -36,8 +36,8 @@ export interface Palette {
 
 export const PALETTES: Palette[] = [
   {
-    id: 'cilbs',
-    label: 'Cilbs',
+    id: 'saaswise',
+    label: 'SAASWISE',
     preview: ['#7a5fe5', '#f4f1ff', '#181024', '#f8f9fb'],
     colors: {
       brand: '#7a5fe5',

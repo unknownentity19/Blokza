@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cilbs.dev/sitemap.xml
+Sitemap: https://saaswise.dev/sitemap.xml

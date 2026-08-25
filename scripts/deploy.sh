@@ -18,7 +18,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-PROJECT="${CF_PAGES_PROJECT:-cilbs}"
+PROJECT="${CF_PAGES_PROJECT:-saaswise}"
 DIST="dist"
 
 echo "==> Building the editor"

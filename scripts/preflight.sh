@@ -27,7 +27,7 @@ info() { printf '    %s\n' "$1"; }
 todo() { TODO+=("$1"); }
 
 echo
-echo "Cilbs deploy preflight"
+echo "SAASWISE deploy preflight"
 echo "======================="
 
 # ---------------------------------------------------------------- toolchain
@@ -140,11 +140,11 @@ else
 fi
 [ -f _headers ] && ok "_headers present" || bad "_headers is missing"
 
-if npm --prefix builder test >/tmp/cilbs-preflight-test.log 2>&1; then
-  ok "tests pass ($(grep -oE 'Tests +[0-9]+ passed' /tmp/cilbs-preflight-test.log | tail -1 | tr -s ' '))"
+if npm --prefix builder test >/tmp/saaswise-preflight-test.log 2>&1; then
+  ok "tests pass ($(grep -oE 'Tests +[0-9]+ passed' /tmp/saaswise-preflight-test.log | tail -1 | tr -s ' '))"
 else
   bad "tests are failing"
-  info "See /tmp/cilbs-preflight-test.log"
+  info "See /tmp/saaswise-preflight-test.log"
   todo "Fix the failing tests before deploying"
 fi
 

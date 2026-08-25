@@ -60,7 +60,7 @@ export function SettingsPanel() {
               className="ui-btn"
               onClick={() =>
                 download(
-                  `${slugify(doc.name, 'site')}.cilbs.json`,
+                  `${slugify(doc.name, 'site')}.saaswise.json`,
                   serialiseProject(doc),
                   'application/json',
                 )

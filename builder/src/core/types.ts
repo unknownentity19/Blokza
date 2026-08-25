@@ -1,5 +1,5 @@
 /**
- * Core document model for the Cilbs builder.
+ * Core document model for the SAASWISE builder.
  *
  * Design notes
  * ------------

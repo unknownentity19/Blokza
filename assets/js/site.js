@@ -1,5 +1,5 @@
 /* =========================================================
-   Cilbs v3.1 — Site interactions
+   SAASWISE v3.1 — Site interactions
    ========================================================= */
 (function () {
   "use strict";
@@ -233,7 +233,7 @@
   const unconfigured = /YOUR_FORM_ID/.test(form.getAttribute("action") || "");
   if (unconfigured) {
     console.warn(
-      "[cilbs] contact form has no endpoint: replace YOUR_FORM_ID in the form action."
+      "[saaswise] contact form has no endpoint: replace YOUR_FORM_ID in the form action."
     );
   }
 

@@ -41,7 +41,7 @@ function readme(doc: SiteDoc, paths: string[]): string {
   return `${doc.name}
 ${'='.repeat(doc.name.length)}
 
-Exported from the Cilbs builder.
+Exported from the SAASWISE builder.
 
 Contents
 --------

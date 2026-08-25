@@ -2,7 +2,7 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 
-// The Cilbs marketing site is served statically from the repository root
+// The SAASWISE marketing site is served statically from the repository root
 // (netlify `publish = "."`). The builder is a single-page app mounted at /app/,
 // so we emit the bundle into <repo>/app and commit it. That keeps the
 // zero-config static deploy working while giving the editor a real build step.
@@ -16,7 +16,7 @@ import { fileURLToPath, URL } from 'node:url';
  */
 function classicEntryScript(): Plugin {
   return {
-    name: 'cilbs-classic-entry',
+    name: 'saaswise-classic-entry',
     // Build only. In dev the entry is `/src/main.tsx`, which Vite must serve as a
     // real module — stripping `type="module"` there loads TypeScript as a classic
     // script, so nothing runs and the dev server shows the boot guard instead of
