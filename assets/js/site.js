@@ -233,7 +233,7 @@
   const unconfigured = /YOUR_FORM_ID/.test(form.getAttribute("action") || "");
   if (unconfigured) {
     console.warn(
-      "[saaswise] contact form has no endpoint: replace YOUR_FORM_ID in the form action."
+      "[SAASWISE] contact form has no endpoint: replace YOUR_FORM_ID in the form action."
     );
   }
 

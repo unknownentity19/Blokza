@@ -68,7 +68,7 @@ export function save(doc: SiteDoc, ui: UiPrefs): void {
   } catch (error) {
     // Quota exceeded, private-mode restrictions, or a disabled storage API.
     // The editor keeps working from memory; the caller surfaces the warning.
-    if (typeof console !== 'undefined') console.warn('[saaswise] could not save', error);
+    if (typeof console !== 'undefined') console.warn('[SAASWISE] could not save', error);
     throw error;
   }
 }

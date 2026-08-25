@@ -217,8 +217,8 @@
 <span class="tk">npm</span> install <span class="ts">@saaswise/sdk</span>
 
 <span class="tc">// 2 · authenticate</span>
-<span class="tk">import</span> { <span class="tn">Saaswise</span> } <span class="tk">from</span> <span class="ts">"@saaswise/sdk"</span>;
-<span class="tk">const</span> client = <span class="tk">new</span> <span class="tn">Saaswise</span>({ token: <span class="tn">process</span>.env.<span class="tp">SAASWISE_KEY</span> });
+<span class="tk">import</span> { <span class="tn">SAASWISE</span> } <span class="tk">from</span> <span class="ts">"@saaswise/sdk"</span>;
+<span class="tk">const</span> client = <span class="tk">new</span> <span class="tn">SAASWISE</span>({ token: <span class="tn">process</span>.env.<span class="tp">SAASWISE_KEY</span> });
 
 <span class="tc">// 3 · ship</span>
 <span class="tk">await</span> client.sites.deploy({ id: <span class="ts">"site_8aL2k9X"</span> });</pre>
@@ -232,8 +232,8 @@
 <span class="tk">pip</span> install <span class="ts">saaswise</span>
 
 <span class="tc"># 2 · authenticate</span>
-<span class="tk">from</span> <span class="tn">saaswise</span> <span class="tk">import</span> <span class="tn">Saaswise</span>
-client = <span class="tn">Saaswise</span>(token=<span class="tn">os</span>.environ[<span class="ts">"SAASWISE_KEY"</span>])
+<span class="tk">from</span> <span class="tn">saaswise</span> <span class="tk">import</span> <span class="tn">SAASWISE</span>
+client = <span class="tn">SAASWISE</span>(token=<span class="tn">os</span>.environ[<span class="ts">"SAASWISE_KEY"</span>])
 
 <span class="tc"># 3 · ship</span>
 client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
@@ -554,7 +554,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- Webhooks -->
       <section class="docs-section" id="webhooks">
         <h2>Webhooks</h2>
-        <p>Subscribe to lifecycle events to keep your CMS, CI, or analytics in sync. Payloads are signed with HMAC-SHA256, verify with the <code>X-Saaswise-Signature</code> header.</p>
+        <p>Subscribe to lifecycle events to keep your CMS, CI, or analytics in sync. Payloads are signed with HMAC-SHA256, verify with the <code>X-SAASWISE-Signature</code> header.</p>
         <table class="props">
           <thead><tr><th>Event</th><th>When it fires</th></tr></thead>
           <tbody>
