@@ -38,7 +38,18 @@
       },
       { threshold: 0.1, rootMargin: "0px 0px -60px 0px" }
     );
-    document.querySelectorAll("[data-reveal], [data-reveal-stagger]").forEach((el) => io.observe(el));
+    /*
+     * Observe everything `revealSelector` names, not a subset of it.
+     *
+     * This observed only [data-reveal] and [data-reveal-stagger] while the
+     * selector above also covers -scale, -left, -right and .reveal-words. Those
+     * start at opacity 0 in base.css, so anything using them was invisible: on
+     * features-builder.html and features-responsive.html the hero screenshot
+     * never appeared at all unless the visitor had reduced motion on, because
+     * the only other thing that adds `is-visible` is the safety sweep below,
+     * and that fires for elements already scrolled *above* the viewport.
+     */
+    document.querySelectorAll(revealSelector).forEach((el) => io.observe(el));
 
     // Safety sweep: fast/jump scrolling (anchor links, End key, scrollbar drags)
     // can move elements past the viewport before the observer fires, leaving
@@ -217,6 +228,91 @@
   });
 })();
 
+
+
+/* ============ Pointer and reveal effects ============
+   Restored. Removing the logo marquee took this whole IIFE with it, and the
+   marquee was only the last thing in it: the headline word-split, a second
+   observer for the -scale/-left/-right reveal variants, the card spotlight, the
+   magnetic buttons and the hero parallax all went too. Their CSS and markup
+   were left behind driving nothing, which is why two feature pages rendered
+   their hero screenshot at opacity 0. The marquee itself is not restored -
+   nothing on the site uses it any more. */
+(function () {
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) return;
+
+  // Split headlines into words so `.reveal-words .word > span` has something to
+  // animate. Without this the class is inert and the CSS matches nothing.
+  document.querySelectorAll(".reveal-words").forEach((el) => {
+    if (el.dataset.split) return;
+    el.dataset.split = "1";
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => {
+      const frag = document.createDocumentFragment();
+      const parts = node.nodeValue.split(/(\s+)/);
+      parts.forEach((part) => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+          return;
+        }
+        const word = document.createElement("span");
+        word.className = "word";
+        const inner = document.createElement("span");
+        inner.textContent = part;
+        word.appendChild(inner);
+        frag.appendChild(word);
+      });
+      node.parentNode.replaceChild(frag, node);
+    });
+    el.querySelectorAll(".word > span").forEach((inner, i) => {
+      inner.style.transitionDelay = (i * 0.05) + "s";
+    });
+  });
+
+  // Cursor spotlight on .card-hover — base.css reads --mx/--my.
+  document.querySelectorAll(".card-hover").forEach((card) => {
+    card.addEventListener("mousemove", (e) => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      card.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+    card.addEventListener("mouseleave", () => {
+      card.style.removeProperty("--mx");
+      card.style.removeProperty("--my");
+    });
+  });
+
+  // Magnetic buttons. Uses the independent `translate` property so it never
+  // clobbers the hover/active `transform` the stylesheet applies.
+  document.querySelectorAll("[data-magnetic]").forEach((el) => {
+    const strength = parseFloat(el.dataset.magnetic) || 0.3;
+    el.addEventListener("mousemove", (e) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - (r.left + r.width / 2)) * strength;
+      const y = (e.clientY - (r.top + r.height / 2)) * strength;
+      el.style.translate = x.toFixed(1) + "px " + y.toFixed(1) + "px";
+    });
+    el.addEventListener("mouseleave", () => { el.style.translate = ""; });
+  });
+
+  // Cursor parallax on the hero glow — pages.css reads --parallax-x/y.
+  const hero = document.querySelector(".hero");
+  if (hero) {
+    let raf = 0;
+    document.addEventListener("mousemove", (e) => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        hero.style.setProperty("--parallax-x", ((e.clientX / window.innerWidth - 0.5) * 20) + "px");
+        hero.style.setProperty("--parallax-y", ((e.clientY / window.innerHeight - 0.5) * 20) + "px");
+        raf = 0;
+      });
+    });
+  }
+})();
 
 /* Contact form: real submit with success/error states */
 (function () {

@@ -597,7 +597,15 @@ details > summary:focus-visible {
 /* Word-by-word reveal for headlines */
 .reveal-words .word {
   display: inline-block;
+  /*
+   * The mask that makes the word slide up from nothing. It has to extend below
+   * the baseline or it clips descenders: "ship" rendered as "shi" with the p's
+   * tail cut flat. The negative margin gives the padding back to the layout, so
+   * line height and wrapping are unchanged.
+   */
   overflow: hidden;
+  padding-bottom: 0.2em;
+  margin-bottom: -0.2em;
   vertical-align: top;
 }
 .reveal-words .word > span {
