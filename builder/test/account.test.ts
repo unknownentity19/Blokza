@@ -257,3 +257,81 @@ describe('deleting the open site', () => {
     expect(S().sync.kind).toBe('off');
   });
 });
+
+/**
+ * The confirmation round trip.
+ *
+ * All of this is about the moment someone clicks the link in their inbox: they
+ * must end up signed in on the page they land on, and the credential in that
+ * URL must not survive the visit.
+ */
+describe('completing an email confirmation', () => {
+  /** Point the test at a URL as if we had just arrived from the email. */
+  function arriveAt(hash: string) {
+    window.history.replaceState(null, '', `/app/${hash}`);
+  }
+
+  it('signs the visitor in from the link, and clears it out of the URL', async () => {
+    const { client, base } = fakeClient();
+    useAccount.setState({ client });
+    arriveAt('#access_token=at-1&refresh_token=rt-1&expires_in=3600&type=signup');
+
+    await S().restore();
+
+    expect(S().session?.accessToken).toBe('at-1');
+    expect(S().notice).toMatch(/confirmed/i);
+    // the session is persisted, so a reload does not undo the confirmation
+    expect(localStorage.getItem(SESSION_KEY)).toContain('at-1');
+    // and the sites list was fetched with the new token
+    expect(base.listSites).toHaveBeenCalled();
+    // the credential is gone from the URL
+    expect(window.location.href).not.toContain('access_token');
+    expect(window.location.hash).toBe('');
+  });
+
+  it('reports an expired link instead of appearing to work', async () => {
+    const { client } = fakeClient();
+    useAccount.setState({ client });
+    arriveAt(
+      '#error=access_denied&error_code=otp_expired' +
+        '&error_description=Email+link+is+invalid+or+has+expired',
+    );
+
+    await S().restore();
+
+    expect(S().session).toBeNull();
+    expect(S().error).toMatch(/expired/i);
+    expect(window.location.href).not.toContain('error');
+  });
+
+  it('leaves an ordinary visit alone, restoring a stored session as before', async () => {
+    const { client } = fakeClient();
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session()));
+    useAccount.setState({ client });
+    arriveAt('');
+
+    await S().restore();
+
+    expect(S().session?.accessToken).toBe('access-1');
+    expect(S().notice).toBeNull();
+  });
+
+  it('offers a resend only while an address is waiting, and stops once signed in', async () => {
+    const resend = vi.fn(async () => undefined);
+    const { client } = fakeClient({
+      signUp: vi.fn(async () => null),
+      resendConfirmation: resend,
+      signIn: vi.fn(async () => session()),
+    } as Partial<CloudClient>);
+    useAccount.setState({ client });
+
+    await S().signUp('new@b.co', 'pw-123456');
+    expect(S().pendingEmail).toBe('new@b.co');
+
+    await S().resendConfirmation();
+    expect(resend).toHaveBeenCalledWith('new@b.co', expect.anything());
+
+    await S().signIn('new@b.co', 'pw-123456');
+    expect(S().pendingEmail).toBeNull();
+  });
+});

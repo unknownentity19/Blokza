@@ -83,7 +83,7 @@ export function createCloudClient(config: CloudConfig | null = cloudConfig(), do
 
   async function call(
     path: string,
-    init: RequestInit & { token?: string; prefer?: string } = {},
+    init: RequestInit & { token?: string; prefer?: string; query?: string } = {},
   ): Promise<{ status: number; body: unknown }> {
     const headers: Record<string, string> = {
       apikey: cfg.anonKey,
@@ -96,7 +96,10 @@ export function createCloudClient(config: CloudConfig | null = cloudConfig(), do
 
     let response: Response;
     try {
-      response = await http(`${cfg.url}${path}`, { ...init, headers });
+      const url = init.query
+        ? `${cfg.url}${path}${path.includes('?') ? '&' : '?'}${init.query}`
+        : `${cfg.url}${path}`;
+      response = await http(url, { ...init, headers });
     } catch (error) {
       // A rejected fetch is a transport failure — no network, DNS, CORS, or a
       // paused project. None of them are the user's fault, and all of them look
@@ -163,13 +166,48 @@ export function createCloudClient(config: CloudConfig | null = cloudConfig(), do
      * a different outcome rather than a failure: the caller has to say "check
      * your email" instead of dropping the user into the editor.
      */
-    async signUp(email: string, password: string): Promise<Session | null> {
+    async signUp(
+      email: string,
+      password: string,
+      emailRedirectTo?: string,
+    ): Promise<Session | null> {
+      /*
+       * `emailRedirectTo` decides where the confirmation link lands. Without it
+       * GoTrue falls back to the project's Site URL, which is the marketing
+       * homepage — so a visitor clicked "confirm", arrived on a page with an
+       * access token sitting in the address bar, and nothing there could use it.
+       * Sending them back to the editor they signed up from means the session in
+       * that link is the session they end up with.
+       *
+       * The URL has to be on the project's Redirect URLs allow-list or GoTrue
+       * silently uses Site URL instead.
+       */
       const { body } = await call('/auth/v1/signup', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(
+          emailRedirectTo ? { email, password, options: { email_redirect_to: emailRedirectTo } }
+                          : { email, password },
+        ),
+        query: emailRedirectTo ? `redirect_to=${encodeURIComponent(emailRedirectTo)}` : undefined,
       });
       const data = (body ?? {}) as Record<string, unknown>;
       return data.access_token ? toSession(body) : null;
+    },
+
+    /**
+     * Send the confirmation email again.
+     *
+     * The single most common way an email sign-up stalls: the first message goes
+     * to spam, or expires while the person is doing something else, and without
+     * this the only way forward is to try to sign up again and be told the
+     * address is already taken.
+     */
+    async resendConfirmation(email: string, emailRedirectTo?: string): Promise<void> {
+      await call('/auth/v1/resend', {
+        method: 'POST',
+        body: JSON.stringify({ type: 'signup', email }),
+        query: emailRedirectTo ? `redirect_to=${encodeURIComponent(emailRedirectTo)}` : undefined,
+      });
     },
 
     async signIn(email: string, password: string): Promise<Session> {

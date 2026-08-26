@@ -178,3 +178,41 @@ describe('needsRefresh', () => {
     expect(needsRefresh(session, 10_000_001)).toBe(true);
   });
 });
+
+describe('email sign-up', () => {
+  /**
+   * Without a redirect the confirmation link goes to the project's Site URL,
+   * which is the marketing homepage — a page that cannot use the session the
+   * link carries. So the target has to reach GoTrue, and it goes in the query
+   * string, not just the body.
+   */
+  it('sends the confirmation link back to the page that asked for it', async () => {
+    const { client, calls } = clientWith([{ body: { user: { id: 'u', email: 'a@b.co' } } }]);
+    await client.signUp('a@b.co', 'pw', 'https://saaswise.dev/app/');
+    expect(calls[0].url).toContain('redirect_to=https%3A%2F%2Fsaaswise.dev%2Fapp%2F');
+  });
+
+  it('omits the redirect entirely when there is none, rather than sending an empty one', async () => {
+    const { client, calls } = clientWith([{ body: { user: { id: 'u', email: 'a@b.co' } } }]);
+    await client.signUp('a@b.co', 'pw');
+    expect(calls[0].url).not.toContain('redirect_to');
+    expect(JSON.parse(String(calls[0].init.body))).toEqual({ email: 'a@b.co', password: 'pw' });
+  });
+
+  it('can send the confirmation again for an address that has not confirmed', async () => {
+    const { client, calls } = clientWith([{ body: {} }]);
+    await client.resendConfirmation('a@b.co', 'https://saaswise.dev/app/');
+    expect(calls[0].url).toContain('/auth/v1/resend');
+    expect(calls[0].url).toContain('redirect_to=');
+    expect(JSON.parse(String(calls[0].init.body))).toEqual({ type: 'signup', email: 'a@b.co' });
+  });
+
+  it('reports a resend that was rate limited in words worth reading', async () => {
+    const { client } = clientWith([
+      { status: 429, body: { error_description: 'For security purposes, rate limit exceeded' } },
+    ]);
+    const error = await client.resendConfirmation('a@b.co').catch((e: unknown) => e);
+    expect((error as CloudError).kind).toBe('auth');
+    expect((error as CloudError).message).toMatch(/wait a minute|too many/i);
+  });
+});

@@ -21,6 +21,7 @@ import {
   type Session,
   type SiteSummary,
 } from '../cloud/client';
+import { authRedirectTarget, consumeAuthCallback } from '../cloud/callback';
 import { cloudAvailable } from '../cloud/config';
 import { ensureFresh, readSession, writeSession } from '../cloud/session';
 import type { SiteDoc } from '../core/types';
@@ -47,6 +48,8 @@ export interface AccountState {
   error: string | null;
   /** Set after a sign-up that needs an email confirmation. */
   notice: string | null;
+  /** The address awaiting confirmation, so the mail can be sent again. */
+  pendingEmail: string | null;
 
   sites: SiteSummary[];
   /** The cloud site the editor is currently bound to, if any. */
@@ -57,6 +60,8 @@ export interface AccountState {
   restore: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<boolean>;
+  /** Send the confirmation email again, for the address that just signed up. */
+  resendConfirmation: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshSites: () => Promise<void>;
   /** Push the document to a new row and bind the editor to it. */
@@ -138,6 +143,7 @@ export const useAccount = create<AccountState>((set, get) => {
     busy: false,
     error: null,
     notice: null,
+  pendingEmail: null,
     sites: [],
     boundSiteId: null,
     boundRevision: 0,
@@ -146,6 +152,30 @@ export const useAccount = create<AccountState>((set, get) => {
     async restore() {
       const { client } = get();
       if (!client) return;
+
+      /*
+       * An email confirmation lands here with the session in the URL fragment,
+       * so that is checked before any stored session: someone who has just
+       * clicked "confirm" should end up signed in, not looking at a sign-in form
+       * with their credentials sitting in the address bar.
+       */
+      const callback = consumeAuthCallback(window.location.href, (clean) => {
+        window.history.replaceState(null, '', clean);
+      });
+      if (callback.kind === 'error') {
+        set({ error: callback.message });
+      } else if (callback.kind === 'session') {
+        writeSession(callback.session);
+        set({
+          restoring: true,
+          notice: callback.confirmed ? 'Email confirmed. You are signed in.' : null,
+        });
+        const fresh = await ensureFresh(client, callback.session);
+        set({ session: fresh, restoring: false });
+        if (fresh) await get().refreshSites();
+        return;
+      }
+
       const stored = readSession();
       if (!stored) return;
       set({ restoring: true });
@@ -157,7 +187,7 @@ export const useAccount = create<AccountState>((set, get) => {
     async signIn(email, password) {
       const { client } = get();
       if (!client) return false;
-      set({ busy: true, error: null, notice: null });
+      set({ busy: true, error: null, notice: null, pendingEmail: null });
       try {
         const session = await client.signIn(email, password);
         writeSession(session);
@@ -175,11 +205,14 @@ export const useAccount = create<AccountState>((set, get) => {
       if (!client) return false;
       set({ busy: true, error: null, notice: null });
       try {
-        const session = await client.signUp(email, password);
+        const session = await client.signUp(email, password, authRedirectTarget());
         if (!session) {
           set({
             busy: false,
-            notice: 'Account created. Confirm the link in your inbox, then sign in.',
+            // The address is kept so the panel can offer to send it again, which
+            // is the one thing people need when the first mail does not arrive.
+            pendingEmail: email,
+            notice: 'Account created. Open the link in your inbox to confirm it.',
           });
           return false;
         }
@@ -190,6 +223,18 @@ export const useAccount = create<AccountState>((set, get) => {
       } catch (error) {
         fail(error);
         return false;
+      }
+    },
+
+    async resendConfirmation() {
+      const { client, pendingEmail } = get();
+      if (!client || !pendingEmail) return;
+      set({ busy: true, error: null });
+      try {
+        await client.resendConfirmation(pendingEmail, authRedirectTarget());
+        set({ busy: false, notice: `Sent again to ${pendingEmail}. Check spam too.` });
+      } catch (error) {
+        fail(error);
       }
     },
 
@@ -208,6 +253,7 @@ export const useAccount = create<AccountState>((set, get) => {
         sync: { kind: 'off' },
         error: null,
         notice: null,
+        pendingEmail: null,
       });
     },
 

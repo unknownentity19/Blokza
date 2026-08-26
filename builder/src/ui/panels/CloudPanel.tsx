@@ -38,6 +38,7 @@ export function CloudPanel() {
   const busy = useAccount((s) => s.busy);
   const error = useAccount((s) => s.error);
   const notice = useAccount((s) => s.notice);
+  const pendingEmail = useAccount((s) => s.pendingEmail);
   const sync = useAccount((s) => s.sync);
   const boundSiteId = useAccount((s) => s.boundSiteId);
   const account = useAccount();
@@ -101,6 +102,23 @@ export function CloudPanel() {
           </Field>
           {error ? <p className="cl__error">{error}</p> : null}
           {notice ? <p className="cl__notice">{notice}</p> : null}
+          {/*
+            * Offered only while an address is actually waiting on a
+            * confirmation. The first mail going to spam, or expiring while
+            * someone does something else, is the usual way an email sign-up
+            * stalls — and without this the only route forward is to try to sign
+            * up again and be told the address is already taken.
+            */}
+          {pendingEmail ? (
+            <button
+              type="button"
+              className="cl__link"
+              disabled={busy}
+              onClick={() => void account.resendConfirmation()}
+            >
+              {busy ? 'Sending…' : 'Send the confirmation email again'}
+            </button>
+          ) : null}
           <div className="ui-btnrow">
             <button
               type="button"

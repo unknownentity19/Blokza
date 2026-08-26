@@ -77,6 +77,12 @@ It **ignores `netlify.toml`**, so the redirects that lived there are duplicated 
    **Site URL** and add the domain to **Redirect URLs**. Sign-in will fail from an
    origin the project has not been told about.
 
+   Add the editor's own path too — `https://saaswise.dev/app/` — because that is
+   where a confirmation link comes back to. If it is not on the allow-list,
+   GoTrue quietly redirects to Site URL instead and the person lands on the
+   marketing homepage rather than signed in. See [CLOUD.md](CLOUD.md) for the two
+   email paths and what each costs.
+
 6. **Put the Supabase keys in the build** — `builder/.env.local`, as described in
    [CLOUD.md](CLOUD.md). They are compiled in, so this must happen *before* the
    build in step 3. If you deployed first, just deploy again.
