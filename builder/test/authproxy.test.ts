@@ -164,6 +164,35 @@ describe('the auth proxy', () => {
     expect(sent['content-length']).toBeUndefined();
   });
 
+  /**
+   * Found in production, not in a test: Vercel adds `x-forwarded-host` with its
+   * own hostname, Neon Auth validates that header, and every proxied call came
+   * back `INVALID_HOSTNAME`. It describes this hop, so it must not describe the
+   * next one. `x-forwarded-for` and `-proto` are deliberately kept — Neon
+   * rate-limits by client IP, and collapsing every user onto Vercel's egress
+   * address would make one abuser throttle everyone.
+   */
+  it('strips the forwarding headers that describe this hop', async () => {
+    const { seen } = await call('POST', '/api/auth/sign-in/email', {
+      headers: {
+        'x-forwarded-host': 'blokza.vercel.app',
+        'x-forwarded-for': '1.2.3.4',
+        'x-forwarded-proto': 'https',
+        forwarded: 'host=blokza.vercel.app;proto=https',
+        'x-vercel-id': 'sin1::abc123',
+        'x-vercel-deployment-url': 'blokza-xyz.vercel.app',
+      },
+    });
+    const sent = seen[0].init.headers as Record<string, string>;
+    expect(sent['x-forwarded-host']).toBeUndefined();
+    expect(sent.forwarded).toBeUndefined();
+    expect(sent['x-vercel-id']).toBeUndefined();
+    expect(sent['x-vercel-deployment-url']).toBeUndefined();
+    // but the client's identity survives, because upstream throttles on it
+    expect(sent['x-forwarded-for']).toBe('1.2.3.4');
+    expect(sent['x-forwarded-proto']).toBe('https');
+  });
+
   it('does not replay the upstream CORS headers onto a same-origin reply', async () => {
     const { headers } = await call('GET', '/api/auth/ok', {
       reply: { headers: { 'access-control-allow-origin': 'https://elsewhere.example' } },

@@ -42,11 +42,23 @@ function upstream() {
 
 /**
  * Headers that describe *this* hop and must not be replayed onto the next one.
- * `host` in particular: forwarding blokza.com's Host to Neon routes the request
- * to nothing.
+ *
+ * `host`: forwarding blokza.com's Host to Neon routes the request to nothing.
+ *
+ * `x-forwarded-host` cost a production debugging session. Vercel sets it to the
+ * deployment's own hostname, Neon Auth validates it, and every proxied call came
+ * back `{"code":"INVALID_HOSTNAME"}` — with the auth endpoint itself perfectly
+ * healthy. `forwarded` (RFC 7239) carries the same thing in a different shape,
+ * so it goes too.
+ *
+ * `x-forwarded-for` and `x-forwarded-proto` are deliberately NOT here. Neon
+ * rate-limits by client IP; dropping it would collapse every visitor onto
+ * Vercel's egress address, where one abuser throttles everybody.
  */
 const HOP_BY_HOP = new Set([
   'host',
+  'x-forwarded-host',
+  'forwarded',
   'connection',
   'keep-alive',
   'transfer-encoding',
@@ -57,6 +69,14 @@ const HOP_BY_HOP = new Set([
   'trailer',
   'content-length',
 ]);
+
+/**
+ * Platform internals. Nothing upstream needs to know the deployment id or the
+ * request's route through Vercel, and a third party has no business being told.
+ */
+function isPlatformHeader(name) {
+  return name.startsWith('x-vercel-');
+}
 
 /**
  * Rebind a cookie to this origin.
@@ -103,7 +123,8 @@ export default async function handler(req, res) {
 
   const headers = {};
   for (const [name, value] of Object.entries(req.headers)) {
-    if (HOP_BY_HOP.has(name.toLowerCase()) || value === undefined) continue;
+    const key = name.toLowerCase();
+    if (HOP_BY_HOP.has(key) || isPlatformHeader(key) || value === undefined) continue;
     headers[name] = Array.isArray(value) ? value.join(', ') : value;
   }
 
