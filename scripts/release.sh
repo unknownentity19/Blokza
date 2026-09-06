@@ -12,10 +12,14 @@
 #   3. every asset URL carries a hash of that asset's contents
 #
 #   ./scripts/release.sh          do the work, show what changed
-#   ./scripts/release.sh --check  change nothing, fail if anything is stale
+#   ./scripts/release.sh --check  fail if anything is stale, leaving the tree as
+#                                 it found it
 #
-# The --check form is what CI wants: it answers "would a deploy from this commit
-# serve something wrong?" without writing to the tree.
+# --check answers "would a deploy from this commit serve something wrong?". It
+# does the work and then puts the tree back, because the only honest way to know
+# whether a build matches the commit is to run the build. It therefore refuses
+# to start on a dirty tree: it cannot tell its own output from your edits, and
+# restoring would take your work with it.
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -25,6 +29,13 @@ CHECK=0
 
 if [ "$CHECK" = "1" ]; then
   BEFORE="$(git status --porcelain)"
+  if [ -n "$BEFORE" ]; then
+    echo "--check needs a clean tree: it rebuilds in place and then restores," >&2
+    echo "and it cannot tell its own output from your uncommitted changes." >&2
+    echo >&2
+    git status --short >&2
+    exit 2
+  fi
 fi
 
 echo "==> Building the editor"
@@ -130,9 +141,14 @@ fi
 echo
 if [ "$CHECK" = "1" ]; then
   AFTER="$(git status --porcelain)"
-  if [ "$BEFORE" != "$AFTER" ]; then
+  # Put the tree back before reporting, so a failed check never leaves a
+  # half-built bundle behind for someone to commit by accident. The tree was
+  # verified clean above, so this discards only what this run produced.
+  git checkout -- . 2>/dev/null || true
+  git clean -qfd app 2>/dev/null || true
+  if [ -n "$AFTER" ]; then
     echo "STALE — the commit does not match what a build produces:" >&2
-    git status --short >&2
+    printf '%s\n' "$AFTER" | sed 's/^/  /' >&2
     echo >&2
     echo "Run ./scripts/release.sh and commit the result." >&2
     exit 1
