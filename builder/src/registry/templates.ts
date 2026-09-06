@@ -147,7 +147,7 @@ export const TEMPLATES: Template[] = [
           // and turned a 60px bar into a tall block. These groups are inline
           // clusters, so they stay horizontal at every width.
           row({ base: { width: 'auto', gap: '32px' }, mobile: { flexDirection: 'row', alignItems: 'center', gap: '16px' } }, [
-            h('SAASWISE', 'h3', { base: { fontSize: '19px', fontWeight: '700', letterSpacing: '-0.02em' } }),
+            h('BLOKZA', 'h3', { base: { fontSize: '19px', fontWeight: '700', letterSpacing: '-0.02em' } }),
             row({ base: { width: 'auto', gap: '26px' }, mobile: { display: 'none' } }, [
               n('link', { label: 'Product', href: '/' }),
               n('link', { label: 'Pricing', href: '/' }),
@@ -321,7 +321,7 @@ export const TEMPLATES: Template[] = [
             h('Starter', 'h3', H3),
             h('$0', 'h3', STAT),
             p('For one project and a weekend of momentum.'),
-            n('list', { marker: 'check', items: items('1 project', '3 pages', 'SAASWISE subdomain') }),
+            n('list', { marker: 'check', items: items('1 project', '3 pages', 'BLOKZA subdomain') }),
             btn('Start free', 'secondary'),
           ]),
           card({ base: { gap: '18px', borderColor: 'var(--color-brand)', borderWidth: '2px' } }, [
@@ -433,7 +433,7 @@ export const TEMPLATES: Template[] = [
             p('Contact', EYEBROW),
             h('Tell us what you are building', 'h2', H2),
             p('We answer every message within one business day.'),
-            n('list', { marker: 'none', items: items('hello@saaswise.dev', '+1 (555) 019-4477') }),
+            n('list', { marker: 'none', items: items('hello@blokza.com', '+1 (555) 019-4477') }),
           ]),
           n('form', { name: 'contact', method: 'post', netlify: true }, { base: { flexBasis: '50%', maxWidth: 'none' } }, [
             n('input', { label: 'Name', type: 'text', placeholder: 'Ada Lovelace', required: true }),
@@ -487,7 +487,7 @@ export const TEMPLATES: Template[] = [
           ]),
           n('divider'),
           row({ base: { justifyContent: 'space-between', gap: '16px' } }, [
-            p('© 2026 SAASWISE. All rights reserved.', { base: { fontSize: '14px' } }),
+            p('© 2026 BLOKZA. All rights reserved.', { base: { fontSize: '14px' } }),
             row({ base: { width: 'auto', gap: '20px' }, mobile: { flexDirection: 'row', alignItems: 'center', width: 'auto' } }, [
               n('link', { label: 'Privacy', href: '/' }),
               n('link', { label: 'Terms', href: '/' }),

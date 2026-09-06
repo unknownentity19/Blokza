@@ -23,7 +23,7 @@ import pathlib
 import re
 import sys
 
-ORIGIN = "https://saaswise.dev"
+ORIGIN = "https://blokza.com"
 
 # How much each page matters relative to the others. The only hand-kept values
 # here, because nothing on disk expresses editorial importance.

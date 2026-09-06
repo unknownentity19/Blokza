@@ -2,10 +2,11 @@ import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 
-// The SAASWISE marketing site is served statically from the repository root
-// (netlify `publish = "."`). The builder is a single-page app mounted at /app/,
-// so we emit the bundle into <repo>/app and commit it. That keeps the
-// zero-config static deploy working while giving the editor a real build step.
+// The BLOKZA marketing site is served statically from the repository root:
+// Vercel publishes the repo as it stands, with no build step of its own. The
+// builder is a single-page app mounted at /app/, so we emit the bundle into
+// <repo>/app and commit it — which is why scripts/release.sh exists to keep
+// that commit current.
 /**
  * Emit the entry as a classic script.
  *
@@ -16,7 +17,7 @@ import { fileURLToPath, URL } from 'node:url';
  */
 function classicEntryScript(): Plugin {
   return {
-    name: 'saaswise-classic-entry',
+    name: 'blokza-classic-entry',
     // Build only. In dev the entry is `/src/main.tsx`, which Vite must serve as a
     // real module — stripping `type="module"` there loads TypeScript as a classic
     // script, so nothing runs and the dev server shows the boot guard instead of
@@ -51,8 +52,8 @@ export default defineConfig({
    * This is why every link points at `app/index.html` rather than `app/`: with a
    * relative base the asset URLs are resolved against the *document*, so landing
    * on a bare `/app` (no trailing slash, no filename) would look for
-   * `/assets/...`. The redirects in netlify.toml and vercel.json cover that case
-   * for anyone who types the short URL.
+   * `/assets/...`. The redirects in vercel.json cover that case for anyone who
+   * types the short URL.
    */
   base: './',
   plugins: [react(), classicEntryScript()],
@@ -96,6 +97,39 @@ export default defineConfig({
     // Never auto-open: the editor is driven from the in-app browser during
     // development, and hijacking the default browser is a surprise.
     open: false,
+    /*
+     * Stand in for the Vercel function at `api/auth/[...all].mjs`.
+     *
+     * Without this, `/api/auth/*` 404s in development and the only way to sign
+     * in locally is to point the client straight at Neon — which is a different
+     * code path from the deployed one, and specifically the path with the
+     * third-party-cookie problem the proxy exists to avoid. Testing the flow
+     * that way proves nothing about the flow that ships.
+     *
+     * With it, dev and production differ only in who runs the proxy: the cookie
+     * is first-party on localhost exactly as it is on blokza.com, and
+     * `VITE_NEON_AUTH_URL` stays unset in both.
+     *
+     * `changeOrigin` rewrites the `Host` header, not the `Origin` header — two
+     * different things that are easy to conflate, and getting it wrong here
+     * fails in a thoroughly misleading way. Left off, the upstream TLS
+     * handshake carries `localhost` as its SNI name, Neon answers with a
+     * default certificate, and Node reports "self-signed certificate" as though
+     * something were intercepting the connection.
+     *
+     * It does not touch `Origin`, so the CSRF check upstream still sees
+     * `http://localhost:5273` — which Neon Auth trusts by default.
+     */
+    proxy: process.env.NEON_AUTH_URL
+      ? {
+          '/api/auth': {
+            target: process.env.NEON_AUTH_URL,
+            changeOrigin: true,
+            secure: true,
+            rewrite: (path: string) => path.replace(/^\/api\/auth/, ''),
+          },
+        }
+      : undefined,
   },
   test: {
     environment: 'jsdom',

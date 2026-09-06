@@ -21,7 +21,7 @@ import { PALETTES } from './registry/palettes';
 // browser-automation checks used while building it). Never shipped: Vite strips
 // the branch from the production bundle.
 if (import.meta.env.DEV) {
-  (window as unknown as Record<string, unknown>).__saaswise = { useEditor, TEMPLATES, PALETTES };
+  (window as unknown as Record<string, unknown>).__blokza = { useEditor, TEMPLATES, PALETTES };
 
   // `?seed=demo` rebuilds a seven-page site through the ordinary editor
   // actions, so the UI can be reviewed and screenshotted at a realistic size

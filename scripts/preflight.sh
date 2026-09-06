@@ -2,8 +2,8 @@
 #
 # Check everything that can be checked without signing in as you.
 #
-# Three steps in the setup need your account and cannot be automated here:
-# creating the Cloudflare and Supabase accounts, and authorising Wrangler. This
+# The steps that need your account cannot be automated here: creating the Neon
+# project, running the schema, and adding your origins to Neon Auth. This
 # script covers the rest — and, more usefully, *verifies* the parts you did by
 # hand, so a mistake shows up now rather than as a broken sign-in on the live
 # site.
@@ -27,7 +27,7 @@ info() { printf '    %s\n' "$1"; }
 todo() { TODO+=("$1"); }
 
 echo
-echo "SAASWISE deploy preflight"
+echo "BLOKZA deploy preflight"
 echo "======================="
 
 # ---------------------------------------------------------------- toolchain
@@ -47,76 +47,75 @@ else
   todo "Run: npm --prefix builder install"
 fi
 
-# ---------------------------------------------------------------- cloudflare
+# ---------------------------------------------------------------- neon
 echo
-echo "Cloudflare"
-WHOAMI="$(npx --yes wrangler whoami 2>&1 || true)"
-if printf '%s' "$WHOAMI" | grep -qiE 'you are logged in|associated with the email|account id'; then
-  ACCOUNT="$(printf '%s' "$WHOAMI" | grep -oiE '[a-z0-9._%+-]+@[a-z0-9.-]+' | head -1)"
-  ok "Wrangler is authorised${ACCOUNT:+ as $ACCOUNT}"
-else
-  bad "Wrangler is not authorised"
-  info "This one has to be you — it signs in to your Cloudflare account."
-  todo "Run: npx wrangler login   (opens a browser, then come back)"
-fi
-
-# ---------------------------------------------------------------- supabase
-echo
-echo "Supabase"
+echo "Neon"
 ENV_FILE="builder/.env.local"
-SUPA_URL=""
-SUPA_KEY=""
+DATA_URL=""
 if [ -f "$ENV_FILE" ]; then
-  SUPA_URL="$(grep -E '^VITE_SUPABASE_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'" | xargs || true)"
-  SUPA_KEY="$(grep -E '^VITE_SUPABASE_ANON_KEY=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'" | xargs || true)"
+  DATA_URL="$(grep -E '^VITE_NEON_DATA_URL=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'" | xargs || true)"
 fi
 
-if [ -z "$SUPA_URL" ] || [ -z "$SUPA_KEY" ]; then
-  bad "$ENV_FILE has no project URL and anon key"
-  info "Supabase → Project Settings → API. Both values are public by design."
+if [ -z "$DATA_URL" ]; then
+  bad "$ENV_FILE has no Data API URL"
+  info "Neon Console -> Data API. The URL is public; the connection string is not."
   todo "Create $ENV_FILE containing:
-      VITE_SUPABASE_URL=https://yourproject.supabase.co
-      VITE_SUPABASE_ANON_KEY=eyJhbGciOi..."
-elif printf '%s' "$SUPA_URL" | grep -q 'yourproject\|dummy'; then
-  bad "$ENV_FILE still holds the placeholder values"
-  todo "Replace the placeholders in $ENV_FILE with your real project URL and anon key"
+      VITE_NEON_DATA_URL=https://ep-xxx.apirest.<region>.aws.neon.tech/neondb/rest/v1"
 else
-  ok "$ENV_FILE has a project URL and anon key"
+  ok "$ENV_FILE has a Data API URL"
 
-  # Is the project awake? A paused free-tier project is indistinguishable from
-  # being offline, and it is the most common reason sign-in stops working.
-  API_STATUS="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 \
-    -H "apikey: $SUPA_KEY" "$SUPA_URL/rest/v1/" 2>/dev/null || echo 000)"
-  case "$API_STATUS" in
-    200) ok "project is reachable and awake" ;;
-    000) bad "could not reach $SUPA_URL"
-         info "Wrong URL, no network, or the free project is paused."
-         todo "Open the Supabase dashboard; if the project is paused, resume it" ;;
-    401|403) bad "the project rejected the anon key (HTTP $API_STATUS)"
-         todo "Re-copy the anon public key from Project Settings → API" ;;
-    *)   bad "unexpected response from the project (HTTP $API_STATUS)" ;;
-  esac
-
-  if [ "$API_STATUS" = "200" ]; then
-    # Does the sites table exist, and does row-level security hide other
-    # people's rows from an unauthenticated request?
-    BODY="$(curl -s --max-time 10 -H "apikey: $SUPA_KEY" \
-      "$SUPA_URL/rest/v1/sites?select=id&limit=1" 2>/dev/null || true)"
-    if printf '%s' "$BODY" | grep -q 'PGRST205\|does not exist\|Could not find the table'; then
-      bad "the sites table does not exist"
-      todo "Paste supabase/schema.sql into the Supabase SQL editor and run it"
-    elif [ "$BODY" = "[]" ]; then
-      ok "sites table exists, and an unauthenticated read returns nothing"
-      info "That is row-level security doing its job — the anon key alone sees no rows."
-    elif printf '%s' "$BODY" | grep -q '^\[{'; then
-      bad "an unauthenticated read returned rows — row-level security is not protecting the table"
-      info "Anyone with the anon key could read your sites. This must be fixed before deploying."
-      todo "Re-run supabase/schema.sql; check 'alter table public.sites enable row level security' applied"
-    else
-      bad "unexpected reply when reading the sites table"
-      info "$(printf '%s' "$BODY" | head -c 160)"
-    fi
+  # An unauthenticated call must be refused, and refused for the right reason.
+  # A 200 here would mean the table is readable by anyone holding the URL.
+  BODY="$(curl -s --max-time 15 "$DATA_URL/sites?select=id&limit=1" 2>/dev/null || true)"
+  if printf '%s' "$BODY" | grep -q 'authorization bearer token\|JWT'; then
+    ok "the Data API is up and demands a token"
+  elif printf '%s' "$BODY" | grep -q '^\[{'; then
+    bad "an unauthenticated read returned rows — row-level security is not protecting the table"
+    info "Anyone with the URL could read your sites. Fix before deploying."
+    todo "Re-run neon/schema.sql; check 'alter table public.sites enable row level security' applied"
+  elif [ "$BODY" = "[]" ]; then
+    bad "an unauthenticated read succeeded and returned an empty set"
+    info "The table is exposed without a token. That is not what the schema intends."
+    todo "Re-run neon/schema.sql and confirm the anonymous role has no grant"
+  elif printf '%s' "$BODY" | grep -qi 'does not exist\|PGRST'; then
+    bad "the sites table is not exposed"
+    todo "Paste neon/schema.sql into the Neon SQL editor and run it"
+  else
+    bad "could not reach the Data API"
+    info "$(printf '%s' "$BODY" | head -c 160)"
+    todo "Check the URL, and whether the project is suspended (free projects scale to zero)"
   fi
+fi
+
+# ---------------------------------------------------------------- neon auth
+echo
+echo "Neon Auth"
+AUTH_URL="${NEON_AUTH_URL:-}"
+if [ -z "$AUTH_URL" ]; then
+  info "NEON_AUTH_URL is not set in this shell — it lives in the Vercel project."
+  info "Export it here to check it: export NEON_AUTH_URL=https://ep-xxx.neonauth...../neondb/auth"
+else
+  if curl -s --max-time 15 "$AUTH_URL/ok" 2>/dev/null | grep -q '"ok":true'; then
+    ok "auth endpoint is up"
+  else
+    bad "auth endpoint did not answer"
+    todo "Check NEON_AUTH_URL against Neon Console -> Auth -> Configuration"
+  fi
+
+  # The failure that only shows up in production: localhost is trusted by
+  # default, so an untrusted production origin passes every local test and
+  # then answers 403 INVALID_ORIGIN on the live site.
+  ORIGIN_CODE="$(curl -s --max-time 15 -X POST "$AUTH_URL/sign-in/email" \
+    -H 'Content-Type: application/json' -H 'Origin: https://blokza.com' \
+    -d '{"email":"preflight@example.invalid","password":"not-a-real-password"}' 2>/dev/null \
+    | grep -o '"code":"[A-Z_]*"' | head -1 || true)"
+  case "$ORIGIN_CODE" in
+    *INVALID_ORIGIN*)
+      bad "https://blokza.com is not a trusted origin"
+      info "Sign-in works locally and fails only once deployed, which is why this is checked here."
+      todo "Neon Console -> Auth -> Configuration: add https://blokza.com and your Vercel preview domain" ;;
+    *) ok "https://blokza.com is a trusted origin" ;;
+  esac
 fi
 
 # ---------------------------------------------------------------- the build
@@ -133,18 +132,22 @@ else
   ok "contact form has a real endpoint"
 fi
 
-if [ -f _redirects ]; then
-  ok "_redirects present (Cloudflare ignores netlify.toml)"
+if [ -f vercel.json ]; then
+  ok "vercel.json present (headers, redirects and the function region)"
 else
-  bad "_redirects is missing — every redirect would silently vanish on deploy"
+  bad "vercel.json is missing — headers and redirects would silently vanish on deploy"
 fi
-[ -f _headers ] && ok "_headers present" || bad "_headers is missing"
+if [ -f "api/auth/[...all].mjs" ]; then
+  ok "the auth proxy is present"
+else
+  bad "api/auth/[...all].mjs is missing — sign-in would have nowhere to go"
+fi
 
-if npm --prefix builder test >/tmp/saaswise-preflight-test.log 2>&1; then
-  ok "tests pass ($(grep -oE 'Tests +[0-9]+ passed' /tmp/saaswise-preflight-test.log | tail -1 | tr -s ' '))"
+if npm --prefix builder test >/tmp/blokza-preflight-test.log 2>&1; then
+  ok "tests pass ($(grep -oE 'Tests +[0-9]+ passed' /tmp/blokza-preflight-test.log | tail -1 | tr -s ' '))"
 else
   bad "tests are failing"
-  info "See /tmp/saaswise-preflight-test.log"
+  info "See /tmp/blokza-preflight-test.log"
   todo "Fix the failing tests before deploying"
 fi
 
@@ -152,9 +155,7 @@ fi
 echo
 echo "-----------------------------------------------------------"
 if [ "$FAIL" -eq 0 ]; then
-  echo "All $PASS checks passed. Ready to deploy:"
-  echo
-  echo "  ./scripts/deploy.sh --deploy"
+  echo "All $PASS checks passed. Push to deploy — Vercel builds from git."
   echo
   exit 0
 fi

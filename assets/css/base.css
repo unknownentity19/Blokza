@@ -1,5 +1,5 @@
 /* =========================================================
-   SAASWISE v3.1 — Refined SaaSwise-style design
+   BLOKZA v3.1 — Refined SaaSwise-style design
    ========================================================= */
 
 :root {
@@ -105,6 +105,15 @@ h1, h2, h3, h4, h5 {
    (serifs get spindly and dated at small sizes). */
 h1, h2 { font-family: var(--font-display); }
 h3, h4, h5 { font-family: var(--font-sans); letter-spacing: -0.015em; }
+
+/* Emphasis carried by weight, not slope.
+   Neither Inter nor Fraunces is loaded with an italic axis, so the browser was
+   shearing the roman instead — a synthetic oblique, on two short runs in the
+   whole site. Inter's real italic is a 50 KB download to serve those two, which
+   is not a trade worth making, and this is already the idiom here: both
+   `.views__item figcaption em` and `.docs-find__hit em` set it straight.
+   The demo pages load demos.css alone and keep their own Playfair italics. */
+em { font-style: normal; font-weight: 500; }
 h1 { font-size: clamp(2.8rem, 1.6rem + 4.4vw, 5.2rem); letter-spacing: -0.035em; }
 h2 { font-size: clamp(2.1rem, 1.5rem + 1.9vw, 3.2rem); letter-spacing: -0.028em; }
 h3 { font-size: clamp(1.18rem, 1rem + 0.5vw, 1.4rem); }
@@ -297,8 +306,9 @@ p  { margin: 0; color: var(--fg-muted); }
   display: inline-flex;
   align-items: center;
   /* Never compress the lockup: as a flex item it was shrinking below its own
-     content width, so "SAASWISE" overflowed the anchor and collided with the
-     first nav link in the ~24px band above the mobile breakpoint. */
+     content width, so the wordmark overflowed the anchor and collided with the
+     first nav link in the ~24px band above the mobile breakpoint. Stated
+     without naming the brand, because the bug is the shrink, not the string. */
   flex-shrink: 0;
   gap: 12px;
   font-weight: 700;
@@ -939,13 +949,24 @@ details > summary:focus-visible {
 .brand-glyph {
   display: inline-flex;
   flex: none;
-  color: var(--p-600);
+}
+/* The mark is artwork now, not a currentColor glyph, so the span no longer
+   passes a colour down to it. `display: block` kills the inline baseline gap
+   that would otherwise sit under the image and push the lockup off centre. */
+.brand-glyph img {
+  display: block;
+  height: 28px;
+  width: auto;
 }
 .brand-name {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 21px;
-  letter-spacing: -0.02em;
+  /* Positive, unlike every other heading here, because this is the one string
+     on the site set in all caps. Fraunces' letterfit is drawn for lowercase, so
+     the negative tracking the headings use closed "LO" up and ran the K's leg
+     into the Z. The social card's lockup uses the same value. */
+  letter-spacing: 0.04em;
   line-height: 1;
   color: var(--fg);
 }

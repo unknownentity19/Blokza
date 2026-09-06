@@ -76,7 +76,7 @@ export function createEmptyDoc(name = 'Untitled site'): SiteDoc {
     version: DOC_VERSION,
     id: uid(10),
     name,
-    siteUrl: `https://${slugify(name, 'site')}.saaswise.dev`,
+    siteUrl: `https://${slugify(name, 'site')}.blokza.com`,
     pages: [
       {
         id: uid(),

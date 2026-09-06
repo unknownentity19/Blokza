@@ -1,6 +1,6 @@
 {
-  "name": "SAASWISE \u2014 Build websites visually",
-  "short_name": "SAASWISE",
+  "name": "BLOKZA \u2014 Build websites visually",
+  "short_name": "BLOKZA",
   "description": "Visual website builder with drag-and-drop editor, no code, full control.",
   "start_url": "/",
   "display": "standalone",
@@ -8,9 +8,9 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/assets/images/favicon.svg?v=3",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/assets/images/favicon.png?v=560ddc146c",
+      "sizes": "64x64",
+      "type": "image/png",
       "purpose": "any"
     }
   ]

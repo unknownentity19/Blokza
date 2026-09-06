@@ -39,3 +39,6 @@ legacy/.next/
 
 # Assembled by scripts/deploy.sh; rebuilt on every deploy.
 dist/
+
+# Fetched on demand by scripts/build-og-card.py.
+scripts/.og-inter-latin.woff2

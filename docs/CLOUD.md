@@ -1,117 +1,149 @@
 # Accounts and cloud-saved sites
 
-Everything here is on free tiers. The only thing that ever costs money is a
-custom domain, and the free `*.netlify.app` / `*.pages.dev` subdomain avoids
-even that.
+The editor works with no account at all: everything is saved in the browser it
+was made in. Signing in adds one thing — the same site, from another browser or
+another machine — and nothing else changes.
+
+Identity and storage are both Neon: **Neon Auth** (Better Auth, managed) issues
+the session, and the **Neon Data API** (PostgREST) holds one table.
 
 ## What you get
 
-Sign in, and your sites live on the server instead of only in one browser — open
-them from another machine, or after clearing site data. Without an account the
-editor works exactly as it always has: everything in `localStorage`, nothing
-sent anywhere.
+- Email and password sign-in, with a real confirmation email
+- Sites saved to Postgres, one row each, readable only by their owner
+- The editor stays local-first: `localStorage` is written on every edit, and
+  the cloud is a second, slower sink
 
-## Setup, once (about five minutes)
+## Setup, once
 
-1. **Create a Supabase project** — <https://supabase.com>, free tier. Pick a
-   region near you; the database password it asks for is for direct SQL access
-   and is not used by this app.
+### 1. Create the project
 
-2. **Create the table.** Open the project's **SQL Editor**, paste all of
-   [`../supabase/schema.sql`](../supabase/schema.sql), and run it. That creates
-   one `sites` table and the row-level-security policies that make the whole
-   thing safe.
+Neon Console → new project. Two things matter and one of them is permanent:
 
-3. **Turn on email sign-in.** *Authentication → Providers → Email* is on by
-   default. Set **Site URL** and **Redirect URLs** (*Authentication → URL
-   Configuration*) to your deployed URL, and add the editor's own path —
-   `https://saaswise.dev/app/` — to Redirect URLs. The confirmation link comes
-   back to that exact page; if it is not on the allow-list GoTrue quietly sends
-   people to Site URL instead, and they land somewhere that cannot use the
-   session the link carries.
+- **Region cannot be changed later.** The only way out is a new project and a
+  `pg_dump`/`pg_restore` migration. Auth runs in the same region as the
+  database, so this sets your sign-in latency for good.
+- **Neon Auth must be toggled on.** It is off by default, and it is not offered
+  in every region — if the toggle is greyed out, that is the region talking.
 
-   Then pick one of the two email paths below. Both are free.
+### 2. Run the schema
 
-### Path A — no confirmation email (nothing to send, nothing to limit)
+Paste `neon/schema.sql` into the Neon SQL editor and run it. It creates the
+`sites` table, enables row-level security, and grants the `authenticated` role
+exactly what it needs.
 
-Set **Confirm email: off**. Sign-up completes immediately and the person is in
-the editor. No mail leaves Supabase, so there is no rate limit and nothing to
-configure.
+Read the comments in that file before changing it. The two that bite:
 
-The trade is that an address is never proven. Someone can sign up as
-`someone-else@example.com`. For an editor whose data is scoped to the account
-that made it, that mostly costs you the ability to email your users later.
+- `owner` is `text`, not `uuid`. Better Auth's user ids are nanoid-style
+  strings, so `auth.uid()` — which parses the JWT's `sub` as a UUID — returns
+  NULL for every one of them and every policy silently denies. `auth.user_id()`
+  returns `sub` as text, which is what these ids actually are.
+- The Data API refuses to expose a table with RLS disabled. That is the
+  behaviour you want: a forgotten `enable row level security` fails closed.
 
-### Path B — real email confirmation, on a free sender
+### 3. Enable the Data API
 
-Set **Confirm email: on**. The flow is wired up end to end:
+Neon Console → Data API. Note the base URL; it looks like
 
-- sign-up sends `redirect_to` pointing at the editor page it was started from
-- Supabase mails a link; the panel says so and offers **Send the confirmation
-  email again**, because the first message going to spam is the usual way this
-  stalls
-- the link comes back to the editor with the session in the URL fragment, which
-  `cloud/callback.ts` consumes, stores, and then erases from the address bar and
-  from history — it is a credential, and it has no business staying visible
-- an expired or already-used link says so instead of silently doing nothing
+```
+https://ep-<id>.apirest.<region>.aws.neon.tech/neondb/rest/v1
+```
 
-**The catch, and it is the whole reason Path A exists:** Supabase's built-in
-mailer is rate limited to a handful of messages an hour and its own docs
-describe it as unsuitable for production. It is fine for testing and useless for
-real sign-ups.
+### 4. Add your origins to Neon Auth
 
-To actually use Path B, point Supabase at your own SMTP under *Project Settings
-→ Authentication → SMTP Settings*. Providers with a free tier that suits a
-low-volume signup flow include **Resend** and **Brevo** — check their current
-free limits before committing, since those move. You will also need a verified
-sending domain, which for `saaswise.dev` means adding the DNS records they give
-you in Cloudflare, alongside the Email Routing records for receiving.
+**The step that is easy to miss, and fails confusingly when you do.** Better
+Auth rejects any state-changing request whose `Origin` it does not recognise —
+you get `403 INVALID_ORIGIN`, which reads like a bug in the site rather than a
+setting.
 
-Until custom SMTP is configured, expect confirmation mail to be throttled. That
-is a limit of the free mailer, not of this code.
+`localhost` is trusted out of the box, so local development works immediately
+and the problem only appears once deployed. In Neon Console → Auth →
+Configuration, add every origin the site is served from:
 
-4. **Give the build your project details.** Copy `builder/.env.example` to
-   `builder/.env.local` and paste the **Project URL** and the **anon public
-   key** from *Project Settings → API*.
+- `https://blokza.com`
+- `https://www.blokza.com`, if you use it
+- your Vercel preview domain
 
-   Both are meant to be public and are compiled into the bundle. The
-   `service_role` key is not — it bypasses every policy, and must never go in
-   the front end.
+### 5. Configure the deployment
 
-5. **Rebuild and deploy.**
+Two values, and they are not interchangeable.
 
-   ```bash
-   cd builder && npm run build
-   ```
+**On Vercel**, as a project environment variable:
 
-   That writes `app/`, which is committed, so deploying is just pushing the
-   files your host already serves.
+```
+NEON_AUTH_URL=https://ep-<id>.neonauth.<region>.aws.neon.tech/neondb/auth
+```
+
+No `VITE_` prefix. This one is read by the serverless function in
+`api/auth/[...all].mjs` and must *not* be inlined into the browser bundle.
+
+**In `builder/.env.local`**, for the build:
+
+```
+VITE_NEON_DATA_URL=https://ep-<id>.apirest.<region>.aws.neon.tech/neondb/rest/v1
+```
+
+`VITE_NEON_AUTH_URL` is optional and usually wrong to set: it defaults to
+`/api/auth`, this site's own proxy, which is the whole point (see below). Set it
+only to run `vite dev` without `vercel dev`, pointing straight at Neon.
+
+Neither value is a credential. The Neon **connection string** is — it carries a
+password and full database authority, and it belongs in neither file.
+
+## Why the auth calls go through this site
+
+`api/auth/[...all].mjs` proxies `/api/auth/*` to Neon Auth. It exists for one
+reason: the session is an HTTP-only cookie.
+
+Called directly on its `*.neon.tech` hostname, that cookie is **third-party** to
+blokza.com. Safari blocks third-party cookies outright and Chrome is phasing
+them out, so a visitor would sign in, watch the page reload, and be signed out
+again with nothing on screen to explain why. Neon's own roadmap lists
+"standalone frontend + backend" as not yet supported, for exactly this reason.
+
+Proxying through the site's own origin makes the cookie first-party, which no
+browser objects to. The proxy also drops the cookie's `Domain` attribute — so it
+binds to this host only — and tightens `SameSite=None` to `Lax`, which is now
+both correct and stricter.
+
+## How a session actually works
+
+Worth knowing, because it is not the usual token pair:
+
+- The **cookie** is the durable credential. JavaScript cannot read it.
+- `GET /api/auth/token` mints a short-lived **JWT** from that cookie, and that
+  JWT is what the Data API accepts.
+- "Refreshing" is just asking for another one.
+
+There is no refresh token anywhere, which is a real improvement on what this
+replaced: `localStorage` used to hold a long-lived credential that a successful
+XSS could take and reuse indefinitely. The worst it now holds is a JWT with
+minutes left on it, and minting another needs the cookie.
+
+The JWT is Ed25519-signed and verified by the Data API against Neon's published
+JWKS at `/.well-known/jwks.json`. Nothing in the browser verifies it — the
+client reads the payload only to learn when to ask for the next one.
 
 ## Two limits worth knowing
 
-- **Free Supabase projects pause after about a week of inactivity.** Resuming is
-  one button in the dashboard, but a paused project looks like being offline:
-  the editor will say it cannot reach the server and keep saving locally.
-- **Sign-in does not work when the editor is opened from a file.** A `file://`
-  page has an opaque origin, which the API rejects, so the Cloud panel explains
-  that and the editor stays in local mode. Use the deployed URL for cloud work,
-  and the local file when you just want to edit offline.
+**The free tier scales to zero.** After an idle spell the project suspends, so
+the first request wakes it and takes noticeably longer. The client says so
+rather than blaming the network.
+
+**Confirmation email is rate-limited.** The panel offers to send it again, which
+is what people need when the first one lands in spam.
 
 ## How syncing behaves
 
-- `localStorage` is still written on every edit. The cloud is a second, slower
-  sink — pushes are debounced by a couple of seconds, and flushed when the tab
-  closes.
-- Saves carry the revision the editor last saw. If another browser or device
-  saved in the meantime, the write matches nothing and the editor tells you
-  instead of overwriting. You choose: keep what is on screen, or take the saved
-  version.
-- Deleting a site in the Cloud panel removes it from the account. The copy in
-  the current browser is left alone.
+Saves are debounced and revision-checked. The editor sends the revision it last
+saw; a stale one matches no row, comes back empty, and the user is asked which
+version wins rather than having one silently overwritten. That check is enforced
+in Postgres by the `sites_touch` trigger, so a client cannot claim a revision it
+did not earn.
 
-## If you would rather not use Supabase
+## If you would rather not use Neon
 
-The client is one file, [`../builder/src/cloud/client.ts`](../builder/src/cloud/client.ts),
-holding six HTTP calls behind a small interface. Pointing it at Firebase,
-Pocketbase or your own endpoint means rewriting that file and nothing else — the
-editor talks to the interface, not to Supabase.
+Leave `VITE_NEON_DATA_URL` unset. `cloudConfig()` returns null, the account UI
+disappears, and the editor is local-only — which is also exactly what happens
+when it is opened from a `file://` URL, where no API would accept the request
+anyway.

@@ -19,8 +19,7 @@ import type { SiteDoc } from '../src/core/types';
 function session(): Session {
   return {
     accessToken: 'access-1',
-    refreshToken: 'refresh-1',
-    // Far in the future, so nothing tries to refresh mid-test.
+    // Far in the future, so nothing tries to mint another mid-test.
     expiresAt: Date.now() + 60 * 60 * 1000,
     user: { id: 'user-1', email: 'a@b.co' },
   };
@@ -53,7 +52,8 @@ function fakeClient(overrides: Partial<CloudClient> = {}) {
     signOut: vi.fn(async () => undefined),
     signIn: vi.fn(),
     signUp: vi.fn(),
-    refresh: vi.fn(),
+    getSession: vi.fn(async () => ({ id: 'user-1', email: 'a@b.co' })),
+    token: vi.fn(async () => session()),
   };
   return { client: { ...base, ...overrides } as unknown as CloudClient, saves, base };
 }
@@ -261,41 +261,55 @@ describe('deleting the open site', () => {
 /**
  * The confirmation round trip.
  *
- * All of this is about the moment someone clicks the link in their inbox: they
- * must end up signed in on the page they land on, and the credential in that
- * URL must not survive the visit.
+ * All of this is about the moment someone clicks the link in their inbox. Neon
+ * Auth verifies the address and sets the cookie before redirecting, so the job
+ * here is no longer to catch a credential out of the URL — it is to notice that
+ * we arrived from a confirmation, ask the server who we now are, and say so.
  */
 describe('completing an email confirmation', () => {
   /** Point the test at a URL as if we had just arrived from the email. */
-  function arriveAt(hash: string) {
-    window.history.replaceState(null, '', `/app/${hash}`);
+  function arriveAt(search: string) {
+    window.history.replaceState(null, '', `/app/${search}`);
   }
 
-  it('signs the visitor in from the link, and clears it out of the URL', async () => {
+  it('picks the session up from the cookie and clears the marker from the URL', async () => {
     const { client, base } = fakeClient();
     useAccount.setState({ client });
-    arriveAt('#access_token=at-1&refresh_token=rt-1&expires_in=3600&type=signup');
+    arriveAt('?confirmed=1');
 
     await S().restore();
 
-    expect(S().session?.accessToken).toBe('at-1');
+    // Nothing was read out of the URL: the session came from asking the server
+    // who the cookie belongs to.
+    expect(base.getSession).toHaveBeenCalled();
+    expect(S().session?.accessToken).toBe('access-1');
     expect(S().notice).toMatch(/confirmed/i);
-    // the session is persisted, so a reload does not undo the confirmation
-    expect(localStorage.getItem(SESSION_KEY)).toContain('at-1');
+    // the session is cached, so a reload does not cost another round trip
+    expect(localStorage.getItem(SESSION_KEY)).toContain('access-1');
     // and the sites list was fetched with the new token
     expect(base.listSites).toHaveBeenCalled();
-    // the credential is gone from the URL
-    expect(window.location.href).not.toContain('access_token');
-    expect(window.location.hash).toBe('');
+    // the marker is gone, so a refresh does not re-announce the confirmation
+    expect(window.location.href).not.toContain('confirmed');
+    expect(window.location.search).toBe('');
+  });
+
+  it('stays signed out when the cookie did not survive the redirect', async () => {
+    const { client } = fakeClient({
+      getSession: vi.fn(async () => null),
+    } as Partial<CloudClient>);
+    useAccount.setState({ client });
+    arriveAt('?confirmed=1');
+
+    await S().restore();
+
+    expect(S().session).toBeNull();
+    expect(S().restoring).toBe(false);
   });
 
   it('reports an expired link instead of appearing to work', async () => {
     const { client } = fakeClient();
     useAccount.setState({ client });
-    arriveAt(
-      '#error=access_denied&error_code=otp_expired' +
-        '&error_description=Email+link+is+invalid+or+has+expired',
-    );
+    arriveAt('?error=invalid_token&error_description=Token+is+invalid+or+has+expired');
 
     await S().restore();
 
@@ -321,7 +335,7 @@ describe('completing an email confirmation', () => {
     const { client } = fakeClient({
       signUp: vi.fn(async () => null),
       resendConfirmation: resend,
-      signIn: vi.fn(async () => session()),
+      signIn: vi.fn(async () => ({ id: 'user-1', email: 'a@b.co' })),
     } as Partial<CloudClient>);
     useAccount.setState({ client });
 

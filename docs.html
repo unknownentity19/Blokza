@@ -3,27 +3,27 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Documentation · SAASWISE</title>
-<meta name="description" content="SAASWISE developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
+<title>Documentation · BLOKZA</title>
+<meta name="description" content="BLOKZA developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
 <meta name="theme-color" content="#ffffff" />
-<link rel="icon" href="assets/images/favicon.svg?v=3" type="image/svg+xml" />
-<link rel="canonical" href="https://saaswise.dev/docs.html" />
+<link rel="icon" href="assets/images/favicon.png?v=560ddc146c" type="image/png" />
+<link rel="canonical" href="https://blokza.com/docs.html" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://saaswise.dev/docs.html" />
-  <meta property="og:site_name" content="SAASWISE" />
-<meta property="og:title" content="Documentation · SAASWISE" />
-<meta property="og:description" content="SAASWISE developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
-  <meta property="og:image" content="https://saaswise.dev/assets/og-image.png" />
+<meta property="og:url" content="https://blokza.com/docs.html" />
+  <meta property="og:site_name" content="BLOKZA" />
+<meta property="og:title" content="Documentation · BLOKZA" />
+<meta property="og:description" content="BLOKZA developer documentation: Quickstart, SDK, REST API, components, webhooks, and embed snippets." />
+  <meta property="og:image" content="https://blokza.com/assets/og-image.png?v=6a1ceeb1c5" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="SAASWISE — the visual website builder for teams who care about craft." />
+  <meta property="og:image:alt" content="BLOKZA — the visual website builder for teams who care about craft." />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/css/base.css?v=31" />
-<link rel="stylesheet" href="assets/css/pages.css?v=71" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400..900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/base.css?v=4ad4c39407" />
+<link rel="stylesheet" href="assets/css/pages.css?v=e7c4d3f0ad" />
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
@@ -31,8 +31,8 @@
 <!-- ========= NAV ========= -->
 <header class="site-nav">
   <div class="container site-nav__inner">
-    <a class="site-nav__brand" href="index.html" aria-label="SAASWISE home">
-      <span class="brand-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4" stroke="currentColor" stroke-width="1.7"/><rect x="10.6" y="10.6" width="8.2" height="8.2" rx="2.2" fill="currentColor"/></svg></span><span class="brand-name">SAASWISE</span>
+    <a class="site-nav__brand" href="index.html" aria-label="BLOKZA home">
+      <span class="brand-glyph" aria-hidden="true"><img src="assets/images/brand-glyph.png?v=83092a0e5a" width="22" height="28" alt="" decoding="async" /></span><span class="brand-name">BLOKZA</span>
     </a>
     <nav aria-label="Primary"><ul class="site-nav__links">
   <li class="has-submenu has-mega has-mega--2col">
@@ -182,13 +182,13 @@
       <!-- Page hero -->
       <header class="docs-hero">
         <nav class="docs-crumbs" aria-label="Breadcrumb">
-          <a href="index.html">SAASWISE</a>
+          <a href="index.html">BLOKZA</a>
           <span>/</span>
           <a href="docs.html">Docs</a>
           <span>/</span>
           <span class="is-current">Quickstart</span>
         </nav>
-        <h1>Build with SAASWISE</h1>
+        <h1>Build with BLOKZA</h1>
         <p>The component library, REST API, webhooks, and embed snippets for shipping marketing sites that look like product. Less plumbing, more shipping.</p>
         <div class="docs-hero__chips">
           <span class="docs-chip">v3.0 · current</span>
@@ -214,11 +214,11 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
 <pre><span class="tc">// 1 · install</span>
-<span class="tk">npm</span> install <span class="ts">@saaswise/sdk</span>
+<span class="tk">npm</span> install <span class="ts">@blokza/sdk</span>
 
 <span class="tc">// 2 · authenticate</span>
-<span class="tk">import</span> { <span class="tn">SAASWISE</span> } <span class="tk">from</span> <span class="ts">"@saaswise/sdk"</span>;
-<span class="tk">const</span> client = <span class="tk">new</span> <span class="tn">SAASWISE</span>({ token: <span class="tn">process</span>.env.<span class="tp">SAASWISE_KEY</span> });
+<span class="tk">import</span> { <span class="tn">BLOKZA</span> } <span class="tk">from</span> <span class="ts">"@blokza/sdk"</span>;
+<span class="tk">const</span> client = <span class="tk">new</span> <span class="tn">BLOKZA</span>({ token: <span class="tn">process</span>.env.<span class="tp">BLOKZA_KEY</span> });
 
 <span class="tc">// 3 · ship</span>
 <span class="tk">await</span> client.sites.deploy({ id: <span class="ts">"site_8aL2k9X"</span> });</pre>
@@ -229,11 +229,11 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
 <pre><span class="tc"># 1 · install</span>
-<span class="tk">pip</span> install <span class="ts">saaswise</span>
+<span class="tk">pip</span> install <span class="ts">blokza</span>
 
 <span class="tc"># 2 · authenticate</span>
-<span class="tk">from</span> <span class="tn">saaswise</span> <span class="tk">import</span> <span class="tn">SAASWISE</span>
-client = <span class="tn">SAASWISE</span>(token=<span class="tn">os</span>.environ[<span class="ts">"SAASWISE_KEY"</span>])
+<span class="tk">from</span> <span class="tn">blokza</span> <span class="tk">import</span> <span class="tn">BLOKZA</span>
+client = <span class="tn">BLOKZA</span>(token=<span class="tn">os</span>.environ[<span class="ts">"BLOKZA_KEY"</span>])
 
 <span class="tc"># 3 · ship</span>
 client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
@@ -244,8 +244,8 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
             </button>
 <pre><span class="tc"># deploy a site</span>
-<span class="tk">curl</span> -X POST https://api.saaswise.dev/v1/sites/site_8aL2k9X/deploys \
-  -H <span class="ts">"Authorization: Bearer $SAASWISE_KEY"</span></pre>
+<span class="tk">curl</span> -X POST https://api.blokza.com/v1/sites/site_8aL2k9X/deploys \
+  -H <span class="ts">"Authorization: Bearer $BLOKZA_KEY"</span></pre>
           </div>
         </div>
 
@@ -258,7 +258,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- SDK install -->
       <section class="docs-section" id="install">
         <h2>SDK install</h2>
-        <p>Install the SAASWISE SDK with your package manager of choice. The same client supports server, edge, and worker runtimes.</p>
+        <p>Install the BLOKZA SDK with your package manager of choice. The same client supports server, edge, and worker runtimes.</p>
 
         <div class="docs-tabs" data-docs-tabs style="margin-top:18px;">
           <div class="docs-tabs__bar" role="tablist" aria-label="Code language">
@@ -267,18 +267,18 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
             <button class="docs-tabs__btn" data-target="ins-yarn" role="tab" id="tab-ins-yarn" aria-controls="ins-yarn" aria-selected="false" tabindex="-1">yarn</button>
             <button class="docs-tabs__btn" data-target="ins-bun" role="tab" id="tab-ins-bun" aria-controls="ins-bun" aria-selected="false" tabindex="-1">bun</button>
           </div>
-          <div class="devdocs-code" data-panel="ins-npm" role="tabpanel" id="ins-npm" aria-labelledby="tab-ins-npm" tabindex="0"><pre><span class="tk">npm</span> install <span class="ts">@saaswise/sdk @saaswise/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-pnpm" role="tabpanel" id="ins-pnpm" aria-labelledby="tab-ins-pnpm" tabindex="0" hidden><pre><span class="tk">pnpm</span> add <span class="ts">@saaswise/sdk @saaswise/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-yarn" role="tabpanel" id="ins-yarn" aria-labelledby="tab-ins-yarn" tabindex="0" hidden><pre><span class="tk">yarn</span> add <span class="ts">@saaswise/sdk @saaswise/components</span></pre></div>
-          <div class="devdocs-code" data-panel="ins-bun" role="tabpanel" id="ins-bun" aria-labelledby="tab-ins-bun" tabindex="0" hidden><pre><span class="tk">bun</span> add <span class="ts">@saaswise/sdk @saaswise/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-npm" role="tabpanel" id="ins-npm" aria-labelledby="tab-ins-npm" tabindex="0"><pre><span class="tk">npm</span> install <span class="ts">@blokza/sdk @blokza/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-pnpm" role="tabpanel" id="ins-pnpm" aria-labelledby="tab-ins-pnpm" tabindex="0" hidden><pre><span class="tk">pnpm</span> add <span class="ts">@blokza/sdk @blokza/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-yarn" role="tabpanel" id="ins-yarn" aria-labelledby="tab-ins-yarn" tabindex="0" hidden><pre><span class="tk">yarn</span> add <span class="ts">@blokza/sdk @blokza/components</span></pre></div>
+          <div class="devdocs-code" data-panel="ins-bun" role="tabpanel" id="ins-bun" aria-labelledby="tab-ins-bun" tabindex="0" hidden><pre><span class="tk">bun</span> add <span class="ts">@blokza/sdk @blokza/components</span></pre></div>
         </div>
 
         <table class="props">
           <thead><tr><th>Package</th><th>Description</th><th>Size (gz)</th></tr></thead>
           <tbody>
-            <tr><td><code>@saaswise/sdk</code></td><td>REST client + Webhook helpers</td><td>4.8 KB</td></tr>
-            <tr><td><code>@saaswise/components</code></td><td>React components used by the editor</td><td>21 KB</td></tr>
-            <tr><td><code>@saaswise/cli</code></td><td>CLI for local dev, preview, deploy</td><td></td></tr>
+            <tr><td><code>@blokza/sdk</code></td><td>REST client + Webhook helpers</td><td>4.8 KB</td></tr>
+            <tr><td><code>@blokza/components</code></td><td>React components used by the editor</td><td>21 KB</td></tr>
+            <tr><td><code>@blokza/cli</code></td><td>CLI for local dev, preview, deploy</td><td></td></tr>
           </tbody>
         </table>
       </section>
@@ -286,7 +286,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- Authentication -->
       <section class="docs-section" id="auth">
         <h2>Authentication</h2>
-        <p>The SAASWISE API uses Bearer tokens. Generate keys in <b>Dashboard → Settings → API keys</b>. Tokens scope to a single workspace and rotate on demand.</p>
+        <p>The BLOKZA API uses Bearer tokens. Generate keys in <b>Dashboard → Settings → API keys</b>. Tokens scope to a single workspace and rotate on demand.</p>
 
         <div class="docs-grid-2">
           <div class="docs-info">
@@ -311,8 +311,8 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
 
         <div class="devdocs-code">
 <pre><span class="tc"># every request</span>
-<span class="tk">curl</span> https://api.saaswise.dev/v1/me \
-  -H <span class="ts">"Authorization: Bearer $SAASWISE_KEY"</span>
+<span class="tk">curl</span> https://api.blokza.com/v1/me \
+  -H <span class="ts">"Authorization: Bearer $BLOKZA_KEY"</span>
 
 <span class="tc"># response</span>
 {
@@ -350,7 +350,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <button class="devdocs-code__copy" type="button" aria-label="Copy code">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
           </button>
-<pre><span class="tk">import</span> { <span class="tn">Hero</span> } <span class="tk">from</span> <span class="ts">"@saaswise/components"</span>;
+<pre><span class="tk">import</span> { <span class="tn">Hero</span> } <span class="tk">from</span> <span class="ts">"@blokza/components"</span>;
 
 <span class="tk">export default function</span> <span class="tn">Page</span>() {
   <span class="tk">return</span> (
@@ -486,8 +486,8 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
           </button>
 <pre><span class="tc"># request</span>
-<span class="tk">curl</span> -X POST https://api.saaswise.dev/v1/sites \
-  -H <span class="ts">"Authorization: Bearer $SAASWISE_KEY"</span> \
+<span class="tk">curl</span> -X POST https://api.blokza.com/v1/sites \
+  -H <span class="ts">"Authorization: Bearer $BLOKZA_KEY"</span> \
   -H <span class="ts">"Content-Type: application/json"</span> \
   -d <span class="ts">'{"name": "habits-app", "template": "lift"}'</span>
 
@@ -495,7 +495,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
 {
   <span class="tp">"id"</span>: <span class="ts">"site_8aL2k9X"</span>,
   <span class="tp">"name"</span>: <span class="ts">"habits-app"</span>,
-  <span class="tp">"url"</span>: <span class="ts">"https://habits-app.saaswise.dev"</span>,
+  <span class="tp">"url"</span>: <span class="ts">"https://habits-app.blokza.com"</span>,
   <span class="tp">"publish_token"</span>: <span class="ts">"pt_••••••••"</span>,
   <span class="tp">"created_at"</span>: <span class="ts">"2026-09-14T18:42:00Z"</span>
 }</pre>
@@ -518,10 +518,10 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
         </ul>
         <h3 class="docs-h3">Update SEO meta</h3>
         <div class="devdocs-code">
-<pre><span class="tk">curl</span> -X PATCH https://api.saaswise.dev/v1/pages/page_4Bz1 \
-  -H <span class="ts">"Authorization: Bearer $SAASWISE_KEY"</span> \
+<pre><span class="tk">curl</span> -X PATCH https://api.blokza.com/v1/pages/page_4Bz1 \
+  -H <span class="ts">"Authorization: Bearer $BLOKZA_KEY"</span> \
   -H <span class="ts">"Content-Type: application/json"</span> \
-  -d <span class="ts">'{"seo": {"title": "Pricing, SAASWISE", "description": "Plans for every team."}}'</span></pre>
+  -d <span class="ts">'{"seo": {"title": "Pricing, BLOKZA", "description": "Plans for every team."}}'</span></pre>
         </div>
       </section>
 
@@ -554,7 +554,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- Webhooks -->
       <section class="docs-section" id="webhooks">
         <h2>Webhooks</h2>
-        <p>Subscribe to lifecycle events to keep your CMS, CI, or analytics in sync. Payloads are signed with HMAC-SHA256, verify with the <code>X-SAASWISE-Signature</code> header.</p>
+        <p>Subscribe to lifecycle events to keep your CMS, CI, or analytics in sync. Payloads are signed with HMAC-SHA256, verify with the <code>X-BLOKZA-Signature</code> header.</p>
         <table class="props">
           <thead><tr><th>Event</th><th>When it fires</th></tr></thead>
           <tbody>
@@ -570,17 +570,17 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <!-- Embed -->
       <section class="docs-section" id="embed">
         <h2>Embed snippet</h2>
-        <p>Drop a single script tag into any HTML page to render a SAASWISE block in place. Snippets render server-side at the edge and hydrate progressively.</p>
+        <p>Drop a single script tag into any HTML page to render a BLOKZA block in place. Snippets render server-side at the edge and hydrate progressively.</p>
         <div class="devdocs-code">
           <button class="devdocs-code__copy" type="button" aria-label="Copy code">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
           </button>
-<pre><span class="tag">&lt;div</span> <span class="tp">id</span>=<span class="ts">"saaswise-pricing"</span><span class="tag">&gt;&lt;/div&gt;</span>
+<pre><span class="tag">&lt;div</span> <span class="tp">id</span>=<span class="ts">"blokza-pricing"</span><span class="tag">&gt;&lt;/div&gt;</span>
 <span class="tag">&lt;script</span>
-  <span class="tp">src</span>=<span class="ts">"https://embed.saaswise.dev/v1/saaswise.js"</span>
+  <span class="tp">src</span>=<span class="ts">"https://embed.blokza.com/v1/blokza.js"</span>
   <span class="tp">data-block</span>=<span class="ts">"pricing"</span>
   <span class="tp">data-site</span>=<span class="ts">"site_8aL2k9X"</span>
-  <span class="tp">data-mount</span>=<span class="ts">"#saaswise-pricing"</span>
+  <span class="tp">data-mount</span>=<span class="ts">"#blokza-pricing"</span>
   <span class="tk">defer</span>
 <span class="tag">&gt;&lt;/script&gt;</span></pre>
         </div>
@@ -621,7 +621,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <h2>Wire up a CMS</h2>
           <span class="docs-tag">Guide</span>
         </div>
-        <p>Pull content from any headless CMS and let editors update copy without touching layout. The block tree stays in SAASWISE, the strings live in the CMS.</p>
+        <p>Pull content from any headless CMS and let editors update copy without touching layout. The block tree stays in BLOKZA, the strings live in the CMS.</p>
         <ol class="docs-steps">
           <li><strong>Map fields.</strong> In the editor, mark text props as <em>bound</em> and pick a CMS path (e.g. <code>hero.title</code>).</li>
           <li><strong>Add a fetch hook.</strong> Server-side, fetch your CMS, then pass the JSON to <code>client.pages.render({ id, data })</code>.</li>
@@ -648,15 +648,15 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <thead><tr><th>Type</th><th>Record</th><th>Value</th></tr></thead>
           <tbody>
             <tr><td>Apex</td><td><code>A</code></td><td><code>76.76.21.21</code></td></tr>
-            <tr><td>Subdomain</td><td><code>CNAME</code></td><td><code>edge.saaswise.dev</code></td></tr>
-            <tr><td>Wildcard</td><td><code>CNAME</code> for <code>*</code></td><td><code>edge.saaswise.dev</code></td></tr>
+            <tr><td>Subdomain</td><td><code>CNAME</code></td><td><code>edge.blokza.com</code></td></tr>
+            <tr><td>Wildcard</td><td><code>CNAME</code> for <code>*</code></td><td><code>edge.blokza.com</code></td></tr>
           </tbody>
         </table>
 
         <div class="devdocs-code">
 <pre><span class="tc"># verify a domain after DNS update</span>
-<span class="tk">curl</span> -X POST https://api.saaswise.dev/v1/sites/site_8aL2k9X/domains/verify \
-  -H <span class="ts">"Authorization: Bearer $SAASWISE_KEY"</span> \
+<span class="tk">curl</span> -X POST https://api.blokza.com/v1/sites/site_8aL2k9X/domains/verify \
+  -H <span class="ts">"Authorization: Bearer $BLOKZA_KEY"</span> \
   -d <span class="ts">'{"hostname": "habits-app.com"}'</span></pre>
         </div>
       </section>
@@ -667,7 +667,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
           <h2>CLI and CI</h2>
           <span class="docs-tag">Guide</span>
         </div>
-        <p>The SAASWISE CLI runs the same build pipeline as the cloud, preview locally, lint your blocks, and ship from CI without leaving your terminal.</p>
+        <p>The BLOKZA CLI runs the same build pipeline as the cloud, preview locally, lint your blocks, and ship from CI without leaving your terminal.</p>
 
         <div class="docs-tabs" data-docs-tabs>
           <div class="docs-tabs__bar" role="tablist" aria-label="Code language">
@@ -675,16 +675,16 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
             <button class="docs-tabs__btn" data-target="cli-ci" role="tab" id="tab-cli-ci" aria-controls="cli-ci" aria-selected="false" tabindex="-1">From CI</button>
           </div>
           <div class="devdocs-code" data-panel="cli-local" role="tabpanel" id="cli-local" aria-labelledby="tab-cli-local" tabindex="0">
-<pre><span class="tk">npx</span> @saaswise/cli login
-<span class="tk">npx</span> @saaswise/cli dev      <span class="tc"># preview at localhost:3010</span>
-<span class="tk">npx</span> @saaswise/cli build    <span class="tc"># static export to ./dist</span></pre>
+<pre><span class="tk">npx</span> @blokza/cli login
+<span class="tk">npx</span> @blokza/cli dev      <span class="tc"># preview at localhost:3010</span>
+<span class="tk">npx</span> @blokza/cli build    <span class="tc"># static export to ./dist</span></pre>
           </div>
           <div class="devdocs-code" data-panel="cli-ci" role="tabpanel" id="cli-ci" aria-labelledby="tab-cli-ci" tabindex="0" hidden>
 <pre><span class="tc"># .github/workflows/deploy.yml</span>
 <span class="tp">- name</span>: Deploy
   <span class="tp">run</span>: |
-    npm i -g @saaswise/cli
-    saaswise deploy --site $SITE_ID --token $<span class="tp">{{ secrets.SAASWISE_KEY }}</span></pre>
+    npm i -g @blokza/cli
+    blokza deploy --site $SITE_ID --token $<span class="tp">{{ secrets.BLOKZA_KEY }}</span></pre>
           </div>
         </div>
       </section>
@@ -738,7 +738,7 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
   <div class="container">
     <div class="site-footer__grid">
       <div>
-        <a class="site-nav__brand" href="index.html"><span class="brand-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4" stroke="currentColor" stroke-width="1.7"/><rect x="10.6" y="10.6" width="8.2" height="8.2" rx="2.2" fill="currentColor"/></svg></span><span class="brand-name">SAASWISE</span></a>
+        <a class="site-nav__brand" href="index.html"><span class="brand-glyph" aria-hidden="true"><img src="assets/images/brand-glyph.png?v=83092a0e5a" width="22" height="28" alt="" decoding="async" /></span><span class="brand-name">BLOKZA</span></a>
         <p class="mt-4" style="max-width:280px;font-size:14px;">The visual website builder for teams who care about craft. Drag, drop, and ship.</p>
       </div>
       <div><h2 class="site-footer__coltitle">Product</h2><ul><li><a href="product.html">Overview</a></li><li><a href="features-builder.html">Features</a></li><li><a href="templates.html">Templates</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="app/index.html">Editor</a></li></ul></div>
@@ -746,13 +746,13 @@ client.sites.deploy(id=<span class="ts">"site_8aL2k9X"</span>)</pre>
       <div><h2 class="site-footer__coltitle">Resources</h2><ul><li><a href="docs.html">Docs</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="community.html">Community</a></li><li><a href="support.html">Support</a></li></ul></div>
     </div>
     <div class="site-footer__bottom">
-      <span>© <span data-year>2026</span> SAASWISE, Inc. All rights reserved.</span>
+      <span>© <span data-year>2026</span> BLOKZA, Inc. All rights reserved.</span>
       <span><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="security.html">Security</a></span>
     </div>
   </div>
 </footer>
 
-<script src="assets/js/site.js?v=16" defer></script>
+<script src="assets/js/site.js?v=089cc3689a" defer></script>
 <!-- The search the sidebar button has always advertised. Its index is built from
      the page's own section links at runtime, so there is nothing to keep in step
      when a section is added or renamed. -->

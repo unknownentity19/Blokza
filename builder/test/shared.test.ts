@@ -55,7 +55,7 @@ function withNavbar(): string {
 /** The nav's brand heading, wherever it currently lives. */
 function brandId(doc: SiteDoc): string {
   const found = Object.values(doc.nodes).find(
-    (node) => node.type === 'heading' && node.props.text === 'SAASWISE',
+    (node) => node.type === 'heading' && node.props.text === 'BLOKZA',
   );
   if (!found) throw new Error('no brand heading');
   return found.id;
@@ -113,7 +113,7 @@ describe('making a section shared', () => {
         if (typeof node.props.text === 'string') seen.push(node.props.text);
       });
       expect(seen, `page ${page.name}`).toContain('Meridian');
-      expect(seen).not.toContain('SAASWISE');
+      expect(seen).not.toContain('BLOKZA');
     }
   });
 

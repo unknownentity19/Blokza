@@ -1,16 +1,21 @@
 /**
  * Keeping someone signed in between visits.
  *
- * The session lives in `localStorage` under its own key, separate from the
- * document: signing out must never risk the work, and a corrupt session must
- * never stop the editor loading. Every read is therefore validated and a bad
- * value is discarded rather than thrown.
+ * What is stored here is now only a *cache*, and that is the whole difference
+ * from the previous version. The durable credential is Neon Auth's HTTP-only
+ * cookie, which JavaScript cannot read at all; this holds the short-lived JWT
+ * minted from it plus the user it belongs to, so the editor can render a signed
+ * in state and make its first Data API call without a round trip.
  *
- * A refresh token in `localStorage` is the same exposure every browser app of
- * this shape accepts — a successful XSS would take it. The mitigation that
- * matters is upstream: no untrusted HTML reaches the page unsanitised (see
- * `core/sanitize.ts`), and the token only ever grants what row-level security
- * allows, which is one user's own rows.
+ * That removes the exposure the old design accepted. It kept a *refresh* token
+ * in `localStorage` — a long-lived credential that a successful XSS would take
+ * and could then use indefinitely. There is no refresh token any more: the
+ * worst an attacker gets from this key is a JWT with minutes left on it, and
+ * they cannot mint another without the cookie.
+ *
+ * The key is separate from the document: signing out must never risk the work,
+ * and a corrupt session must never stop the editor loading. Every read is
+ * therefore validated and a bad value discarded rather than thrown.
  */
 
 import { needsRefresh, type CloudClient, type Session } from './client';
@@ -23,13 +28,12 @@ function isSession(value: unknown): value is Session {
   return (
     typeof s.accessToken === 'string' &&
     s.accessToken.length > 0 &&
-    typeof s.refreshToken === 'string' &&
-    s.refreshToken.length > 0 &&
     typeof s.expiresAt === 'number' &&
     Number.isFinite(s.expiresAt) &&
     typeof s.user === 'object' &&
     s.user !== null &&
-    typeof (s.user as Session['user']).id === 'string'
+    typeof (s.user as Session['user']).id === 'string' &&
+    (s.user as Session['user']).id.length > 0
   );
 }
 
@@ -57,9 +61,11 @@ export function writeSession(session: Session | null): void {
 /**
  * A session guaranteed usable for the next call, or null if it cannot be.
  *
- * Refreshing early avoids the case where a token passes this check and expires
- * in flight. A failed refresh means the stored token is spent — the session is
- * cleared so the UI asks for a password rather than looping on 401s.
+ * "Refreshing" is minting a new JWT from the cookie, so this succeeds exactly
+ * when the cookie is still good. Doing it early avoids the case where a token
+ * passes this check and expires in flight. A failure means the cookie is gone
+ * or expired — the cache is cleared so the UI asks for a password rather than
+ * looping on 401s from the Data API.
  */
 export async function ensureFresh(
   client: CloudClient,
@@ -68,7 +74,7 @@ export async function ensureFresh(
   if (!session) return null;
   if (!needsRefresh(session)) return session;
   try {
-    const next = await client.refresh(session.refreshToken);
+    const next = await client.token(session.user);
     writeSession(next);
     return next;
   } catch {

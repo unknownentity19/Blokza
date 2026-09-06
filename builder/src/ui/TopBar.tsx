@@ -49,7 +49,7 @@ export function TopBar() {
   return (
     <header className="tb">
       <div className="tb__left">
-        <a className="tb__back" href="/" title="Back to saaswise.dev">
+        <a className="tb__back" href="/" title="Back to blokza.com">
           <Icon path="M15 6l-6 6 6 6" size={16} strokeWidth={2} />
         </a>
         <div className="tb__id">

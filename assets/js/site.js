@@ -1,5 +1,5 @@
 /* =========================================================
-   SAASWISE v3.1 — Site interactions
+   BLOKZA v3.1 — Site interactions
    ========================================================= */
 (function () {
   "use strict";
@@ -322,7 +322,7 @@
   const unconfigured = /YOUR_FORM_ID/.test(form.getAttribute("action") || "");
   if (unconfigured) {
     console.warn(
-      "[SAASWISE] contact form has no endpoint: replace YOUR_FORM_ID in the form action."
+      "[BLOKZA] contact form has no endpoint: replace YOUR_FORM_ID in the form action."
     );
   }
 

@@ -1,17 +1,19 @@
 /**
  * Completing an email confirmation.
  *
- * The fragment GoTrue redirects with is a credential, so the interesting cases
- * are all about not mishandling it: erasing it from the URL, refusing a
- * half-session that would expire into a silent sign-out, and telling someone
- * their link is stale instead of dropping them on a page that looks fine.
+ * Neon Auth verifies the address server-side and redirects here with the cookie
+ * already set, so unlike the flow this replaces there is no credential in the
+ * URL to mishandle. What is left is a notice, and the interesting cases are all
+ * about showing the right one exactly once: announcing a confirmation, keeping
+ * the page's own fragment, explaining a stale link, and not repeating any of it
+ * on a refresh.
  */
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { consumeAuthCallback } from '../src/cloud/callback';
+import { CONFIRMED_PARAM, authRedirectTarget, consumeAuthCallback } from '../src/cloud/callback';
 
-const APP = 'https://saaswise.dev/app/';
+const APP = 'https://blokza.com/app/';
 
 describe('consumeAuthCallback', () => {
   it('does nothing on an ordinary URL', () => {
@@ -23,97 +25,67 @@ describe('consumeAuthCallback', () => {
     expect(consumeAuthCallback('not a url').kind).toBe('none');
   });
 
-  it('turns a confirmation fragment into a session', () => {
-    const result = consumeAuthCallback(
-      `${APP}#access_token=at-1&refresh_token=rt-1&expires_in=3600&token_type=bearer&type=signup`,
-    );
-    expect(result.kind).toBe('session');
-    if (result.kind !== 'session') return;
-    expect(result.session.accessToken).toBe('at-1');
-    expect(result.session.refreshToken).toBe('rt-1');
-    expect(result.confirmed).toBe(true);
-    expect(result.session.expiresAt).toBeGreaterThan(Date.now());
+  it('reports a confirmed address', () => {
+    expect(consumeAuthCallback(`${APP}?${CONFIRMED_PARAM}=1`).kind).toBe('confirmed');
   });
 
   /**
-   * The whole point of consuming it. An access token left in the address bar is
-   * copied into pasted links, and left in history for anyone on the machine.
+   * The reason the marker exists at all: Better Auth returns to the bare
+   * callback URL on success, so without something of our own there is no way to
+   * tell a fresh confirmation from someone simply opening the editor, and the
+   * "Email confirmed" notice would either never appear or appear every time.
    */
-  it('erases every auth parameter from the URL', () => {
+  it('round-trips the marker that authRedirectTarget asks for', () => {
+    const target = 'https://blokza.com/app/index.html?confirmed=1';
+    expect(consumeAuthCallback(target).kind).toBe('confirmed');
+  });
+
+  it('erases the callback parameters from the URL', () => {
     const scrub = vi.fn();
-    consumeAuthCallback(
-      `${APP}?seed=demo#access_token=at-1&refresh_token=rt-1&expires_in=3600&type=signup`,
-      scrub,
-    );
+    consumeAuthCallback(`${APP}?seed=demo&${CONFIRMED_PARAM}=1`, scrub);
     expect(scrub).toHaveBeenCalledTimes(1);
     const cleaned = scrub.mock.calls[0][0] as string;
-    expect(cleaned).not.toContain('access_token');
-    expect(cleaned).not.toContain('refresh_token');
-    expect(cleaned).not.toContain('type=signup');
+    expect(cleaned).not.toContain(CONFIRMED_PARAM);
     // and it keeps what was not ours
     expect(cleaned).toContain('seed=demo');
   });
 
   /**
-   * The case my first pass got wrong: `type` and `expires_in` were read *after*
-   * the scrub had deleted them, so with scrubbing on — which is how it always
-   * runs in the app — a confirmed sign-up silently reported itself as not
-   * confirmed and the "Email confirmed" notice never appeared.
+   * The mistake the previous version of this file was written to catch: values
+   * read *after* the scrub had deleted them came back as defaults, so with
+   * scrubbing on — which is how it always runs in the app — a confirmed sign-up
+   * silently reported itself as not confirmed.
    */
-  it('still reports the confirmation and expiry when the URL is being scrubbed', () => {
-    const result = consumeAuthCallback(
-      `${APP}#access_token=at-1&refresh_token=rt-1&expires_in=60&type=signup`,
-      () => {},
-    );
-    expect(result.kind).toBe('session');
-    if (result.kind !== 'session') return;
-    expect(result.confirmed).toBe(true);
-    // 60s, not the 3600s default
-    expect(result.session.expiresAt).toBeLessThan(Date.now() + 120_000);
+  it('still reports the confirmation when the URL is being scrubbed', () => {
+    expect(consumeAuthCallback(`${APP}?${CONFIRMED_PARAM}=1`, () => {}).kind).toBe('confirmed');
   });
 
   it('keeps any unrelated fragment the page was using', () => {
     const scrub = vi.fn();
-    consumeAuthCallback(`${APP}#panel=insert&access_token=at-1&refresh_token=rt-1`, scrub);
+    consumeAuthCallback(`${APP}?${CONFIRMED_PARAM}=1#panel=insert`, scrub);
     expect(scrub.mock.calls[0][0]).toContain('panel=insert');
-  });
-
-  /**
-   * An access token with no refresh token works until it expires and then signs
-   * the person out with no warning. Refusing it is the kinder failure.
-   */
-  it('refuses a session with no refresh token', () => {
-    const result = consumeAuthCallback(`${APP}#access_token=at-1&expires_in=3600&type=signup`);
-    expect(result.kind).toBe('error');
-    if (result.kind !== 'error') return;
-    expect(result.message).toMatch(/complete session/i);
   });
 
   it('explains an expired link instead of failing silently', () => {
     const result = consumeAuthCallback(
-      `${APP}#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired`,
+      `${APP}?error=invalid_token&error_description=Token+is+invalid+or+has+expired`,
     );
     expect(result.kind).toBe('error');
     if (result.kind !== 'error') return;
     expect(result.message).toMatch(/expired/i);
-    // not GoTrue's raw wording, and not a plus-encoded sentence
+    // not the raw upstream wording, and not a plus-encoded sentence
     expect(result.message).not.toContain('+');
   });
 
-  it('reads an error from the query string too, and still clears it', () => {
+  it('reads an error from the fragment too, and still clears it', () => {
     const scrub = vi.fn();
-    const result = consumeAuthCallback(
-      `${APP}?error=access_denied&error_description=Something+went+wrong`,
-      scrub,
-    );
+    const result = consumeAuthCallback(`${APP}#error=access_denied`, scrub);
     expect(result.kind).toBe('error');
     expect(scrub.mock.calls[0][0]).not.toContain('error');
   });
 
   it('says so plainly when the address was already confirmed', () => {
-    const result = consumeAuthCallback(
-      `${APP}#error=invalid_request&error_description=Email+link+already+used`,
-    );
+    const result = consumeAuthCallback(`${APP}?error=already_verified`);
     if (result.kind !== 'error') throw new Error('expected an error');
     expect(result.message).toMatch(/already confirmed/i);
   });
@@ -122,5 +94,17 @@ describe('consumeAuthCallback', () => {
     const scrub = vi.fn();
     consumeAuthCallback(`${APP}#panel=insert`, scrub);
     expect(scrub).not.toHaveBeenCalled();
+  });
+});
+
+describe('authRedirectTarget', () => {
+  /**
+   * The target has to carry the marker, or the confirmation notice never fires:
+   * Better Auth redirects to exactly this URL and adds nothing of its own.
+   */
+  it('carries the marker consumeAuthCallback looks for', () => {
+    const target = authRedirectTarget();
+    expect(target).toContain(`${CONFIRMED_PARAM}=1`);
+    expect(consumeAuthCallback(String(target)).kind).toBe('confirmed');
   });
 });

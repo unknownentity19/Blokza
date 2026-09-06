@@ -1,9 +1,9 @@
 {
-  "name": "saaswise-builder",
+  "name": "blokza-builder",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "SAASWISE visual website builder — production editor",
+  "description": "BLOKZA visual website builder — production editor",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b --noEmit && vite build",

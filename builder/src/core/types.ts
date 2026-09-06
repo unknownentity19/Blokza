@@ -1,5 +1,5 @@
 /**
- * Core document model for the SAASWISE builder.
+ * Core document model for the BLOKZA builder.
  *
  * Design notes
  * ------------

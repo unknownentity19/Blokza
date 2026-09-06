@@ -1,4 +1,4 @@
-# SAASWISE — Marketing Site + Visual Editor
+# BLOKZA — Marketing Site + Visual Editor
 
 Two things live in this repository:
 
@@ -76,7 +76,7 @@ are rewritten to relative filenames, which means the ZIP works from a local
 folder, an S3 bucket, GitHub Pages or Netlify without changes.
 
 Everything is client-side: work autosaves to `localStorage`, and the project can
-be downloaded as a `.saaswise.json` file to move between browsers.
+be downloaded as a `.blokza.json` file to move between browsers.
 
 ## Production checklist
 
@@ -91,8 +91,8 @@ be downloaded as a `.saaswise.json` file to move between browsers.
 - [x] Web App Manifest (`/site.webmanifest`)
 - [x] `robots.txt` + `sitemap.xml`
 - [x] Custom 404 page
-- [x] Security headers (CSP-friendly, HSTS, X-Frame-Options) via `_headers` (Netlify) + `vercel.json`
-- [x] Cache-Control: 1-year immutable on `/assets/*`, no-cache on HTML
+- [x] Security headers (CSP-friendly, HSTS, X-Frame-Options) via `vercel.json`
+- [x] Cache-Control: 1-year immutable on `/assets/*`, no-cache on HTML, content-hashed `?v=` stamps
 - [x] Deferred JS, font preconnect
 - [x] Contact form with Formspree integration, honeypot, validation, success/error states
 - [x] GitHub Actions CI (HTML/JS validation, broken link check, builder typecheck + tests + build)
@@ -100,25 +100,21 @@ be downloaded as a `.saaswise.json` file to move between browsers.
 
 ## Deploy
 
-### Netlify
-```bash
-# Drag the project folder into the Netlify deploy area, or:
-npm i -g netlify-cli
-netlify deploy --prod
-```
-The included `netlify.toml` and `_headers` configure caching, security headers, and redirects automatically.
+Vercel serves the repository as committed — no build step on their side — and
+runs `api/auth/[...all].mjs` for `/api/auth/*`.
 
-### Vercel
 ```bash
-npm i -g vercel
-vercel --prod
+./scripts/preflight.sh      # is everything configured?
+./scripts/release.sh        # build the editor, regenerate the sitemap, stamp assets
+git commit -am "…" && git push
 ```
-The `vercel.json` handles clean URLs, headers, and cache rules.
 
-### Static host (any)
-Upload the project root to any static file server. The marketing site has no
-build step, and `app/` is committed pre-built, so nothing needs to run on the
-host.
+`release.sh` matters because there is no build on the far side: it is what keeps
+the committed `app/` bundle, `sitemap.xml`, and every content-hashed `?v=` stamp
+honest. `./scripts/release.sh --check` verifies without writing.
+
+Full detail in [docs/DEPLOY.md](docs/DEPLOY.md); accounts and sign-in in
+[docs/CLOUD.md](docs/CLOUD.md).
 
 ## Wiring the contact form
 
@@ -150,7 +146,9 @@ Then visit http://localhost:8000.
 ├── editor.html                                           ← redirect to /app/
 ├── 404.html                                              ← branded not-found
 ├── sitemap.xml / robots.txt / site.webmanifest           ← SEO foundation
-├── _headers / netlify.toml / vercel.json                 ← deploy + security config
+├── vercel.json                                           ← headers, redirects, function region
+├── api/auth/[...all].mjs                                  ← Neon Auth proxy (first-party cookie)
+├── neon/schema.sql                                       ← sites table + row-level security
 ├── .github/workflows/ci.yml                              ← validation pipeline
 ├── assets/
 │   ├── css/

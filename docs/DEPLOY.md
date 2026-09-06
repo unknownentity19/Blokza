@@ -1,130 +1,102 @@
-# Deploying to Cloudflare Pages
+# Deploying
 
-The domain lives on Cloudflare (for Email Routing), so Pages is the host that
-costs the least trouble: same dashboard as the DNS, certificates issued
-automatically, and Access available later if the editor should ever be private.
+The site is static files plus one serverless function. Vercel serves the
+repository as it stands and runs `api/auth/[...all].mjs` for `/api/auth/*`.
 
-Free throughout. The domain itself is the only thing that costs money.
+There is no build step on Vercel, and that is deliberate: `.vercelignore`
+excludes `builder/`, so the editor bundle in `app/` is served exactly as
+committed. **That means a stale commit ships a stale editor.** `scripts/release.sh`
+exists to make sure it never does.
 
-## Why direct upload rather than a connected repository
-
-Pages normally builds from a Git push. This project is kept local and is not
-pushed, so deploys go up directly from the machine with Wrangler instead. Same
-result, no repository required.
-
-## What actually gets uploaded
-
-`scripts/deploy.sh` assembles `dist/` from a list, rather than publishing the
-repository root. That is not tidiness:
-
-- The root also holds `builder/node_modules` (~98 MB) and `legacy/` (~419 MB).
-  Netlify tolerated this because `netlify.toml` redirected those paths to a 404 —
-  but the files were still uploaded. **Cloudflare Pages caps a deployment at
-  20,000 files and 25 MB per file, so the repository root cannot be published
-  there at all.**
-- Listing what belongs on the site is the only way to be sure the TypeScript
-  source is not on it.
-
-The result is about 53 files and 2 MB: the marketing pages, `assets/`, the built
-editor in `app/`, and the four files a host reads from the root (`_headers`,
-`_redirects`, `robots.txt`, `sitemap.xml`).
-
-`sitemap.xml` is *generated* during assembly by `scripts/sitemap.py`, not
-copied. Its membership comes from which pages carry `noindex` and its
-`lastmod` dates from the files themselves, so neither can drift out of step
-with what is actually being published. Editing the committed copy by hand
-has no effect on a deploy.
-
-The script refuses to continue if `dist/` ever contains `node_modules`, `src` or
-`legacy`, or if the editor did not build.
-
-## Redirects and headers
-
-Cloudflare reads `_headers` — the same file Netlify uses, no translation needed.
-
-It **ignores `netlify.toml`**, so the redirects that lived there are duplicated in
-`_redirects`. Without that file they would disappear on deploy with no error.
-`netlify.toml` is kept so Netlify still works as a fallback.
-
-## One-time setup
-
-1. **Domain on Cloudflare** — add the site, move the nameservers, then turn on
-   *Email → Email Routing* for forwarding. Email is MX-level and independent of
-   where the site is hosted.
-
-2. **Log Wrangler in to your account** (opens a browser; it is your account, so
-   this step is yours):
-
-   ```bash
-   npx wrangler login
-   ```
-
-3. **First deploy**, which also creates the Pages project:
-
-   ```bash
-   ./scripts/deploy.sh --deploy
-   ```
-
-   It publishes to a project called `saaswise`; set `CF_PAGES_PROJECT` to use
-   another name. You get a `*.pages.dev` URL immediately.
-
-4. **Attach the domain** — *Workers & Pages → saaswise → Custom domains → Set up a
-   custom domain*. Because the zone is already yours, Cloudflare writes the DNS
-   record itself and issues the certificate. An apex domain works through CNAME
-   flattening.
-
-5. **Tell Supabase the real URL** — *Authentication → URL Configuration*: set
-   **Site URL** and add the domain to **Redirect URLs**. Sign-in will fail from an
-   origin the project has not been told about.
-
-   Add the editor's own path too — `https://saaswise.dev/app/` — because that is
-   where a confirmation link comes back to. If it is not on the allow-list,
-   GoTrue quietly redirects to Site URL instead and the person lands on the
-   marketing homepage rather than signed in. See [CLOUD.md](CLOUD.md) for the two
-   email paths and what each costs.
-
-6. **Put the Supabase keys in the build** — `builder/.env.local`, as described in
-   [CLOUD.md](CLOUD.md). They are compiled in, so this must happen *before* the
-   build in step 3. If you deployed first, just deploy again.
-
-## Every deploy after that
+## The loop
 
 ```bash
-./scripts/deploy.sh
+./scripts/preflight.sh      # is everything configured?
+./scripts/release.sh        # build, regenerate, stamp
+git commit -am "…" && git push
 ```
 
-Assembles and checks `dist/` without publishing, so you can look at it. Then:
+Vercel deploys the push. Nothing else to run.
 
-```bash
-./scripts/deploy.sh --deploy
+### What `release.sh` does, and why it has to
+
+Three things must be true *in the commit*, because nothing downstream will do
+them:
+
+1. **`app/` holds a current editor build.** No build step on the far side.
+2. **`sitemap.xml` matches the pages on disk.** It is generated, not kept by
+   hand — a hand-kept list is one forgotten edit from advertising a page that
+   does not exist.
+3. **Every asset URL carries a hash of that asset's contents.** This is the one
+   that bites. `vercel.json` serves `/assets/*` as `immutable` for a year, and
+   `immutable` means browsers will not revalidate *even on a forced reload*. An
+   unstamped image is a file you cannot replace for twelve months without
+   renaming it. Deriving the `?v=` from the bytes means it can never be stale
+   and never needs remembering.
+
+`./scripts/release.sh --check` does all of it without writing, and fails if the
+tree would change. That is the CI-shaped question: would deploying this commit
+serve something wrong?
+
+## First-time setup
+
+### Vercel
+
+Import the repository. The defaults are right — no framework, no build command,
+no output directory. Then set one environment variable:
+
+```
+NEON_AUTH_URL=https://ep-<id>.neonauth.<region>.aws.neon.tech/neondb/auth
 ```
 
-The editor is rebuilt each time, so `app/` is never stale — which was a real
-failure mode when the built editor was committed and the source moved on
-without it.
+No `VITE_` prefix. It is read by the serverless function and must not reach the
+browser bundle.
 
-## Worth knowing
+`vercel.json` pins functions to `sin1` to sit beside the Neon project in
+Singapore. If you ever move the Neon region, move this too — otherwise every
+sign-in goes browser → Singapore-region-function → wherever Neon now is.
 
-- **The build happens on your machine**, so the Supabase URL and anon key come
-  from `builder/.env.local`. There is nothing to configure in the Cloudflare
-  dashboard, and no environment variables to keep in step.
-- **`_headers` sends HSTS with `preload` and `includeSubDomains`.** The header
-  alone changes nothing until the domain is submitted at hstspreload.org, but
-  once it is, every subdomain is HTTPS-only and that is deliberately hard to
-  undo. Fine alongside email; a problem only if you ever want a plain-HTTP
-  subdomain.
-- **Tests do not run in CI**, because nothing is pushed. Run them before a
-  deploy:
+### Neon
 
-  ```bash
-  npm --prefix builder test
-  ```
+See [CLOUD.md](CLOUD.md) for the full setup. The step people miss:
 
-- **Cache headers assume content hashing.** `app/assets/*` is immutable for a
-  year and safe because Vite hashes those filenames; `app/index.html` and the
-  marketing HTML always revalidate. Do not add long caching to an unhashed file.
-- **Everything under `assets/` is stamped with a content digest at deploy time**
-  — stylesheets, scripts and images, including the `url()` references inside the
-  stylesheets. That is what makes `immutable` safe there: without a stamp, a
-  replaced screenshot would stay cached for up to a year with no way to push the
-  new one short of renaming the file.
+> **Add `https://blokza.com` to Neon Auth's trusted origins.**
+> `localhost` is trusted by default, so sign-in works perfectly in development
+> and returns `403 INVALID_ORIGIN` the moment it is deployed.
+
+`preflight.sh` checks this, because it is otherwise invisible until production.
+
+### Why `cleanUrls` is off
+
+`vercel.json` sets `"cleanUrls": false`, and it needs to stay that way. The site
+is built end to end around `.html` URLs: 652 internal links, every `<link
+rel="canonical">`, and every entry `scripts/sitemap.py` generates.
+
+With `cleanUrls: true`, Vercel serves `/about` and **308-redirects**
+`/about.html` to it. That would put a redirect in front of every internal
+navigation, and — worse — point every canonical tag at a URL that redirects,
+which is exactly what a canonical is not supposed to do.
+
+Turning it on is a whole-site change (links, canonicals, sitemap generator), not
+a config flag.
+
+### The domain
+
+Add `blokza.com` in Vercel and follow its DNS instructions.
+
+One consequence of the move from `.dev`: **`.dev` is HSTS-preloaded at the TLD
+level and `.com` is not.** The `Strict-Transport-Security` header in
+`vercel.json` still applies after a first visit, but the `preload` directive
+does nothing until the domain is submitted at
+[hstspreload.org](https://hstspreload.org).
+
+## What is no longer here
+
+`scripts/deploy.sh`, `_headers`, `_redirects` and `netlify.toml` are gone. The
+first published to Cloudflare Pages via Wrangler; the rest were host config for
+Cloudflare and Netlify, duplicating what `vercel.json` now says. Two files
+describing the same headers is a drift waiting to happen — `vercel.json` is the
+only source of truth for headers, redirects and the function region.
+
+`supabase/` is gone too. Identity and storage are both Neon; see
+[CLOUD.md](CLOUD.md).

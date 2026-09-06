@@ -103,6 +103,30 @@ export const useAccount = create<AccountState>((set, get) => {
     return message;
   };
 
+  /**
+   * Build a session from the cookie alone.
+   *
+   * Used where the browser may already be signed in without this tab knowing:
+   * after an email confirmation redirect, and on a first load in a second tab.
+   * Asking the server who we are is the only way to find out, because the cookie
+   * that proves it is HTTP-only and unreadable from here.
+   *
+   * Returns null rather than throwing for a visitor who simply is not signed in,
+   * which is the ordinary case and not an error worth showing anyone.
+   */
+  const establish = async (client: CloudClient): Promise<Session | null> => {
+    try {
+      const user = await client.getSession();
+      if (!user) return null;
+      const session = await client.token(user);
+      writeSession(session);
+      return session;
+    } catch {
+      writeSession(null);
+      return null;
+    }
+  };
+
   const push = async (): Promise<void> => {
     const job = pending;
     pending = undefined;
@@ -164,13 +188,11 @@ export const useAccount = create<AccountState>((set, get) => {
       });
       if (callback.kind === 'error') {
         set({ error: callback.message });
-      } else if (callback.kind === 'session') {
-        writeSession(callback.session);
-        set({
-          restoring: true,
-          notice: callback.confirmed ? 'Email confirmed. You are signed in.' : null,
-        });
-        const fresh = await ensureFresh(client, callback.session);
+      } else if (callback.kind === 'confirmed') {
+        // Neon Auth set the cookie during the redirect that brought us here, so
+        // there is nothing to read out of the URL — ask who we are instead.
+        set({ restoring: true, notice: 'Email confirmed. You are signed in.' });
+        const fresh = await establish(client);
         set({ session: fresh, restoring: false });
         if (fresh) await get().refreshSites();
         return;
@@ -189,7 +211,9 @@ export const useAccount = create<AccountState>((set, get) => {
       if (!client) return false;
       set({ busy: true, error: null, notice: null, pendingEmail: null });
       try {
-        const session = await client.signIn(email, password);
+        const user = await client.signIn(email, password);
+        if (!user) throw new CloudError('That sign-in did not complete. Try again.', 'auth');
+        const session = await client.token(user);
         writeSession(session);
         set({ session, busy: false });
         await get().refreshSites();
@@ -205,8 +229,8 @@ export const useAccount = create<AccountState>((set, get) => {
       if (!client) return false;
       set({ busy: true, error: null, notice: null });
       try {
-        const session = await client.signUp(email, password, authRedirectTarget());
-        if (!session) {
+        const user = await client.signUp(email, password, authRedirectTarget());
+        if (!user) {
           set({
             busy: false,
             // The address is kept so the panel can offer to send it again, which
@@ -216,6 +240,7 @@ export const useAccount = create<AccountState>((set, get) => {
           });
           return false;
         }
+        const session = await client.token(user);
         writeSession(session);
         set({ session, busy: false });
         await get().refreshSites();
@@ -243,7 +268,7 @@ export const useAccount = create<AccountState>((set, get) => {
       if (timer !== undefined) clearTimeout(timer);
       timer = undefined;
       pending = undefined;
-      if (client && session) await client.signOut(session.accessToken);
+      if (client && session) await client.signOut();
       writeSession(null);
       set({
         session: null,

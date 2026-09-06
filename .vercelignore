@@ -1,9 +1,37 @@
-# Vercel uploads only what it needs. The site is the repo root plus the built
-# builder in app/ — the builder's source, the superseded prototype and the local
-# tooling config are not part of the deployment.
+# What NOT to upload.
+#
+# Read this as a denylist and mean it: Vercel publishes the repository root, so
+# anything absent from this file is on the public internet. That is the opposite
+# of how the old Cloudflare script worked — it named the files that belonged in
+# the deploy, and everything else was excluded by default. Adding a directory to
+# the repository now means deciding whether it ships.
+#
+# What does ship: the marketing pages, `assets/`, the built editor in `app/`,
+# `api/` for the auth function, and the files a host reads from the site root
+# (robots.txt, sitemap.xml, site.webmanifest, vercel.json).
+
+# Source. The editor is committed pre-built in app/, so the builder itself is
+# never needed at deploy time — see docs/DEPLOY.md.
 builder
 legacy
+
+# Build tooling and the artwork it consumes. design/ holds the 1.3 MB logo
+# master, which exists to regenerate assets/images/* and has no business being
+# fetched by a visitor.
+scripts
+design
+
+# Documentation and database schema. Neither is secret, and neither is a page.
+docs
+neon
+README.md
+
+# Editor and agent configuration.
 .kiro
 .claude
 .github
 .vscode
+
+# Noise. .DS_Store in particular lists filenames that are nobody else's business.
+.DS_Store
+**/.DS_Store

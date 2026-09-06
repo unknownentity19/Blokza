@@ -7,6 +7,11 @@ import { Icon } from './common';
 import { useEditor } from '../store/editor';
 import type { LeftPanelId } from '../core/types';
 
+// Imported rather than written as a path so Vite emits it into the bundle's
+// own assets folder with a content hash. A literal `/assets/...` would break
+// the editor opened from disk, which is the whole reason `base` is relative.
+import brandGlyph from '../../../assets/images/brand-glyph.png';
+
 const ITEMS: { id: LeftPanelId; label: string; icon: string }[] = [
   { id: 'insert', label: 'Insert', icon: 'M12 5v14M5 12h14' },
   { id: 'layers', label: 'Layers', icon: 'M12 3l9 5-9 5-9-5zM3 13l9 5 9-5M3 18l9 5 9-5' },
@@ -22,12 +27,13 @@ export function Rail({ onHelp }: { onHelp: () => void }) {
 
   return (
     <nav className="rail" aria-label="Editor panels">
-      <a className="rail__brand" href="/" title="SAASWISE">
-        <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
-          <rect width="32" height="32" rx="8" fill="currentColor" />
-          <path d="M9 22.5L16 9.5l7 13" stroke="#fff" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className="sr-only">SAASWISE home</span>
+      <a className="rail__brand" href="/" title="BLOKZA">
+        {/* The same mark the marketing nav carries, at the same height. What
+            used to sit here was a tiled chevron identical to the one the demo
+            templates give their fictional brands — the editor was wearing one
+            of its own sample sites' logos. */}
+        <img src={brandGlyph} width={22} height={28} alt="" />
+        <span className="sr-only">BLOKZA home</span>
       </a>
 
       <div className="rail__group">

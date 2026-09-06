@@ -41,7 +41,7 @@ function readme(doc: SiteDoc, paths: string[]): string {
   return `${doc.name}
 ${'='.repeat(doc.name.length)}
 
-Exported from the SAASWISE builder.
+Exported from the BLOKZA builder.
 
 Contents
 --------
