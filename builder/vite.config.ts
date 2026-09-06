@@ -136,5 +136,23 @@ export default defineConfig({
     globals: true,
     include: ['test/**/*.test.ts', 'test/**/*.test.tsx'],
     restoreMocks: true,
+    /*
+     * Pin the cloud config empty for the whole suite.
+     *
+     * Vitest loads `.env.local` the same way a build does, so without this the
+     * results depend on whether the developer running them happens to have a
+     * Neon project configured — 29 tests passed on one machine and failed on
+     * another for no reason visible in the diff. That is exactly the kind of
+     * test nobody trusts.
+     *
+     * Empty means `cloudConfig()` is null, so the editor mounts in its
+     * local-only mode and the shell tests exercise the shell. Anything testing
+     * the account gate sets its own state explicitly rather than relying on
+     * ambient configuration.
+     */
+    env: {
+      VITE_NEON_DATA_URL: '',
+      VITE_NEON_AUTH_URL: '',
+    },
   },
 });
