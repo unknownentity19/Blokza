@@ -1813,3 +1813,119 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   pointer-events: none;
 }
 .ui-img__note { margin: 0; font-size: 10px; line-height: 1.45; color: var(--fg-faint); }
+
+/* ---------------------------------------------------------------------------
+   The sign-in wall.
+
+   Rendered instead of the whole editor grid, so it owns the viewport rather
+   than sitting inside `.app`. Deliberately plain: this is the first thing a
+   visitor sees, and a form is the only thing on it.
+   --------------------------------------------------------------------------- */
+.gate {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg-mute, #f8f9fb);
+  overflow: auto;
+}
+
+/* The reload state. A signed-in visitor holds a cookie but no session object
+   for the moment it takes to ask, and flashing a sign-in form into that gap is
+   worse than showing nothing at all. */
+.gate--waiting { background: var(--bg-mute, #f8f9fb); }
+
+.gate__card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border: 1px solid var(--line, #e1e5ed);
+  border-radius: 14px;
+  padding: 30px 28px 24px;
+  box-shadow: 0 1px 2px rgb(24 16 36 / 4%), 0 12px 32px rgb(24 16 36 / 6%);
+}
+
+.gate__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.gate__brand img { display: block; height: 26px; width: auto; }
+.gate__brand span {
+  font-weight: 800;
+  font-size: 17px;
+  /* All caps, so tracked positive — the same reasoning as the marketing nav. */
+  letter-spacing: 0.04em;
+  color: var(--fg, #181024);
+}
+
+.gate__title {
+  margin: 0 0 6px;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--fg, #181024);
+}
+.gate__lead {
+  margin: 0 0 20px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-muted, #5b5470);
+}
+
+.gate__submit {
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--p-600, #6442d6);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.gate__submit:hover:not(:disabled) { background: var(--p-700, #5433c0); }
+.gate__submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.gate__link {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--p-600, #6442d6);
+  font: inherit;
+  font-size: 13px;
+  text-align: center;
+  cursor: pointer;
+}
+.gate__link:hover { text-decoration: underline; }
+
+.gate__error,
+.gate__notice {
+  margin: 14px 0 0;
+  padding: 9px 11px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.gate__error  { background: #fef2f3; color: #be123c; }
+.gate__notice { background: var(--p-50, #f4f1ff); color: var(--p-700, #5433c0); }
+
+.gate__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line, #e1e5ed);
+  font-size: 12.5px;
+  color: var(--fg-muted, #5b5470);
+  text-decoration: none;
+}
+.gate__back:hover { color: var(--fg, #181024); }

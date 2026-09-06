@@ -3,8 +3,9 @@
  *
  * Three states, and the empty one matters most: with no project configured — or
  * opened from disk, where the API cannot be reached at all — this says so
- * plainly instead of offering a sign-in that could never work. Local editing is
- * the normal mode, not a degraded one, so the copy does not apologise for it.
+ * plainly instead of offering a sign-in that could never work. Those are also
+ * the only modes where the editor opens without a session at all; everywhere
+ * else `AuthGate` has already required one before this panel can be reached.
  *
  * A conflict is the only place the editor asks the user to choose. It cannot be
  * resolved automatically: two devices have both edited the same site, and no
@@ -83,8 +84,8 @@ export function CloudPanel() {
         </header>
         <div className="ui-panel__scroll cl">
           <p className="cl__hint">
-            Signing in keeps your sites on the server so you can open them from another browser or
-            machine. Editing without an account keeps working exactly as it does now.
+            Signing in keeps your sites on the server so you can open them from another
+            browser or machine.
           </p>
           <Field label="Email">
             <TextControl value={email} placeholder="you@example.com" onCommit={setEmail} />
