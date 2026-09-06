@@ -98,7 +98,7 @@ export default defineConfig({
     // development, and hijacking the default browser is a surprise.
     open: false,
     /*
-     * Stand in for the Vercel function at `api/auth/[...all].mjs`.
+     * Stand in for the Vercel function at `api/auth.mjs`.
      *
      * Without this, `/api/auth/*` 404s in development and the only way to sign
      * in locally is to point the client straight at Neon — which is a different

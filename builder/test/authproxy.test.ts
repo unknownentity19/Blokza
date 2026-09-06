@@ -1,5 +1,5 @@
 /**
- * The auth proxy — `api/auth/[...all].mjs`.
+ * The auth proxy — `api/auth.mjs`.
  *
  * It is the only server-side code in the project and the only thing that
  * touches cookies, so the parts worth pinning down are the security-relevant
@@ -15,7 +15,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // @ts-expect-error — plain JS, deliberately untyped: the repository root has no
 // package.json and typing a sixty-line proxy is not worth adding one.
-import handler from '../../api/auth/[...all].mjs';
+import handler from '../../api/auth.mjs';
 
 const UPSTREAM = 'https://ep-test.neonauth.example.aws.neon.tech/neondb/auth';
 
@@ -84,7 +84,25 @@ afterEach(() => {
 });
 
 describe('the auth proxy', () => {
-  it('rewrites /api/auth/* onto the upstream path, query and all', async () => {
+  /**
+   * How Vercel actually reaches this function: the rewrite in vercel.json puts
+   * the sub-path in `__path`, because `req.url` by then points at the function
+   * rather than at what the caller asked for.
+   */
+  it('takes the upstream path from the rewrite, and strips the carrier param', async () => {
+    const { seen } = await call('GET', '/api/auth?__path=sign-in/email&token=abc');
+    expect(seen[0].url).toBe(`${UPSTREAM}/sign-in/email?token=abc`);
+    expect(seen[0].url).not.toContain('__path');
+  });
+
+  /** A nested path is the case the catch-all silently 404'd on in production. */
+  it('handles a nested path', async () => {
+    const { seen } = await call('GET', '/api/auth?__path=.well-known/jwks.json');
+    expect(seen[0].url).toBe(`${UPSTREAM}/.well-known/jwks.json`);
+  });
+
+  /** The fallback: `vite dev` proxies without a rewrite, so req.url is the truth. */
+  it('falls back to req.url when nothing carried the path', async () => {
     const { seen } = await call('GET', '/api/auth/verify-email?token=abc&callbackURL=%2Fapp%2F');
     expect(seen[0].url).toBe(`${UPSTREAM}/verify-email?token=abc&callbackURL=%2Fapp%2F`);
   });

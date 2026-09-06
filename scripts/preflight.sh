@@ -137,10 +137,10 @@ if [ -f vercel.json ]; then
 else
   bad "vercel.json is missing — headers and redirects would silently vanish on deploy"
 fi
-if [ -f "api/auth/[...all].mjs" ]; then
+if [ -f "api/auth.mjs" ]; then
   ok "the auth proxy is present"
 else
-  bad "api/auth/[...all].mjs is missing — sign-in would have nowhere to go"
+  bad "api/auth.mjs is missing — sign-in would have nowhere to go"
 fi
 
 if npm --prefix builder test >/tmp/blokza-preflight-test.log 2>&1; then

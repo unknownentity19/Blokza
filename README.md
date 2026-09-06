@@ -101,7 +101,7 @@ be downloaded as a `.blokza.json` file to move between browsers.
 ## Deploy
 
 Vercel serves the repository as committed — no build step on their side — and
-runs `api/auth/[...all].mjs` for `/api/auth/*`.
+runs `api/auth.mjs` for `/api/auth/*`.
 
 ```bash
 ./scripts/preflight.sh      # is everything configured?
@@ -147,7 +147,7 @@ Then visit http://localhost:8000.
 ├── 404.html                                              ← branded not-found
 ├── sitemap.xml / robots.txt / site.webmanifest           ← SEO foundation
 ├── vercel.json                                           ← headers, redirects, function region
-├── api/auth/[...all].mjs                                  ← Neon Auth proxy (first-party cookie)
+├── api/auth.mjs                                  ← Neon Auth proxy (first-party cookie)
 ├── neon/schema.sql                                       ← sites table + row-level security
 ├── .github/workflows/ci.yml                              ← validation pipeline
 ├── assets/

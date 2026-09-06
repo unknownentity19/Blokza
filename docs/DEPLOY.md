@@ -1,7 +1,7 @@
 # Deploying
 
 The site is static files plus one serverless function. Vercel serves the
-repository as it stands and runs `api/auth/[...all].mjs` for `/api/auth/*`.
+repository as it stands and runs `api/auth.mjs` for `/api/auth/*`.
 
 There is no build step on Vercel, and that is deliberate: `.vercelignore`
 excludes `builder/`, so the editor bundle in `app/` is served exactly as

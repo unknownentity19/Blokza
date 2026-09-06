@@ -4,6 +4,12 @@
   ],
   "cleanUrls": false,
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/api/auth/:path*",
+      "destination": "/api/auth?__path=:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",

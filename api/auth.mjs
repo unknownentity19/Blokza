@@ -24,6 +24,12 @@
  * precisely the problem — it would work locally and depend on the runtime
  * version in production. The extension says it outright.
  *
+ * A plain file rather than a `[...all]` catch-all, reached through a rewrite in
+ * `vercel.json`. The catch-all deployed and served one segment — `/api/auth/ok`
+ * answered — but 404'd at the edge on anything deeper, so `/sign-in/email` and
+ * `/.well-known/jwks.json` never reached this code. The rewrite hands the
+ * sub-path over in `__path`, which leaves nothing about the routing implicit.
+ *
  * Set `NEON_AUTH_URL` in the Vercel project (no `VITE_` prefix — this runs on
  * the server, and the value must not be inlined into the browser bundle).
  */
@@ -39,6 +45,13 @@
 function upstream() {
   return (process.env.NEON_AUTH_URL || '').replace(/\/+$/, '');
 }
+
+/**
+ * Query parameter the rewrite carries the sub-path in. Deliberately ugly so it
+ * cannot collide with anything Better Auth defines, and stripped before the
+ * request goes upstream.
+ */
+const PATH_PARAM = '__path';
 
 /**
  * Headers that describe *this* hop and must not be replayed onto the next one.
@@ -117,9 +130,23 @@ export default async function handler(req, res) {
     return;
   }
 
-  // `/api/auth/sign-in/email?x=1` -> `/sign-in/email?x=1`
-  const path = String(req.url || '').replace(/^\/api\/auth/, '') || '/';
-  const target = `${base}${path}`;
+  /*
+   * Where upstream should be asked.
+   *
+   * `vercel.json` rewrites `/api/auth/:path*` here with the segments in
+   * `__path`, because a bare rewrite would leave `req.url` pointing at this
+   * function rather than at what the caller asked for. The fallback parses
+   * `req.url` directly, which is what happens under `vite dev` — and would also
+   * cover a future where the rewrite is dropped.
+   */
+  const asked = new URL(String(req.url || '/'), 'http://placeholder');
+  const carried = asked.searchParams.get(PATH_PARAM);
+  asked.searchParams.delete(PATH_PARAM);
+  const path = carried
+    ? `/${carried.replace(/^\/+/, '')}`
+    : asked.pathname.replace(/^\/api\/auth/, '') || '/';
+  const query = asked.searchParams.toString();
+  const target = `${base}${path}${query ? `?${query}` : ''}`;
 
   const headers = {};
   for (const [name, value] of Object.entries(req.headers)) {

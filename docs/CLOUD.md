@@ -75,7 +75,7 @@ NEON_AUTH_URL=https://ep-<id>.neonauth.<region>.aws.neon.tech/neondb/auth
 ```
 
 No `VITE_` prefix. This one is read by the serverless function in
-`api/auth/[...all].mjs` and must *not* be inlined into the browser bundle.
+`api/auth.mjs` and must *not* be inlined into the browser bundle.
 
 **In `builder/.env.local`**, for the build:
 
@@ -92,7 +92,7 @@ password and full database authority, and it belongs in neither file.
 
 ## Why the auth calls go through this site
 
-`api/auth/[...all].mjs` proxies `/api/auth/*` to Neon Auth. It exists for one
+`api/auth.mjs` proxies `/api/auth/*` to Neon Auth. It exists for one
 reason: the session is an HTTP-only cookie.
 
 Called directly on its `*.neon.tech` hostname, that cookie is **third-party** to
