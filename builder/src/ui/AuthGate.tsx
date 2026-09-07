@@ -11,15 +11,25 @@
  * URL, or built with no cloud project, there is no API to sign in against, so
  * gating would lock the editor shut with no way through. `cloudAvailable()`
  * decides, and in those modes the editor stays local-only exactly as before.
+ *
+ * This is also the only place in the product that asks for a password, which is
+ * why `/signin.html` and `/signup.html` now redirect here rather than carrying
+ * forms of their own. Two implementations of one form is two chances to drift.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { Field, Icon } from './common';
-import { TextControl } from './inspector/controls';
+import { Icon } from './common';
 import { useAccount } from '../store/account';
 
 import brandGlyph from '../../../assets/images/brand-glyph.png';
+
+/** `?mode=signup` arrives from the marketing site's "Get started" links. */
+function initialMode(): 'in' | 'up' {
+  if (typeof window === 'undefined') return 'in';
+  const mode = new URLSearchParams(window.location.search).get('mode');
+  return mode === 'signup' || mode === 'up' ? 'up' : 'in';
+}
 
 export function AuthGate() {
   const busy = useAccount((s) => s.busy);
@@ -28,96 +38,129 @@ export function AuthGate() {
   const pendingEmail = useAccount((s) => s.pendingEmail);
   const account = useAccount();
 
-  const [mode, setMode] = useState<'in' | 'up'>('in');
+  const [mode, setMode] = useState<'in' | 'up'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const emailRef = useRef<HTMLInputElement>(null);
 
-  // Enter should submit from either field. A wall with a button you have to
-  // hunt for is a worse wall.
+  // The one field anyone needs to touch first.
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Enter' && !busy && email && password) void submit();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  });
+    emailRef.current?.focus();
+  }, []);
 
-  const submit = async () => {
+  /*
+   * A real form, and real inputs.
+   *
+   * Enter submits because the browser makes it, not because a window-level
+   * keydown listener is watching — and a password manager will offer to fill
+   * and save a `<form>` with the right `autocomplete` values, which it will not
+   * do for the inspector's commit-on-blur control. On a screen whose entire job
+   * is one password, that is the difference between working and nearly working.
+   */
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (busy || !email || !password) return;
     if (mode === 'in') await account.signIn(email, password);
     else await account.signUp(email, password);
   };
 
+  const signingIn = mode === 'in';
+
   return (
     <div className="gate">
-      <div className="gate__card">
-        <div className="gate__brand">
-          <img src={brandGlyph} width={26} height={33} alt="" />
+      <div className="gate__shell">
+        <a className="gate__brand" href="/">
+          <img src={brandGlyph} width={24} height={30} alt="" />
           <span>BLOKZA</span>
+        </a>
+
+        <div className="gate__card">
+          <h1 className="gate__title">{signingIn ? 'Sign in' : 'Create your account'}</h1>
+          <p className="gate__lead">
+            {signingIn
+              ? 'Your sites are saved to your account, so they follow you to any browser or machine.'
+              : 'Free, and it takes a moment. One account holds every site you build.'}
+          </p>
+
+          <form onSubmit={(event) => void submit(event)}>
+            <label className="gate__label" htmlFor="gate-email">
+              Email
+            </label>
+            <input
+              id="gate-email"
+              ref={emailRef}
+              className="gate__input"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="off"
+              spellCheck={false}
+              placeholder="you@example.com"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+
+            <label className="gate__label" htmlFor="gate-password">
+              Password
+            </label>
+            <input
+              id="gate-password"
+              className="gate__input"
+              type="password"
+              // `new-password` is what tells a manager to offer a generated one
+              // rather than trying to fill an account that does not exist yet.
+              autoComplete={signingIn ? 'current-password' : 'new-password'}
+              placeholder="••••••••"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            {!signingIn ? <p className="gate__hint">At least eight characters.</p> : null}
+
+            {error ? (
+              <p className="gate__error" role="alert">
+                {error}
+              </p>
+            ) : null}
+            {notice ? <p className="gate__notice">{notice}</p> : null}
+
+            {/*
+             * Offered only while an address is actually waiting on a
+             * confirmation. The first mail going to spam is the usual way an
+             * email sign-up stalls, and without this the only route forward is
+             * to try again and be told the address is already taken.
+             */}
+            {pendingEmail ? (
+              <button
+                type="button"
+                className="gate__link"
+                disabled={busy}
+                onClick={() => void account.resendConfirmation()}
+              >
+                {busy ? 'Sending…' : 'Send the confirmation email again'}
+              </button>
+            ) : null}
+
+            <button className="gate__submit" type="submit" disabled={busy || !email || !password}>
+              {busy ? 'Working…' : signingIn ? 'Sign in' : 'Create account'}
+            </button>
+          </form>
+
+          <p className="gate__alt">
+            {signingIn ? 'New here? ' : 'Already have an account? '}
+            <button
+              type="button"
+              className="gate__switch"
+              onClick={() => {
+                setMode(signingIn ? 'up' : 'in');
+                // A "wrong password" left over from the other mode is confusing
+                // rather than helpful; the store owns it, so clear it here.
+                useAccount.setState({ error: null, notice: null });
+              }}
+            >
+              {signingIn ? 'Create an account' : 'Sign in'}
+            </button>
+          </p>
         </div>
-
-        <h1 className="gate__title">{mode === 'in' ? 'Sign in' : 'Create an account'}</h1>
-        <p className="gate__lead">
-          {mode === 'in'
-            ? 'Your sites are saved to your account, so they follow you to any browser or machine.'
-            : 'One account keeps every site you build, on every machine you use.'}
-        </p>
-
-        <Field label="Email">
-          <TextControl value={email} placeholder="you@example.com" onCommit={setEmail} />
-        </Field>
-        <Field label="Password" hint={mode === 'up' ? 'At least eight characters.' : undefined}>
-          <TextControl
-            value={password}
-            password
-            // Lets a password manager offer to generate and save one, rather
-            // than trying to fill an account that does not exist yet.
-            autoComplete={mode === 'up' ? 'new-password' : 'current-password'}
-            placeholder="••••••••"
-            onCommit={setPassword}
-          />
-        </Field>
-
-        {error ? <p className="gate__error">{error}</p> : null}
-        {notice ? <p className="gate__notice">{notice}</p> : null}
-
-        {/*
-         * Offered only while an address is actually waiting on a confirmation.
-         * The first mail going to spam is the usual way an email sign-up stalls,
-         * and without this the only route forward is to try again and be told
-         * the address is already taken.
-         */}
-        {pendingEmail ? (
-          <button
-            type="button"
-            className="gate__link"
-            disabled={busy}
-            onClick={() => void account.resendConfirmation()}
-          >
-            {busy ? 'Sending…' : 'Send the confirmation email again'}
-          </button>
-        ) : null}
-
-        <button
-          type="button"
-          className="gate__submit"
-          disabled={busy || !email || !password}
-          onClick={() => void submit()}
-        >
-          {busy ? 'Working…' : mode === 'in' ? 'Sign in' : 'Create account'}
-        </button>
-
-        <button
-          type="button"
-          className="gate__link"
-          onClick={() => {
-            setMode(mode === 'in' ? 'up' : 'in');
-            // A "wrong password" left over from the other mode is confusing
-            // rather than helpful; the store owns the fields, so clear them here.
-            useAccount.setState({ error: null, notice: null });
-          }}
-        >
-          {mode === 'in' ? 'No account yet? Create one' : 'Already have an account? Sign in'}
-        </button>
 
         <a className="gate__back" href="/">
           <Icon path="M15 6l-6 6 6 6" size={13} strokeWidth={2} /> Back to blokza.com

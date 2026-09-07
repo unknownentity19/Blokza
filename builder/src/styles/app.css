@@ -45,6 +45,7 @@
   --shadow-lg: 0 30px 70px -24px rgba(20, 16, 32, 0.3);
 
   --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
 
   color-scheme: light;
@@ -1827,57 +1828,133 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
   display: grid;
   place-items: center;
   padding: 24px;
-  background: var(--bg-mute, #f8f9fb);
+  background: var(--bg-soft, #f8f9fb);
   overflow: auto;
 }
+
+/*
+ * The editor's own canvas ground, reused rather than reinvented.
+ *
+ * The first thing a new visitor sees is the surface they are about to build
+ * on — the same dot grid, at the same 16px pitch, as `.cv`. Masked to fade out
+ * toward the middle so the card sits in a clearing instead of on top of a busy
+ * field, which is also what happens on the real canvas once a section lands.
+ */
+.gate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 1px 1px, rgb(24 16 36 / 7.5%) 1px, transparent 0) 0 0 / 16px 16px;
+  /* The clearing is only as big as the card plus breathing room — sized in
+     `px` rather than `%` so it does not swallow the whole viewport on a large
+     screen, which is exactly what a percentage ellipse did. */
+  -webkit-mask-image: radial-gradient(circle 320px at 50% 46%, transparent 40%, #000 100%);
+  mask-image: radial-gradient(circle 320px at 50% 46%, transparent 40%, #000 100%);
+  pointer-events: none;
+}
+.gate > * { position: relative; }
 
 /* The reload state. A signed-in visitor holds a cookie but no session object
    for the moment it takes to ask, and flashing a sign-in form into that gap is
    worse than showing nothing at all. */
-.gate--waiting { background: var(--bg-mute, #f8f9fb); }
+.gate--waiting { background: var(--bg-soft, #f8f9fb); }
+.gate--waiting::before { display: none; }
 
-.gate__card {
-  width: 100%;
-  max-width: 380px;
-  background: #fff;
-  border: 1px solid var(--line, #e1e5ed);
-  border-radius: 14px;
-  padding: 30px 28px 24px;
-  box-shadow: 0 1px 2px rgb(24 16 36 / 4%), 0 12px 32px rgb(24 16 36 / 6%);
-}
+.gate__shell { width: 100%; max-width: 392px; }
 
+/* Outside the card, not in it: the card is then purely the task, and the
+   lockup reads as "you are at BLOKZA" rather than as a heading for the form. */
 .gate__brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 22px;
+  justify-content: center;
+  gap: 11px;
+  margin: 0 0 20px;
+  text-decoration: none;
 }
-.gate__brand img { display: block; height: 26px; width: auto; }
+.gate__brand img { display: block; height: 30px; width: auto; }
 .gate__brand span {
-  font-weight: 800;
-  font-size: 17px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 21px;
   /* All caps, so tracked positive — the same reasoning as the marketing nav. */
   letter-spacing: 0.04em;
   color: var(--fg, #181024);
 }
 
+.gate__card {
+  background: #fff;
+  border: 1px solid var(--line, #e1e5ed);
+  border-radius: 16px;
+  padding: 30px 30px 26px;
+  box-shadow: 0 1px 2px rgb(24 16 36 / 4%), 0 18px 44px rgb(24 16 36 / 8%);
+}
+
 .gate__title {
-  margin: 0 0 6px;
-  font-size: 21px;
+  margin: 0 0 7px;
+  font-family: var(--font-display);
+  font-size: 27px;
   font-weight: 700;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
   color: var(--fg, #181024);
 }
 .gate__lead {
-  margin: 0 0 20px;
+  margin: 0 0 22px;
   font-size: 13px;
   line-height: 1.55;
   color: var(--fg-muted, #5b5470);
 }
 
+.gate__label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-muted, #5b5470);
+}
+.gate__label + .gate__input { margin-bottom: 14px; }
+
+.gate__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line, #e1e5ed);
+  border-radius: 9px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  color: var(--fg, #181024);
+  /* Chrome renders `type=password` bullets in a serif fallback otherwise, which
+     next to Inter labels reads as a rendering fault rather than a choice. */
+  font-family: var(--font);
+}
+.gate__input::placeholder { color: var(--fg-faint, #8b849c); }
+.gate__input:focus {
+  outline: none;
+  border-color: var(--p-500, #7a5fe5);
+  /* A ring rather than a shifted border, so nothing reflows on focus. */
+  box-shadow: 0 0 0 3px rgb(122 95 229 / 18%);
+}
+
+.gate__hint {
+  margin: -8px 0 14px;
+  font-size: 12px;
+  color: var(--fg-faint, #8b849c);
+}
+
+/* One rule, one job: separate the task from the way out of it. */
+.gate__alt {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line, #e1e5ed);
+  font-size: 13px;
+  text-align: center;
+  color: var(--fg-muted, #5b5470);
+}
+
 .gate__submit {
   width: 100%;
-  margin-top: 18px;
+  margin-top: 4px;
   padding: 10px 16px;
   border: 0;
   border-radius: 8px;
@@ -1889,6 +1966,17 @@ textarea.ui-input { resize: vertical; line-height: 1.5; }
 }
 .gate__submit:hover:not(:disabled) { background: var(--p-700, #5433c0); }
 .gate__submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.gate__switch {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--p-600, #6442d6);
+  cursor: pointer;
+}
+.gate__switch:hover { text-decoration: underline; }
 
 .gate__link {
   display: block;
