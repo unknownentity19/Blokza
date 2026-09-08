@@ -315,26 +315,18 @@
   const errorEl = form.querySelector("[data-error]");
   const btn = form.querySelector("button[type='submit']");
 
-  // The form action ships with a placeholder that has to be replaced with a real
-  // endpoint id. Until it is, every submit would spend a few seconds saying
-  // "Sending..." and then fail — so the fallback (which names a real address) is
-  // shown straight away instead of after a pointless round-trip.
-  const unconfigured = /YOUR_FORM_ID/.test(form.getAttribute("action") || "");
-  if (unconfigured) {
-    console.warn(
-      "[BLOKZA] contact form has no endpoint: replace YOUR_FORM_ID in the form action."
-    );
-  }
+  // The generic wording lives in the markup, so it is translated and styled with
+  // everything else and the fallback address is written down once. Endpoint
+  // detail replaces it per-attempt, which is why the original has to be kept:
+  // without this, a "that is not an email address" from one submit is still on
+  // screen when the next one fails for an unrelated reason.
+  const genericError = errorEl ? errorEl.textContent : "";
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (successEl) successEl.hidden = true;
     if (errorEl) errorEl.hidden = true;
     if (!form.checkValidity()) { form.reportValidity(); return; }
-    if (unconfigured) {
-      if (errorEl) errorEl.hidden = false;
-      return;
-    }
     const originalLabel = btn.textContent;
     btn.disabled = true;
     btn.textContent = "Sending...";
@@ -344,11 +336,31 @@
         body: new FormData(form),
         headers: { Accept: "application/json" },
       });
-      if (!res.ok) throw new Error("Submit failed");
+      // `/api/contact` answers with a reason. A rejected address or a message
+      // three words long is something the sender can fix in ten seconds, and
+      // "something went wrong" tells them none of it — so show what came back
+      // and keep what they typed. The generic fallback is for the cases they
+      // genuinely cannot act on.
+      let detail = "";
+      try {
+        detail = ((await res.json()) || {}).message || "";
+      } catch (_) { /* a non-JSON reply falls through to the fallback */ }
+      if (!res.ok) {
+        if (errorEl) {
+          errorEl.textContent = res.status === 400 && detail ? detail : genericError;
+          errorEl.hidden = false;
+        }
+        return;
+      }
       form.reset();
       if (successEl) successEl.hidden = false;
     } catch (err) {
-      if (errorEl) errorEl.hidden = false;
+      // A dead network, not a rejected submission: restore the generic wording
+      // in case a previous attempt left a specific one behind.
+      if (errorEl) {
+        errorEl.textContent = genericError;
+        errorEl.hidden = false;
+      }
     } finally {
       btn.disabled = false;
       btn.textContent = originalLabel;

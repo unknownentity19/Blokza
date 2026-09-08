@@ -43,14 +43,30 @@ serve something wrong?
 ### Vercel
 
 Import the repository. The defaults are right — no framework, no build command,
-no output directory. Then set one environment variable:
+no output directory. Then set the environment variables:
 
 ```
 NEON_AUTH_URL=https://ep-<id>.neonauth.<region>.aws.neon.tech/neondb/auth
+SMTP_USER=hello@blokza.com
+SMTP_PASS=<app-specific password>
 ```
 
-No `VITE_` prefix. It is read by the serverless function and must not reach the
-browser bundle.
+None of these take a `VITE_` prefix. They are read by the serverless functions
+and must not reach the browser bundle — `SMTP_PASS` especially, since anything
+prefixed `VITE_` is inlined into a public file.
+
+`NEON_AUTH_URL` is what `api/auth.mjs` proxies sign-in to. The two `SMTP_`
+variables are what `api/contact.mjs` sends the contact form through; without
+them that endpoint answers `503` and the form shows its "email us instead"
+fallback, which is a deliberate degradation rather than a failure. Optional
+alongside them: `CONTACT_TO` (defaults to `SMTP_USER`), `SMTP_HOST` (defaults
+to `smtp.zoho.com`) and `SMTP_PORT` (defaults to `465`, implicit TLS).
+
+The password must be an app-specific one from Zoho's *Security → App
+passwords*, not the account login. It is scoped to SMTP and can be revoked on
+its own, which the login password cannot. Note also that Zoho's free tier has
+no SMTP at all — new free accounts are web-only — so the contact form needs
+Mail Lite or above to work at all.
 
 `vercel.json` pins functions to `sin1` to sit beside the Neon project in
 Singapore. If you ever move the Neon region, move this too — otherwise every

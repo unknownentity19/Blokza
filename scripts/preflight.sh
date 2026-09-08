@@ -121,15 +121,27 @@ fi
 # ---------------------------------------------------------------- the build
 echo
 echo "Build"
-# The contact form ships with a placeholder endpoint. It fails gracefully — the
-# error state names a real address — but a live site whose contact form cannot
-# deliver a message is worth catching before the deploy, not after.
-if grep -q 'YOUR_FORM_ID' contact.html 2>/dev/null; then
-  bad "the contact form has no endpoint (action is still YOUR_FORM_ID)"
-  info "Visitors get the 'email us instead' fallback rather than a delivered message."
-  todo "Create a form at https://formspree.io (free), then replace YOUR_FORM_ID in contact.html"
+# The contact form posts to our own function, which needs a mailbox to send
+# through. Missing credentials answer 503 and the visitor gets the fallback —
+# survivable, but worth catching before the deploy rather than after.
+if grep -q 'action="/api/contact"' contact.html 2>/dev/null; then
+  ok "contact form posts to /api/contact"
 else
-  ok "contact form has a real endpoint"
+  bad "the contact form does not point at /api/contact"
+fi
+
+if [ -f "api/contact.mjs" ]; then
+  ok "the contact function is present"
+else
+  bad "api/contact.mjs is missing — the form would 404"
+fi
+
+# Only checkable from a shell that has them exported; they live in Vercel.
+if [ -n "${SMTP_USER:-}" ] && [ -n "${SMTP_PASS:-}" ]; then
+  ok "SMTP credentials are set in this shell"
+else
+  info "SMTP_USER / SMTP_PASS are not set here — they belong in the Vercel project."
+  info "Without them /api/contact answers 503 and the form shows its fallback."
 fi
 
 if [ -f vercel.json ]; then

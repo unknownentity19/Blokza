@@ -16,7 +16,7 @@ Two things live in this repository:
 | Pricing | `pricing.html` | Plans, comparison table, monthly/yearly toggle |
 | Docs | `docs.html` | Sticky sidebar + content |
 | Blog | `blog.html` | 6-post grid with custom SVG covers |
-| Contact | `contact.html` | Form wired to Formspree |
+| Contact | `contact.html` | Form posting to `/api/contact` |
 | Builder | `app/` | The visual builder (built from `builder/`) |
 | Editor (legacy) | `editor.html` | 301 redirect to `/app/` for old links |
 | 404 | `404.html` | Branded not-found page |
@@ -94,7 +94,7 @@ be downloaded as a `.blokza.json` file to move between browsers.
 - [x] Security headers (CSP-friendly, HSTS, X-Frame-Options) via `vercel.json`
 - [x] Cache-Control: 1-year immutable on `/assets/*`, no-cache on HTML, content-hashed `?v=` stamps
 - [x] Deferred JS, font preconnect
-- [x] Contact form with Formspree integration, honeypot, validation, success/error states
+- [x] Contact form delivered by our own SMTP endpoint, honeypot, validation, success/error states
 - [x] GitHub Actions CI (HTML/JS validation, broken link check, builder typecheck + tests + build)
 - [x] No external runtime dependencies on the marketing site
 
@@ -118,13 +118,27 @@ Full detail in [docs/DEPLOY.md](docs/DEPLOY.md); accounts and sign-in in
 
 ## Wiring the contact form
 
-The form on `contact.html` is configured to POST to Formspree. Replace `YOUR_FORM_ID` in `contact.html`:
+The form posts to `/api/contact`, a function in this repository that speaks SMTP
+and delivers the message as email. Nothing goes through a third-party form
+service, so submissions are not stored anywhere but the destination inbox.
 
-```html
-<form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-```
+It needs a mailbox to send from. In the Vercel project's environment variables:
 
-Sign up free at https://formspree.io and paste in your form ID. The honeypot field, validation, and success/error states are already wired up.
+| Variable | Required | Meaning |
+| --- | --- | --- |
+| `SMTP_USER` | yes | The full mailbox, e.g. `hello@blokza.com` |
+| `SMTP_PASS` | yes | An **app-specific** password, not the account password |
+| `CONTACT_TO` | no | Where submissions land; defaults to `SMTP_USER` |
+| `SMTP_HOST` | no | Defaults to `smtp.zoho.com` |
+| `SMTP_PORT` | no | Defaults to `465` (implicit TLS) |
+
+Zoho's free tier has no SMTP — it is web-only for new accounts — so this needs
+Mail Lite or above. Generate the app password under Zoho's *Security → App
+passwords*, never the login password.
+
+With the variables unset the endpoint answers `503` and the form shows its
+fallback ("email us instead") rather than failing silently. The honeypot,
+validation, and success/error states are wired up either way.
 
 ## Local development
 
