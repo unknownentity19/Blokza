@@ -17,7 +17,7 @@
  *
  * Environment (set in Vercel, never in the repository):
  *
- *   SMTP_USER   the full Zoho mailbox, e.g. hello@blokza.com
+ *   SMTP_USER   the full Zoho mailbox, e.g. contact@blokza.com
  *   SMTP_PASS   an app-specific password, not the account password
  *   CONTACT_TO  where submissions land; defaults to SMTP_USER
  *   SMTP_HOST   defaults to smtp.zoho.com

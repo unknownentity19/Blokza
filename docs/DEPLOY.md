@@ -47,7 +47,7 @@ no output directory. Then set the environment variables:
 
 ```
 NEON_AUTH_URL=https://ep-<id>.neonauth.<region>.aws.neon.tech/neondb/auth
-SMTP_USER=hello@blokza.com
+SMTP_USER=contact@blokza.com
 SMTP_PASS=<app-specific password>
 ```
 

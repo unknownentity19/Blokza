@@ -126,7 +126,7 @@ It needs a mailbox to send from. In the Vercel project's environment variables:
 
 | Variable | Required | Meaning |
 | --- | --- | --- |
-| `SMTP_USER` | yes | The full mailbox, e.g. `hello@blokza.com` |
+| `SMTP_USER` | yes | The full mailbox — `contact@blokza.com` |
 | `SMTP_PASS` | yes | An **app-specific** password, not the account password |
 | `CONTACT_TO` | no | Where submissions land; defaults to `SMTP_USER` |
 | `SMTP_HOST` | no | Defaults to `smtp.zoho.com` |
