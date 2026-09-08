@@ -112,6 +112,18 @@ function friendlyAuthMessage(status: number, body: unknown): string {
       return 'That password is too long.';
     case 'INVALID_EMAIL':
       return 'That does not look like an email address.';
+    /*
+     * A CSRF rejection, not a credentials problem: the host the page is served
+     * from is not on Neon Auth's trusted-domain list. It arrives as a 403 and
+     * used to fall through to "Your session has expired", which sent me looking
+     * at cookies while the actual fault was a `www.` prefix nobody had added
+     * upstream. Say the true thing — the person seeing it is almost always the
+     * one who can fix it.
+     */
+    case 'INVALID_ORIGIN':
+      return 'This site is not authorised to sign you in. Add its address to the auth provider\'s trusted domains.';
+    case 'MISSING_OR_NULL_ORIGIN':
+      return 'The browser sent no origin, so sign-in was refused. Opening the editor from a file cannot sign in.';
   }
 
   // Codes are not exhaustive, so a couple of shapes still need the prose.

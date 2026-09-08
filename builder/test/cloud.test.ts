@@ -203,6 +203,21 @@ describe('createCloudClient', () => {
       expect((error as CloudError).message).toMatch(/do not match/i);
     });
 
+    /**
+     * Seen in production on the day the domain was attached: Vercel served the
+     * site from `www.`, only the apex was on Neon's trusted list, and the 403
+     * fell through to "Your session has expired" — which points at cookies and
+     * is nowhere near the truth.
+     */
+    it('names a rejected origin rather than blaming the session', async () => {
+      const { client } = clientWith([
+        { status: 403, body: { code: 'INVALID_ORIGIN', message: 'Invalid origin' } },
+      ]);
+      const error = await client.signIn('a@b.co', 'pw').catch((e: unknown) => e);
+      expect((error as CloudError).message).toMatch(/trusted domains/i);
+      expect((error as CloudError).message).not.toMatch(/expired/i);
+    });
+
     it('tells an unverified user to check their inbox', async () => {
       const { client } = clientWith([
         { status: 403, body: { code: 'EMAIL_NOT_VERIFIED', message: 'Email not verified' } },
