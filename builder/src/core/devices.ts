@@ -15,7 +15,7 @@ export const DEVICES: DevicePreset[] = [
     width: 1440,
     height: 900,
     breakpoint: 'base',
-    icon: 'M3 5h18v11H3zM8 20h8M12 16v4',
+    icon: 'M4 3h16a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2zM8 21L16 21M12 17L12 21',
   },
   {
     id: 'laptop',
@@ -23,7 +23,7 @@ export const DEVICES: DevicePreset[] = [
     width: 1180,
     height: 800,
     breakpoint: 'base',
-    icon: 'M5 5h14v10H5zM2 18h20',
+    icon: 'M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2zM20.054 15.987H3.946',
   },
   {
     id: 'tablet',
@@ -31,7 +31,7 @@ export const DEVICES: DevicePreset[] = [
     width: 820,
     height: 1024,
     breakpoint: 'tablet',
-    icon: 'M6 3h12v18H6zM12 18h.01',
+    icon: 'M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-16a2 2 0 0 1 2 -2zM12 18L12.01 18',
   },
   {
     id: 'mobile',
@@ -39,7 +39,7 @@ export const DEVICES: DevicePreset[] = [
     width: 390,
     height: 844,
     breakpoint: 'mobile',
-    icon: 'M8 2h8v20H8zM12 18.5h.01',
+    icon: 'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-16a2 2 0 0 1 2 -2zM12 18h.01',
   },
 ];
 

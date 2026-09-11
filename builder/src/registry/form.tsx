@@ -39,7 +39,7 @@ export const form: ComponentDef = {
   label: 'Form',
   group: 'form',
   hint: 'Wraps inputs and posts them somewhere.',
-  icon: 'M4 4h16v16H4zM8 9h8M8 13h8M8 17h4',
+  icon: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2zM8 9h8M8 13h8M8 17h5',
   container: true,
   fields: [
     { key: 'name', label: 'Form name', type: 'text', placeholder: 'contact' },
@@ -90,7 +90,7 @@ export const input: ComponentDef = {
   label: 'Input',
   group: 'form',
   hint: 'Single-line text field.',
-  icon: 'M3 8h18v8H3zM7 12h6',
+  icon: 'M5 8h14a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2zM7 12h6',
   inlineEditable: ['label'],
   fields: [
     { key: 'label', label: 'Label', type: 'text' },
@@ -131,7 +131,7 @@ export const textarea: ComponentDef = {
   label: 'Text area',
   group: 'form',
   hint: 'Multi-line text field.',
-  icon: 'M3 5h18v14H3zM7 9h10M7 13h10M7 17h6',
+  icon: 'M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2zM7 9h10M7 13h10M7 17h6',
   inlineEditable: ['label'],
   fields: [
     { key: 'label', label: 'Label', type: 'text' },
@@ -166,7 +166,7 @@ export const select: ComponentDef = {
   label: 'Select',
   group: 'form',
   hint: 'Dropdown of fixed choices.',
-  icon: 'M3 8h18v8H3zM15 11l2 2 2-2',
+  icon: 'M5 8h14a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-4a2 2 0 0 1 2 -2zM15 11l2 2 2-2',
   inlineEditable: ['label'],
   fields: [
     { key: 'label', label: 'Label', type: 'text' },
@@ -217,7 +217,7 @@ export const checkbox: ComponentDef = {
   label: 'Checkbox',
   group: 'form',
   hint: 'Single opt-in box.',
-  icon: 'M4 5h7v7H4zM15 8h5M15 12h5M7 8.5l1.5 1.5L11 7',
+  icon: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2zM0 0m16 9-5.5 5.5L8 12',
   inlineEditable: ['label'],
   fields: [
     { key: 'label', label: 'Label', type: 'textarea' },
@@ -243,7 +243,7 @@ export const submit: ComponentDef = {
   label: 'Submit',
   group: 'form',
   hint: 'Real submit button for a form.',
-  icon: 'M4 9h16v6H4zM10 12h4',
+  icon: 'M6 9h12a2 2 0 0 1 2 2v2a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-2a2 2 0 0 1 2 -2zM10 12h4',
   inlineEditable: ['label'],
   fields: [
     { key: 'label', label: 'Label', type: 'text' },

@@ -42,10 +42,10 @@ const WEIGHTS = options(
 );
 
 const ALIGN_ICONS = [
-  { value: 'left', icon: 'M3 6h18M3 12h10M3 18h14', title: 'Left' },
-  { value: 'center', icon: 'M3 6h18M7 12h10M5 18h14', title: 'Centre' },
-  { value: 'right', icon: 'M3 6h18M11 12h10M7 18h14', title: 'Right' },
-  { value: 'justify', icon: 'M3 6h18M3 12h18M3 18h18', title: 'Justify' },
+  { value: 'left', icon: 'M21 5H3M15 12H3M17 19H3', title: 'Left' },
+  { value: 'center', icon: 'M21 5H3M17 12H7M19 19H5', title: 'Centre' },
+  { value: 'right', icon: 'M21 5H3M21 12H9M21 19H7', title: 'Right' },
+  { value: 'justify', icon: 'M3 5h18M3 12h18M3 19h18', title: 'Justify' },
 ];
 
 const JUSTIFY = options(

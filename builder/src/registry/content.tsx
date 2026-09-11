@@ -20,7 +20,7 @@ export const heading: ComponentDef = {
   label: 'Heading',
   group: 'content',
   hint: 'Semantic heading, h1 through h6.',
-  icon: 'M6 4v16M18 4v16M6 12h12',
+  icon: 'M6 12h12M6 20V4M18 20V4',
   inlineEditable: ['text'],
   fields: [
     { key: 'text', label: 'Text', type: 'textarea', placeholder: 'Write a heading' },
@@ -51,7 +51,7 @@ export const text: ComponentDef = {
   label: 'Text',
   group: 'content',
   hint: 'Paragraph of body copy.',
-  icon: 'M4 6h16M4 11h16M4 16h10',
+  icon: 'M21 5H3M15 12H3M17 19H3',
   inlineEditable: ['text'],
   fields: [{ key: 'text', label: 'Text', type: 'textarea', placeholder: 'Write something' }],
   defaults: {
@@ -71,7 +71,7 @@ export const richtext: ComponentDef = {
   label: 'Rich text',
   group: 'content',
   hint: 'Formatted copy — headings, lists, links.',
-  icon: 'M4 5h16M4 10h16M4 15h10M4 20h7',
+  icon: 'M15 5h6M15 12h6M3 19h18M0 0m3 12 3.553-7.724a.5.5 0 0 1 .894 0L11 12M3.92 10h6.16',
   fields: [
     {
       key: 'html',
@@ -119,7 +119,7 @@ export const button: ComponentDef = {
   label: 'Button',
   group: 'content',
   hint: 'Primary call to action.',
-  icon: 'M4 9h16v6H4z',
+  icon: 'M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z',
   inlineEditable: ['label'],
   fields: [
     ...LINK_FIELDS,
@@ -166,7 +166,7 @@ export const link: ComponentDef = {
   label: 'Link',
   group: 'content',
   hint: 'Inline text link.',
-  icon: 'M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1',
+  icon: 'M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71',
   inlineEditable: ['label'],
   fields: LINK_FIELDS,
   defaults: { label: 'Learn more', href: '#' },
@@ -188,7 +188,7 @@ export const badge: ComponentDef = {
   label: 'Badge',
   group: 'content',
   hint: 'Small pill of label text.',
-  icon: 'M5 8h14v8H5zM8 12h8',
+  icon: 'M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z',
   inlineEditable: ['text'],
   fields: [{ key: 'text', label: 'Text', type: 'text', placeholder: 'New' }],
   defaults: { text: 'New' },
@@ -224,7 +224,7 @@ export const quote: ComponentDef = {
   label: 'Quote',
   group: 'content',
   hint: 'Pull quote with attribution.',
-  icon: 'M9 7c-3 0-5 2.4-5 5.4V19h6v-6H7c0-2 1-3.2 2.6-3.4zM20 7c-3 0-5 2.4-5 5.4V19h6v-6h-3c0-2 1-3.2 2.6-3.4z',
+  icon: 'M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2zM5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z',
   inlineEditable: ['text', 'author', 'role'],
   fields: [
     { key: 'text', label: 'Quote', type: 'textarea' },
@@ -258,7 +258,7 @@ export const bulletList: ComponentDef = {
   label: 'List',
   group: 'content',
   hint: 'Bulleted, numbered, or checkmark list.',
-  icon: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
+  icon: 'M3 5h.01M3 12h.01M3 19h.01M8 5h13M8 12h13M8 19h13',
   fields: [
     {
       key: 'marker',
@@ -321,7 +321,7 @@ export const icon: ComponentDef = {
   label: 'Icon',
   group: 'content',
   hint: 'Single stroke icon.',
-  icon: 'M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9z',
+  icon: 'M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z',
   fields: [
     { key: 'name', label: 'Icon', type: 'icon' },
     { key: 'strokeWidth', label: 'Stroke', type: 'range', min: 1, max: 3, step: 0.1 },
