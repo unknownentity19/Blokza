@@ -45,7 +45,9 @@
   --shadow-lg: 0 30px 70px -24px rgba(20, 16, 32, 0.3);
 
   --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  /* Matches the marketing site: display-scale type is the body face, set large.
+     See the same token in assets/css/base.css. */
+  --font-display: var(--font);
   --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, monospace;
 
   color-scheme: light;
