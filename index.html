@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="assets/images/hero.webp?v=ca6adc2854" type="image/webp" fetchpriority="high" />
 <link rel="stylesheet" href="assets/css/base.css?v=c8980e65cb" />
-  <link rel="stylesheet" href="assets/css/pages.css?v=615824565c" />
+  <link rel="stylesheet" href="assets/css/pages.css?v=1d4efbfe8b" />
 <link rel="canonical" href="https://blokza.com/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blokza.com/" />
@@ -216,7 +216,19 @@
         <div class="preview-glow"></div>
         <span class="float-chip float-chip--saved"><span class="pip"></span> Auto-saved</span>
         <span class="float-chip float-chip--users">
-          <span class="avpile"><span class="a1">M</span><span class="a2">D</span><span class="a3">R</span></span>
+          <!--
+            Faces rather than initials. "3 editing" with three coloured letters
+            is the placeholder every mock ships with; the chip is claiming
+            people are in the document, so it should show people. They rotate
+            through the pool below, which is also what makes the claim read as
+            live rather than painted on. Photographs are at 22px and the
+            surrounding chip already says what this is, so: empty alt.
+          -->
+          <span class="avpile" data-faces-pool="assets/images/faces/ava.webp?v=ff118470df assets/images/faces/noor.webp?v=7ec47cdab8 assets/images/faces/finn.webp?v=5c8a1d1f2c assets/images/faces/mara.webp?v=510eeba225 assets/images/faces/theo.webp?v=11d1312a74 assets/images/faces/iris.webp?v=0eabf16236">
+            <span class="a1"><img src="assets/images/faces/ava.webp?v=ff118470df" width="48" height="48" alt="" decoding="async" /></span>
+            <span class="a2"><img src="assets/images/faces/noor.webp?v=7ec47cdab8" width="48" height="48" alt="" decoding="async" /></span>
+            <span class="a3"><img src="assets/images/faces/finn.webp?v=5c8a1d1f2c" width="48" height="48" alt="" decoding="async" /></span>
+          </span>
           3 editing
         </span>
         <span class="float-chip float-chip--live"><span class="pill">LIVE</span> Published in 1.2s</span>
@@ -269,10 +281,19 @@
                 <div class="mock-doc">
                   <div class="h1"></div>
                   <div class="h2"></div>
-                  <div class="row">
-                    <div class="tile is-selected"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
+                  <!--
+                    Real photographs, not grey rectangles: this is a picture of
+                    a website being built, and every placeholder in it asked the
+                    reader to imagine the part that matters. The three cycle
+                    through the pool below, one at a time, so the canvas reads
+                    as something being worked on rather than a screenshot.
+                    Decorative — the surrounding mock already carries the
+                    meaning — hence empty alt.
+                  -->
+                  <div class="row" data-canvas-pool="assets/images/canvas/desk.webp?v=fadd9bb77a assets/images/canvas/laptop.webp?v=ee7f1e0283 assets/images/canvas/studio.webp?v=8ca2ef7113 assets/images/canvas/lamp.webp?v=67612144e3 assets/images/canvas/cafe.webp?v=08a4e82bd2 assets/images/canvas/structure.webp?v=c6b900e8f7 assets/images/canvas/lights.webp?v=90819238b5 assets/images/canvas/garage.webp?v=6af1ff2eef assets/images/canvas/notes.webp?v=6b2c0d8cb2">
+                    <div class="tile is-selected"><img src="assets/images/canvas/desk.webp?v=fadd9bb77a" width="400" height="164" alt="" decoding="async" /></div>
+                    <div class="tile"><img src="assets/images/canvas/laptop.webp?v=ee7f1e0283" width="400" height="164" alt="" decoding="async" /></div>
+                    <div class="tile"><img src="assets/images/canvas/studio.webp?v=8ca2ef7113" width="400" height="164" alt="" decoding="async" /></div>
                   </div>
                   <div class="ctas"><span class="b1"></span><span class="b2"></span></div>
                 </div>
@@ -702,6 +723,6 @@
     </div>
   </footer>
 
-  <script src="assets/js/site.js?v=367790d788" defer></script>
+  <script src="assets/js/site.js?v=2a5fa800ba" defer></script>
 </body>
 </html>

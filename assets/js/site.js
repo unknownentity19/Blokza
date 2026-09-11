@@ -404,6 +404,131 @@
   }
 })();
 
+/* ============ Hero mock: photographs that get swapped ============
+   Two places in the hero mock claim something is happening — a canvas with
+   images on it, and a chip saying three people are editing. Both used to be
+   drawn: grey rectangles and coloured initials. Both now hold real
+   photographs, and both rotate through a pool, because a still picture of
+   "3 editing" is a screenshot, not a product.
+
+   One tile changes at a time, round-robin. All of them at once would read as
+   a slideshow; one at a time reads as someone working.
+
+   Only what is on screen ships in the markup. The rest of each pool is
+   fetched after `load`, so the hero costs three small images on first paint. */
+(function () {
+  const motion = matchMedia("(prefers-reduced-motion: reduce)");
+
+  function shuffler(root, slotSelector, width, height, period) {
+    const slots = Array.from(root.querySelectorAll(slotSelector));
+    const pool = (root.dataset.canvasPool || root.dataset.facesPool || "")
+      .split(/\s+/).filter(Boolean);
+    // Nothing to rotate between if the pool is no bigger than what is shown.
+    if (slots.length < 2 || pool.length <= slots.length) return null;
+
+    const shown = slots.map((slot) => {
+      const img = slot.querySelector("img");
+      return img ? img.getAttribute("src") : null;
+    });
+    let next = slots.length;   // first unused entry in the pool
+    let turn = 0;              // which slot swaps next
+    let timer = 0;
+
+    function swap() {
+      const index = turn % slots.length;
+      const slot = slots[index];
+      const current = slot.querySelector("img:not(.is-out)");
+      if (!current) return;
+
+      // Skip anything already on screen, so two slots never show one face.
+      let src = pool[next % pool.length];
+      for (let tries = 0; shown.includes(src) && tries < pool.length; tries += 1) {
+        next += 1;
+        src = pool[next % pool.length];
+      }
+      next += 1;
+
+      const incoming = new Image(width, height);
+      incoming.src = src;
+      incoming.alt = "";
+      // Decode before inserting: a half-painted photograph fading in looks
+      // worse than a swap that happens a moment later. A rejection means the
+      // file is missing or corrupt — drop that entry and leave the slot alone,
+      // rather than crossfading to a broken image.
+      const decoded = incoming.decode
+        ? incoming.decode().then(() => true, () => false)
+        : Promise.resolve(true);
+      // `decode()` is not guaranteed to settle — a document that is throttled
+      // or not being painted can leave it pending indefinitely, and because the
+      // slot only advances once it resolves, one stalled call would strand the
+      // rotation for good. Cap the wait and fall back to what the image itself
+      // reports: loaded means paint it, anything else means skip this turn.
+      const ready = Promise.race([
+        decoded,
+        new Promise((settle) => {
+          window.setTimeout(() => settle(incoming.complete && incoming.naturalWidth > 0), 600);
+        }),
+      ]);
+      ready.then((ok) => {
+        if (!ok || !current.isConnected) return;
+        incoming.className = "is-out";
+        slot.appendChild(incoming);
+        // Two frames: one for the node to land at opacity 0, one to give the
+        // transition something to animate from.
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          incoming.classList.remove("is-out");
+          current.classList.add("is-out");
+        }));
+        shown[index] = src;
+        window.setTimeout(() => current.remove(), 700);
+        turn += 1;
+      });
+    }
+
+    return {
+      warm() { pool.slice(slots.length).forEach((src) => { new Image().src = src; }); },
+      start() { if (!timer) timer = window.setInterval(swap, period); },
+      stop() { window.clearInterval(timer); timer = 0; },
+    };
+  }
+
+  const canvas = document.querySelector("[data-canvas-pool]");
+  const faces = document.querySelector("[data-faces-pool]");
+  // Offset periods so a tile and an avatar rarely turn over together — two
+  // simultaneous crossfades in one small mock read as a glitch.
+  const runners = [
+    canvas && shuffler(canvas, ".tile", 400, 164, 3200),
+    faces && shuffler(faces, "span", 48, 48, 5100),
+  ].filter(Boolean);
+  if (!runners.length) return;
+
+  const startAll = () => runners.forEach((r) => r.start());
+  const stopAll = () => runners.forEach((r) => r.stop());
+
+  // The photographs are the point; the swapping is the flourish. Reduced
+  // motion keeps the first, drops the second.
+  window.addEventListener("load", () => {
+    // Nothing is ever going to swap under reduced motion, so the rest of the
+    // pool is bandwidth spent on images that will not be shown. If the setting
+    // is turned off later the change handler below starts the rotation and
+    // each photograph loads on the swap that needs it.
+    if (motion.matches) return;
+    runners.forEach((r) => r.warm());
+    startAll();
+  });
+  // A background tab should not pay for a crossfade nobody can see.
+  document.addEventListener("visibilitychange", () => {
+    document.hidden || motion.matches ? stopAll() : startAll();
+  });
+  // Turning reduced motion on mid-visit should mean now, not next reload.
+  motion.addEventListener("change", (e) => {
+    if (e.matches) { stopAll(); return; }
+    runners.forEach((r) => r.warm());
+    startAll();
+  });
+})();
+
+
 /* Contact form: real submit with success/error states */
 (function () {
   const form = document.getElementById("contact-form");

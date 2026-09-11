@@ -257,8 +257,20 @@
   min-height: 420px;
   background: #fff;
 }
+/*
+ * Below 720px the side panels go, rather than shrink.
+ *
+ * Squeezing them to 88px and 96px kept three columns and broke all three: the
+ * titles clipped mid-word ("COMPONEN"), every property row ran its label into
+ * its value ("Padding32px", "Radius14px"), and the canvas — the one panel
+ * whose whole job is to show a page being built — was left 63px wide, which
+ * crushed its content to vertical slivers. The window chrome, the selected
+ * block and the second cursor still say "visual editor" on their own; three
+ * unreadable columns said it worse.
+ */
 @media (max-width: 720px) {
-  .mock-body { grid-template-columns: 88px 1fr 96px; min-height: 320px; }
+  .mock-body { grid-template-columns: 1fr; min-height: 280px; }
+  .mock-side { display: none; }
 }
 .mock-side {
   border-right: 1px solid var(--border);
@@ -334,13 +346,28 @@
   gap: 10px;
 }
 .mock-doc .tile {
+  position: relative;
   height: 64px;
   border-radius: 4px;
+  /* Still a gradient, because it is what shows while the photograph decodes
+     and behind the crossfade. */
   background: linear-gradient(135deg, var(--p-50), #fff);
   border: 1px solid var(--border);
+  overflow: hidden;
 }
+/* Stacked rather than replaced: the outgoing photograph stays until the
+   incoming one has painted, so a swap never flashes the gradient. */
+.mock-doc .tile img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.55s var(--ease);
+}
+.mock-doc .tile img.is-out { opacity: 0; }
 .mock-doc .tile.is-selected {
-  background: linear-gradient(135deg, var(--p-100), var(--p-50));
   border-color: var(--p-300);
   box-shadow: 0 0 0 3px var(--p-100);
 }
@@ -496,6 +523,7 @@
   align-items: center;
 }
 .avpile span {
+  position: relative;
   display: inline-grid;
   place-items: center;
   width: 22px; height: 22px;
@@ -505,11 +533,25 @@
   font-weight: 700;
   color: #fff;
   margin-left: -6px;
+  overflow: hidden;
 }
 .avpile span:first-child { margin-left: 0; }
+/* The gradients stay as the ground each photograph sits on: they cover the
+   moment before it decodes, and they keep the three tiles distinct if an
+   image ever fails to load. */
 .avpile .a1 { background: linear-gradient(135deg, var(--p-500), var(--p-700)); }
 .avpile .a2 { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
 .avpile .a3 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+.avpile img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.55s var(--ease);
+}
+.avpile img.is-out { opacity: 0; }
 
 
 /* =================== SECTION HEAD =================== */
