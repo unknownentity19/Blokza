@@ -13,13 +13,18 @@
 }
 .hero > * { position: relative; z-index: 1; }
 
-/* Decorative purple star behind the headline */
+/* Decorative purple star in the hero's top-right corner.
+   It used to be 220px at mid-height, which parked it on the astronaut's boot;
+   sending it behind the art hid all but two clipped slivers, because the
+   illustration is an opaque box. The empty sky above the planet is the one
+   spot that is reliably clear at any width, and a smaller star reads as an
+   accent there rather than a sticker. */
 .hero__star {
   position: absolute;
-  top: 50%;
-  right: 5%;
-  width: 220px;
-  height: 220px;
+  top: 9%;
+  right: 2.5%;
+  width: 120px;
+  height: 120px;
   z-index: 2;
   pointer-events: none;
   opacity: 0.85;
