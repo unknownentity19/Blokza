@@ -249,6 +249,25 @@
   font-size: 11px;
   font-weight: 600;
 }
+/* Breakpoint switcher: three device glyphs in one pill, the lit one matching
+   the canvas width. The editor's own TopBar puts it here. */
+.mock-chrome .bp {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.mock-chrome .bp i {
+  display: inline-grid;
+  place-items: center;
+  width: 22px; height: 20px;
+  border-radius: 3px;
+  color: var(--fg-faint);
+}
+.mock-chrome .bp i.is-on { background: var(--p-50); color: var(--p-700); }
+@media (max-width: 720px) { .mock-chrome .bp { display: none; } }
 
 /* 3-column editor body */
 .mock-body {
@@ -287,76 +306,108 @@
   font-weight: 700;
 }
 
-/* component palette items */
-.mock-comp {
+/* Layers tree. Depth is a custom property so the indent is one rule, and the
+   two rings on the canvas — ours in purple, Maya's in sky — have matching rows
+   here. */
+.lyr {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 8px;
-  margin: 2px 0;
-  font-size: 12px;
+  gap: 6px;
+  height: 24px;
+  padding: 0 6px 0 calc(6px + var(--d, 0) * 14px);
+  margin: 1px 0;
+  font-size: 11.5px;
   color: var(--fg-2);
   border-radius: 4px;
-  transition: background 0.2s ease;
+  position: relative;
 }
-.mock-comp:hover, .mock-comp.is-active {
-  background: var(--p-50);
-  color: var(--p-700);
+.lyr__chev { width: 10px; display: inline-grid; place-items: center; color: var(--fg-faint); flex: 0 0 auto; }
+.lyr__ico  { display: inline-grid; place-items: center; color: var(--fg-dim); flex: 0 0 auto; }
+.lyr__name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lyr.is-open .lyr__name { font-weight: 600; color: var(--fg); }
+.lyr.is-selected { background: var(--p-50); color: var(--p-700); }
+.lyr.is-selected .lyr__ico { color: var(--p-700); }
+.lyr.is-selected .lyr__name { font-weight: 600; }
+/* Maya's row: her colour as a dot on the right, the same sky as her ring. */
+.lyr.is-peer::after {
+  content: "";
+  position: absolute;
+  right: 8px; top: 50%;
+  width: 6px; height: 6px;
+  margin-top: -3px;
+  border-radius: 999px;
+  background: var(--peer);
+  box-shadow: 0 0 0 2px #fff;
 }
-.mock-comp .ico {
-  display: inline-grid;
-  place-items: center;
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  background: var(--bg-mute);
-  color: var(--fg-muted);
-  flex: 0 0 auto;
-}
-.mock-comp.is-active .ico { background: var(--p-100); color: var(--p-700); }
 
-/* canvas area */
+/* Canvas: the editor's own dot grid, so the document sits on a surface that
+   is recognisably a canvas rather than a grey rectangle. */
 .mock-canvas {
-  background: #fcfcfd;
-  padding: 24px;
   position: relative;
   overflow: hidden;
+  padding: 22px;
+  --peer: #0ea5e9;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(24, 16, 36, 0.07) 1px, transparent 0) 0 0 / 22px 22px,
+    #fbfbfd;
 }
+.mock-side { --peer: #0ea5e9; }
+
+/* The document: a real page in miniature. Type is small but real, and the
+   scale is set so the whole page shows without the canvas going empty. */
 .mock-doc {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 20px;
-  box-shadow: var(--shadow-xs);
+  border-radius: 6px;
+  padding: 16px 18px 18px;
+  box-shadow: 0 1px 2px rgba(15, 15, 20, 0.04), 0 10px 30px -18px rgba(15, 15, 20, 0.18);
 }
-.mock-doc .h1 {
-  height: 16px; width: 70%;
-  border-radius: 4px;
-  background: var(--fg);
-  margin-bottom: 8px;
+.mdoc-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 9px;
+  color: var(--fg-muted);
 }
-.mock-doc .h2 {
-  height: 12px; width: 50%;
-  border-radius: 4px;
-  background: var(--fg-muted);
-  margin-bottom: 16px;
+.mdoc-brand { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; color: var(--fg); letter-spacing: 0.01em; }
+.mdoc-brand i { width: 9px; height: 9px; border-radius: 3px; background: var(--fg); }
+.mdoc-links { display: inline-flex; gap: 10px; margin-left: auto; }
+.mdoc-navbtn { padding: 3px 8px; border-radius: 3px; background: var(--fg); color: #fff; font-weight: 600; }
+.mdoc-h {
+  margin: 0 0 6px;
+  max-width: 88%;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--fg);
 }
+.mdoc-sub { margin: 0 0 14px; font-size: 10px; line-height: 1.45; color: var(--fg-muted); max-width: 78%; }
+.mdoc-logos { display: flex; gap: 8px; margin-top: 16px; }
+.mdoc-logos i { flex: 1; height: 8px; border-radius: 3px; background: var(--bg-mute); }
+.mdoc-logos i:nth-child(2) { flex: 0.7; }
+.mdoc-logos i:nth-child(4) { flex: 0.8; }
+
 .mock-doc .row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
-.mock-doc .tile {
-  position: relative;
-  height: 64px;
-  border-radius: 4px;
-  /* Still a gradient, because it is what shows while the photograph decodes
-     and behind the crossfade. */
+/* The tile is the selectable object; `.ph` is the clipped photograph inside
+   it. Splitting them lets handles, tags and the gap measurement sit outside
+   the image edge, which is where every editor puts them. */
+.mock-doc .tile { position: relative; height: 64px; border-radius: 4px; }
+.mock-doc .tile .ph {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
   background: linear-gradient(135deg, var(--p-50), #fff);
   border: 1px solid var(--border);
-  overflow: hidden;
 }
-/* Stacked rather than replaced: the outgoing photograph stays until the
-   incoming one has painted, so a swap never flashes the gradient. */
 .mock-doc .tile img {
   position: absolute;
   inset: 0;
@@ -367,109 +418,137 @@
   transition: opacity 0.55s var(--ease);
 }
 .mock-doc .tile img.is-out { opacity: 0; }
-.mock-doc .tile.is-selected {
-  border-color: var(--p-300);
-  box-shadow: 0 0 0 3px var(--p-100);
-}
-.mock-doc .ctas {
-  margin-top: 14px;
-  display: inline-flex;
-  gap: 8px;
-}
-.mock-doc .ctas .b1 { width: 70px; height: 28px; border-radius: 4px; background: var(--p-700); }
-.mock-doc .ctas .b2 { width: 70px; height: 28px; border-radius: 4px; border: 1px solid var(--border-2); }
 
-
-@keyframes select-breathe {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(122, 95, 229, 0.0); }
-  50%      { box-shadow: 0 0 0 4px rgba(122, 95, 229, 0.15); }
+/* Our selection: a 1.5px purple outline, four handles, a label, a measurement. */
+.mock-doc .tile.is-selected .ph { border-color: var(--p-500); box-shadow: 0 0 0 1px var(--p-500); }
+.mock-doc .hnd {
+  position: absolute;
+  width: 6px; height: 6px;
+  background: #fff;
+  border: 1.5px solid var(--p-500);
+  border-radius: 1px;
+  z-index: 2;
 }
+.mock-doc .hnd:nth-of-type(1) { left: -3px;  top: -3px; }
+.mock-doc .hnd:nth-of-type(2) { right: -3px; top: -3px; }
+.mock-doc .hnd:nth-of-type(3) { left: -3px;  bottom: -3px; }
+.mock-doc .hnd:nth-of-type(4) { right: -3px; bottom: -3px; }
+.mock-doc .seltag {
+  position: absolute;
+  top: -9px; left: 7px;
+  padding: 1px 5px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: #fff;
+  background: var(--p-500);
+  border-radius: 3px;
+  z-index: 3;
+}
+.mock-doc .gapchip {
+  position: absolute;
+  top: 50%; right: -13px;
+  transform: translate(50%, -50%);
+  padding: 0 3px;
+  font: 700 7.5px/1.5 var(--font-mono);
+  color: var(--p-700);
+  background: var(--p-100);
+  border-radius: 2px;
+  z-index: 3;
+}
+/* Maya's selection: same grammar, her colour, no handles — you cannot resize
+   someone else's selection. */
+.mock-doc .tile.is-peer .ph { border-color: var(--peer); box-shadow: 0 0 0 1px var(--peer); }
 
-/* drag cursor that loops over the canvas */
+.mock-doc .ctas { margin-top: 14px; display: inline-flex; gap: 8px; }
+.mock-doc .ctas span {
+  display: inline-grid;
+  place-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+/* The page's own primary is black, like its nav button. Purple stays the
+   editor's: selection, handles, Publish. A reader can then tell the tool
+   from the site being built without being told. */
+.mock-doc .ctas .b1 { background: var(--fg); color: #fff; }
+.mock-doc .ctas .b2 { border: 1px solid var(--border-2); color: var(--fg-2); }
+
+/* Maya's cursor. It rests by her selection and wanders to the headline and
+   the buttons — places a person editing this page would actually go — then
+   comes home. Her colour throughout, so cursor, ring and layer row read as
+   one person. */
 .mock-cursor {
   position: absolute;
-  left: 28px; top: 32px;
+  left: 70%; top: 42%;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   pointer-events: none;
-  color: var(--p-700);
-  filter: drop-shadow(0 6px 8px rgba(15,15,20,0.18));
-  animation: cursor-loop 9s var(--ease-in-out) infinite;
+  color: var(--peer);
+  filter: drop-shadow(0 4px 6px rgba(15, 15, 20, 0.18));
+  animation: cursor-loop 11s var(--ease-in-out) infinite;
   will-change: transform;
+  z-index: 4;
 }
-/*
- * The collaborator cursor fades in and out inside its own keyframes, so with the
- * duration clamped under prefers-reduced-motion it sat on the 0% frame - opacity
- * 0 - and vanished from the mock entirely. Reduced motion should remove the
- * movement, not the content.
- */
 @media (prefers-reduced-motion: reduce) {
   .mock-cursor { opacity: 1 !important; }
 }
-.mock-cursor svg { color: var(--p-700); }
 .mock-cursor .label {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
-  background: var(--p-700);
+  background: var(--peer);
   color: #fff;
-  padding: 3px 8px;
+  padding: 2px 7px;
   border-radius: 4px;
 }
+/* Measured against the rendered document at 1180px: rest is inside Maya's
+   tile, the first hop lands on the headline, the second on "Start a project". */
 @keyframes cursor-loop {
-  0%   { transform: translate(0, 0);     opacity: 0; }
-  6%   { opacity: 1; }
-  25%  { transform: translate(160px, 80px); }
-  45%  { transform: translate(260px, 50px); }
-  68%  { transform: translate(80px, 130px); }
-  90%  { transform: translate(40px, 30px); opacity: 1; }
-  100% { transform: translate(0, 0);     opacity: 0; }
+  0%, 12%   { transform: translate(0, 0); }
+  30%, 44%  { transform: translate(-206px, -80px); }
+  62%, 74%  { transform: translate(-236px, 54px); }
+  92%, 100% { transform: translate(0, 0); }
+}
+@media (max-width: 720px) {
+  .mock-cursor { left: 66%; top: 46%; }
+  @keyframes cursor-loop {
+    0%, 12%   { transform: translate(0, 0); }
+    30%, 44%  { transform: translate(-140px, -76px); }
+    62%, 74%  { transform: translate(-150px, 62px); }
+    92%, 100% { transform: translate(0, 0); }
+  }
 }
 
-/* settings panel */
+/* Inspector */
+.mock-crumb { margin: -6px 0 10px; padding: 0 6px; font-size: 10px; color: var(--fg-faint); }
+.mock-crumb b { font-weight: 400; margin: 0 3px; }
+.mock-side__title--sub { margin-top: 14px; }
 .mock-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 8px;
+  gap: 8px;
+  min-height: 28px;
+  padding: 0 8px;
   margin: 4px 0;
   font-size: 11px;
   border-radius: 4px;
   background: var(--bg-soft);
 }
-.mock-row .label { color: var(--fg-dim); }
-.mock-row .value { color: var(--fg); display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
-.mock-row .swatch { width: 10px; height: 10px; border-radius: 4px; background: var(--p-600); }
-
-.mock-bar {
-  margin: 6px 8px;
-  height: 6px;
-  border-radius: 4px;
-  background: var(--bg-mute);
-  position: relative;
-}
-.mock-bar i {
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  border-radius: inherit;
-  background: var(--p-600);
-  /*
-   * Rests filled, and animates *from* empty. It used to rest at width 0, so
-   * under prefers-reduced-motion - where the duration is clamped to ~0 - all
-   * three bars in the hero mock rendered as empty tracks.
-   *
-   * scaleX rather than width: animating width on an infinite loop relayouts the
-   * subtree on every frame, forever, even scrolled off-screen.
-   */
-  width: var(--w, 70%);
-  transform-origin: left center;
-  animation: bar-fill 2.4s var(--ease-in-out) infinite;
-}
-@keyframes bar-fill {
-  0%   { transform: scaleX(0); }
-  60%  { transform: scaleX(1); }
-  100% { transform: scaleX(1); opacity: 0.6; }
-}
+.mock-row .label { color: var(--fg-dim); flex: 0 0 auto; }
+.mock-row .value { color: var(--fg); display: inline-flex; align-items: center; gap: 6px; font-weight: 500; min-width: 0; }
+.mock-row--field .value { font-weight: 400; color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mock-seg { display: inline-flex; padding: 2px; gap: 2px; background: #fff; border: 1px solid var(--border); border-radius: 3px; }
+.mock-seg b { font-weight: 500; font-size: 10px; padding: 1px 7px; border-radius: 2px; color: var(--fg-dim); }
+.mock-seg b.is-on { background: var(--p-600); color: #fff; }
+.mock-step b { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 3px; background: #fff; border: 1px solid var(--border); font-weight: 500; color: var(--fg-dim); }
+.mock-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mock-pair .mock-row { margin: 0; }
 
 /* Floating chips around hero preview */
 .float-chip {
