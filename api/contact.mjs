@@ -50,6 +50,60 @@ function looksLikeEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
 }
 
+/**
+ * RFC 2047 encoded-word, for header values that are not pure ASCII.
+ *
+ * Header fields are 7-bit ASCII; `Content-Type: charset=utf-8` covers the body
+ * and nothing else. Every subject this builds contains an em dash, so *every*
+ * message was putting raw UTF-8 bytes in a header — not just the ones from
+ * senders called José. Tolerant servers pass it through, strict ones reject the
+ * message, and the common outcome is an inbox showing "Ã©" where a name should
+ * be.
+ *
+ * A word is capped at 75 characters including the `=?UTF-8?B?` and `?=`
+ * wrappers, so the payload is chunked at 45 bytes — a multiple of 3, which
+ * keeps each chunk's base64 unpadded, and split on whole characters so a word
+ * never ends mid-sequence. Continuations are folded with CRLF + space, which is
+ * how a long header is spread over several lines.
+ */
+function encodeHeaderWord(value) {
+  const text = String(value ?? '');
+  if (!text) return '';
+  // eslint-disable-next-line no-control-regex
+  if (!/[^\x00-\x7F]/.test(text)) return text;
+
+  const chunks = [];
+  let current = Buffer.alloc(0);
+  for (const char of text) {
+    const bytes = Buffer.from(char, 'utf8');
+    if (current.length + bytes.length > 45) {
+      chunks.push(current);
+      current = Buffer.alloc(0);
+    }
+    current = Buffer.concat([current, bytes]);
+  }
+  if (current.length) chunks.push(current);
+
+  return chunks.map((c) => `=?UTF-8?B?${c.toString('base64')}?=`).join('\r\n ');
+}
+
+/**
+ * A display name as it may appear before an <address>.
+ *
+ * Non-ASCII is encoded; ASCII that contains an RFC 5322 special is quoted. The
+ * special that actually bites is the comma: `Reply-To` is a list, so a sender
+ * who writes "Pat O'Brien, Jr" turned one address into two, the second of them
+ * malformed — and a reply then bounced or went nowhere.
+ */
+function displayName(value) {
+  const name = String(value ?? '');
+  if (!name) return '';
+  // eslint-disable-next-line no-control-regex
+  if (/[^\x00-\x7F]/.test(name)) return encodeHeaderWord(name);
+  if (!/[()<>@,;:\\".[\]]/.test(name)) return name;
+  return `"${name.replace(/([\\"])/g, '\\$1')}"`;
+}
+
 async function readBody(req) {
   if (req.body !== undefined && req.body !== null) {
     if (typeof req.body === 'string') {
@@ -183,8 +237,8 @@ function buildMessage({ from, to, name, email, topic, msg }) {
   return [
     `From: BLOKZA <${from}>`,
     `To: <${to}>`,
-    `Reply-To: ${headerSafe(name)} <${headerSafe(email)}>`,
-    `Subject: ${subject}`,
+    `Reply-To: ${displayName(headerSafe(name))} <${headerSafe(email)}>`,
+    `Subject: ${encodeHeaderWord(subject)}`,
     `Date: ${new Date().toUTCString()}`,
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=utf-8',

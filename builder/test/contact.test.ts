@@ -112,6 +112,68 @@ describe('the contact endpoint', () => {
     expect(message).toMatch(/^Reply-To: Ada Lovelace <ada@example\.com>/m);
   });
 
+  /**
+   * Header fields are 7-bit ASCII; only the body is covered by the
+   * `charset=utf-8` declaration. The subject is built with an em dash, so this
+   * is every message rather than an unusual one.
+   */
+  describe('header encoding', () => {
+    const headersOf = (message: string) => message.split('\r\n\r\n')[0];
+    // RFC 5322 folding: a continuation line begins with whitespace.
+    const unfold = (block: string) => block.replace(/\r\n[ \t]/g, '');
+    const decodeWords = (line: string) =>
+      line.replace(/=\?UTF-8\?B\?([A-Za-z0-9+/=]+)\?=/g, (_m, b64: string) =>
+        Buffer.from(b64, 'base64').toString('utf8'));
+
+    it('never puts a raw non-ASCII byte in a header, even for an ASCII sender', async () => {
+      const { send } = await post(GOOD);
+      expect(headersOf(String(send.mock.calls[0][0].message))).toMatch(/^[\x00-\x7F]*$/);
+    });
+
+    it('encodes an accented name so the inbox shows it, not mojibake', async () => {
+      const { send } = await post({ ...GOOD, name: 'José Ávila' });
+      const headers = headersOf(String(send.mock.calls[0][0].message));
+      expect(headers).toMatch(/^[\x00-\x7F]*$/);
+
+      const subject = unfold(headers).split('\r\n').find((l) => l.startsWith('Subject:'))!;
+      expect(decodeWords(subject)).toBe('Subject: [BLOKZA] Sales — José Ávila');
+    });
+
+    it('keeps every encoded-word inside the 75-character limit, folding as needed', async () => {
+      const { send } = await post({ ...GOOD, name: 'Ünicode Ärger Øyvind Þorsteinn Æsop Ñuñez' });
+      const message = String(send.mock.calls[0][0].message);
+      const words = message.match(/=\?UTF-8\?B\?[A-Za-z0-9+/=]+\?=/g) ?? [];
+      expect(words.length).toBeGreaterThan(1);
+      for (const word of words) expect(word.length).toBeLessThanOrEqual(75);
+
+      const subject = unfold(headersOf(message)).split('\r\n').find((l) => l.startsWith('Subject:'))!;
+      expect(decodeWords(subject)).toContain('Ünicode Ärger Øyvind Þorsteinn Æsop Ñuñez');
+    });
+
+    /**
+     * `Reply-To` is an address *list*, so an unquoted comma in a display name
+     * splits one address into two — the second of them malformed, and the
+     * reply then goes nowhere.
+     */
+    it('quotes a display name containing a comma', async () => {
+      const { send } = await post({ ...GOOD, name: "Pat O'Brien, Jr" });
+      expect(String(send.mock.calls[0][0].message))
+        .toMatch(/^Reply-To: "Pat O'Brien, Jr" <ada@example\.com>/m);
+    });
+
+    it('quotes a display name containing angle brackets, so it cannot pose as a second address', async () => {
+      const { send } = await post({ ...GOOD, name: 'Bad <evil@example.com>' });
+      expect(String(send.mock.calls[0][0].message))
+        .toMatch(/^Reply-To: "Bad <evil@example\.com>" <ada@example\.com>/m);
+    });
+
+    it('leaves an ordinary ASCII name alone', async () => {
+      const { send } = await post(GOOD);
+      expect(String(send.mock.calls[0][0].message))
+        .toMatch(/^Reply-To: Ada Lovelace <ada@example\.com>/m);
+    });
+  });
+
   /** Telling a bot it was caught only teaches it to skip the field. */
   it('accepts a honeypot submission silently and sends nothing', async () => {
     const { code, send } = await post({ ...GOOD, _gotcha: 'http://spam.example' });
@@ -337,7 +399,17 @@ describe('the SMTP client', () => {
     expect(res.out.code).toBe(200);
     expect(received).toMatch(/^To: <inbox@blokza\.com>$/m);
     expect(received).toMatch(/^Reply-To: Ada Lovelace <ada@example\.com>$/m);
-    expect(received).toMatch(/^Subject: \[BLOKZA\] Sales — Ada Lovelace$/m);
+    // The subject reaches the wire as an RFC 2047 encoded-word, because it is
+    // built with an em dash and a header may not carry a raw non-ASCII byte.
+    // What matters is what the recipient's client shows after decoding.
+    // This fake server re-joins the DATA lines with \n, so unfold on that.
+    const subjectLine = received.replace(/\n[ \t]/g, '')
+      .split('\n').find((l) => l.startsWith('Subject:'))!;
+    const decodedSubject = subjectLine.replace(
+      /=\?UTF-8\?B\?([A-Za-z0-9+/=]+)\?=/g,
+      (_m, b64: string) => Buffer.from(b64, 'base64').toString('utf8'),
+    );
+    expect(decodedSubject).toBe('Subject: [BLOKZA] Sales — Ada Lovelace');
     // The dot-stuffed line arrives escaped, and the text after it survives —
     // the whole point of the escaping is that the message is not truncated.
     expect(received).toContain('\n..\n');

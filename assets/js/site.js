@@ -9,9 +9,39 @@
   const toggle = document.querySelector("[data-nav-toggle]");
   const mobile = document.querySelector("[data-nav-mobile]");
   if (toggle && mobile) {
-    toggle.addEventListener("click", () => {
-      const open = mobile.classList.toggle("is-open");
+    const setNav = (open) => {
+      mobile.classList.toggle("is-open", open);
       toggle.setAttribute("aria-expanded", String(open));
+    };
+    toggle.addEventListener("click", (e) => {
+      // Without this the click reaches the document closer below, which would
+      // shut the panel in the same gesture that opened it.
+      e.stopPropagation();
+      setNav(!mobile.classList.contains("is-open"));
+    });
+
+    /*
+     * Escape and outside-click dismissal.
+     *
+     * The submenus a few dozen lines down have had both since they were
+     * written; the mobile panel — the one control on the site that covers the
+     * whole screen on a phone — had neither, so the only way out was to find
+     * the hamburger again under the open menu. Tapping the page or pressing
+     * Escape is what every other overlay here does, and what a visitor tries
+     * first.
+     */
+    document.addEventListener("click", (e) => {
+      if (!mobile.classList.contains("is-open")) return;
+      // A tap inside the panel is navigation or scrolling, not dismissal.
+      if (mobile.contains(e.target)) return;
+      setNav(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape" || !mobile.classList.contains("is-open")) return;
+      setNav(false);
+      // The panel is gone; leaving focus inside it would strand a keyboard
+      // user on an element that is no longer reachable.
+      toggle.focus();
     });
   }
 
@@ -74,23 +104,90 @@
     document.querySelectorAll(revealSelector).forEach((el) => el.classList.add("is-visible"));
   }
 
-  // Tabs (Validate / Track / Optimize / Scale)
-  document.querySelectorAll('[data-tabs]').forEach((root) => {
-    const tabs = root.querySelectorAll(".tab");
-    const panels = document.querySelectorAll("[data-tab-panel]");
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
-        const id = tab.dataset.tabFor;
-        panels.forEach((p) => {
-          // `is-visible` on a tab panel drove exactly one CSS rule, and that
-          // rule targeted `.metric .bar i`, which appears in no page's markup.
-          // The remove / read offsetWidth / add dance existed only to restart
-          // that animation, so it was forcing a synchronous layout on every tab
-          // click to re-trigger nothing.
-          p.hidden = p.dataset.tabPanel !== id;
-        });
+  /*
+   * Tabs (Design / Collaborate / Publish / Extend)
+   *
+   * The strip was four bare <button>s: switching worked with a mouse and told
+   * assistive technology nothing at all — no role, no selected state, no link
+   * from a tab to the panel it drives. A screen reader read four unlabelled
+   * buttons and could not say which one was current, which is the same defect
+   * the pricing toggle's `aria-pressed` and the submenus' `aria-expanded`
+   * already fix elsewhere in this file.
+   *
+   * Wiring the roles in is what makes the keyboard model a promise: `role=tab`
+   * is announced as "tab, 2 of 4", and arrow keys are then expected to move
+   * between them, so the roving tabindex below is part of the same fix rather
+   * than an extra. Only the active tab stays in the page's tab order; Home and
+   * End jump to the ends, per the WAI-ARIA tabs pattern.
+   */
+  document.querySelectorAll('[data-tabs]').forEach((root, rootIndex) => {
+    const tabs = Array.from(root.querySelectorAll(".tab"));
+    // Scoped to this group. A document-wide lookup happened to work because one
+    // page has one strip, but it meant a second strip anywhere on the site
+    // would have hidden the first one's panels.
+    const scope = root.closest(".showcase") || document;
+    const panels = Array.from(scope.querySelectorAll("[data-tab-panel]"));
+    if (!tabs.length || !panels.length) return;
+
+    const panelFor = (name) => panels.find((p) => p.dataset.tabPanel === name);
+
+    root.setAttribute("role", "tablist");
+    tabs.forEach((tab, i) => {
+      const name = tab.dataset.tabFor;
+      const panel = panelFor(name);
+      const tabId = `tab-${rootIndex}-${name}`;
+      const panelId = `tabpanel-${rootIndex}-${name}`;
+      tab.id = tabId;
+      tab.setAttribute("role", "tab");
+      if (panel) {
+        panel.id = panelId;
+        panel.setAttribute("role", "tabpanel");
+        panel.setAttribute("aria-labelledby", tabId);
+        // A panel is a scrollable region of prose; without this a keyboard user
+        // can reach the tab but not the content it reveals.
+        panel.tabIndex = 0;
+        tab.setAttribute("aria-controls", panelId);
+      }
+      const active = tab.classList.contains("is-active") || (i === 0 && !root.querySelector(".tab.is-active"));
+      tab.setAttribute("aria-selected", String(active));
+      tab.tabIndex = active ? 0 : -1;
+    });
+
+    function select(tab, { focus = false } = {}) {
+      const name = tab.dataset.tabFor;
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.classList.toggle("is-active", on);
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
       });
+      panels.forEach((p) => {
+        // `is-visible` on a tab panel drove exactly one CSS rule, and that
+        // rule targeted `.metric .bar i`, which appears in no page's markup.
+        // The remove / read offsetWidth / add dance existed only to restart
+        // that animation, so it was forcing a synchronous layout on every tab
+        // click to re-trigger nothing.
+        p.hidden = p.dataset.tabPanel !== name;
+      });
+      if (focus) tab.focus();
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => select(tab));
+    });
+
+    root.addEventListener("keydown", (e) => {
+      const current = tabs.indexOf(document.activeElement);
+      if (current === -1) return;
+      const last = tabs.length - 1;
+      let next;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") next = current === last ? 0 : current + 1;
+      else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = current === 0 ? last : current - 1;
+      else if (e.key === "Home") next = 0;
+      else if (e.key === "End") next = last;
+      else return;
+      e.preventDefault();
+      select(tabs[next], { focus: true });
     });
   });
 
