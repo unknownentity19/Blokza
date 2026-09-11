@@ -169,244 +169,183 @@
   max-width: 1080px;
   padding: 0 24px 0;
 }
+/* No mat. A 14px white frame around a dark window read as a bezel and hid
+   the glow behind it; the window itself, with its own radius and shadow,
+   floating on the page, is the object. */
 .preview-stage {
   position: relative;
-  border-radius: var(--r-3xl);
-  background: linear-gradient(180deg, #fff, #faf7ff);
-  border: 1px solid var(--border);
-  padding: 14px;
-  box-shadow: var(--shadow-lg);
-  transform: none;
-  transition: box-shadow 0.4s var(--ease);
-}
-
-.preview-stage::before {
-  /* subtle gradient border */
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(140deg, rgba(122, 95, 229, 0.45), transparent 50%, rgba(122, 95, 229, 0.18));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-  opacity: 0.7;
+  border-radius: 16px;
 }
 
 .preview-glow {
   display: none;
 }
 
-/* Editor mock browser frame */
+/* ===== Editor mock: dark tool, bright page =====
+   The window is the brand's own dark (#0f101c is the demo bar and the product
+   page's closing band), tinted a step toward the purple so it belongs to this
+   palette rather than to "dark mode". Everything inside it is quiet except
+   three things: the Publish button, the selection, and the page. */
 .mock-window {
-  background: #fff;
-  border-radius: calc(var(--r-3xl) - 14px);
+  --mk-bg: #14152b;
+  --mk-bar: #1a1b33;
+  --mk-line: rgba(255, 255, 255, 0.08);
+  --mk-soft: rgba(255, 255, 255, 0.05);
+  --mk-text: #eeecf7;
+  --mk-muted: rgba(238, 236, 247, 0.62);
+  --mk-dim: rgba(238, 236, 247, 0.38);
+  --peer: #38bdf8;
+  background: var(--mk-bg);
+  color: var(--mk-text);
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 30px 60px -24px rgba(20, 16, 40, 0.5), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
 }
+/* A diffuse brand glow behind the stage, so the dark window floats on the
+   light page instead of sitting on it. */
+.product-preview::before {
+  content: "";
+  position: absolute;
+  inset: -4% 4% -12%;
+  background: radial-gradient(55% 60% at 50% 70%, rgba(122, 95, 229, 0.34), transparent 72%);
+  filter: blur(18px);
+  pointer-events: none;
+  z-index: 0;
+}
+.product-preview { isolation: isolate; }
+.product-preview > * { position: relative; z-index: 1; }
+
 .mock-chrome {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 14px;
-  background: var(--bg-soft);
-  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  background: var(--mk-bar);
+  border-bottom: 1px solid var(--mk-line);
 }
 .mock-chrome .dots { display: inline-flex; gap: 6px; }
-.mock-chrome .dots i {
-  width: 11px; height: 11px;
-  border-radius: 4px;
-}
-.mock-chrome .dots i:nth-child(1) { background: #fb7185; }
-.mock-chrome .dots i:nth-child(2) { background: #fbbf24; }
-.mock-chrome .dots i:nth-child(3) { background: #34d399; }
-.mock-chrome .url {
-  flex: 1;
-  text-align: center;
-  font-size: 12px;
-  color: var(--fg-dim);
-}
+.mock-chrome .dots i { width: 10px; height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); }
+.mock-chrome .url { flex: 1; text-align: center; font-size: 12px; color: var(--mk-muted); }
 .mock-chrome .url span {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: #fff;
-  padding: 4px 12px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--mk-line);
 }
-.mock-chrome .url svg { color: var(--p-600); }
-.mock-chrome .publish {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 4px;
-  background: var(--p-700);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-}
-/* Breakpoint switcher: three device glyphs in one pill, the lit one matching
-   the canvas width. The editor's own TopBar puts it here. */
+.mock-chrome .url svg { color: var(--mk-dim); }
 .mock-chrome .bp {
   display: inline-flex;
   gap: 2px;
   padding: 2px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--mk-line);
 }
 .mock-chrome .bp i {
   display: inline-grid;
   place-items: center;
-  width: 22px; height: 20px;
-  border-radius: 3px;
-  color: var(--fg-faint);
+  width: 24px; height: 22px;
+  border-radius: 4px;
+  color: var(--mk-dim);
 }
-.mock-chrome .bp i.is-on { background: var(--p-50); color: var(--p-700); }
-@media (max-width: 720px) { .mock-chrome .bp { display: none; } }
-
-/* 3-column editor body */
-.mock-body {
-  display: grid;
-  grid-template-columns: 200px 1fr 220px;
-  min-height: 420px;
-  background: #fff;
-}
-/*
- * Below 720px the side panels go, rather than shrink.
- *
- * Squeezing them to 88px and 96px kept three columns and broke all three: the
- * titles clipped mid-word ("COMPONEN"), every property row ran its label into
- * its value ("Padding32px", "Radius14px"), and the canvas — the one panel
- * whose whole job is to show a page being built — was left 63px wide, which
- * crushed its content to vertical slivers. The window chrome, the selected
- * block and the second cursor still say "visual editor" on their own; three
- * unreadable columns said it worse.
- */
-@media (max-width: 720px) {
-  .mock-body { grid-template-columns: 1fr; min-height: 280px; }
-  .mock-side { display: none; }
-}
-.mock-side {
-  border-right: 1px solid var(--border);
-  padding: 14px 12px;
-}
-.mock-side.right { border-right: none; border-left: 1px solid var(--border); }
-.mock-side__title {
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
-  margin: 0 0 10px;
-  padding: 0 6px;
-  font-weight: 700;
-}
-
-/* Layers tree. Depth is a custom property so the indent is one rule, and the
-   two rings on the canvas — ours in purple, Maya's in sky — have matching rows
-   here. */
-.lyr {
-  display: flex;
+.mock-chrome .bp i.is-on { background: rgba(122, 95, 229, 0.25); color: #c9bdfa; }
+.mock-chrome .publish {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 24px;
-  padding: 0 6px 0 calc(6px + var(--d, 0) * 14px);
-  margin: 1px 0;
+  padding: 6px 13px;
+  border-radius: 6px;
+  background: var(--p-500);
+  color: #fff;
   font-size: 11.5px;
-  color: var(--fg-2);
-  border-radius: 4px;
-  position: relative;
-}
-.lyr__chev { width: 10px; display: inline-grid; place-items: center; color: var(--fg-faint); flex: 0 0 auto; }
-.lyr__ico  { display: inline-grid; place-items: center; color: var(--fg-dim); flex: 0 0 auto; }
-.lyr__name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.lyr.is-open .lyr__name { font-weight: 600; color: var(--fg); }
-.lyr.is-selected { background: var(--p-50); color: var(--p-700); }
-.lyr.is-selected .lyr__ico { color: var(--p-700); }
-.lyr.is-selected .lyr__name { font-weight: 600; }
-/* Maya's row: her colour as a dot on the right, the same sky as her ring. */
-.lyr.is-peer::after {
-  content: "";
-  position: absolute;
-  right: 8px; top: 50%;
-  width: 6px; height: 6px;
-  margin-top: -3px;
-  border-radius: 999px;
-  background: var(--peer);
-  box-shadow: 0 0 0 2px #fff;
+  font-weight: 600;
+  box-shadow: 0 6px 16px -6px rgba(122, 95, 229, 0.7);
 }
 
-/* Canvas: the editor's own dot grid, so the document sits on a surface that
-   is recognisably a canvas rather than a grey rectangle. */
+.mock-body {
+  display: grid;
+  grid-template-columns: 52px 1fr 212px;
+  min-height: 400px;
+}
+
+/* Icon rail */
+.mock-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+  border-right: 1px solid var(--mk-line);
+}
+.mock-rail i {
+  display: inline-grid;
+  place-items: center;
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  color: var(--mk-dim);
+}
+.mock-rail i.is-on { background: rgba(122, 95, 229, 0.22); color: #d3c9fb; }
+.mock-rail__end { margin-top: auto; }
+
+/* Canvas: the editor's dot grid on the dark surface. */
 .mock-canvas {
   position: relative;
   overflow: hidden;
-  padding: 22px;
-  --peer: #0ea5e9;
+  padding: 26px 28px 30px;
   background:
-    radial-gradient(circle at 1px 1px, rgba(24, 16, 36, 0.07) 1px, transparent 0) 0 0 / 22px 22px,
-    #fbfbfd;
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.075) 1px, transparent 0) 0 0 / 22px 22px,
+    #101124;
 }
-.mock-side { --peer: #0ea5e9; }
 
-/* The document: a real page in miniature. Type is small but real, and the
-   scale is set so the whole page shows without the canvas going empty. */
+/* The page. The only white in the frame, and the largest thing in it. */
 .mock-doc {
+  color: var(--fg);
   background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 16px 18px 18px;
-  box-shadow: 0 1px 2px rgba(15, 15, 20, 0.04), 0 10px 30px -18px rgba(15, 15, 20, 0.18);
+  border-radius: 10px;
+  padding: 18px 22px 22px;
+  box-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.7), 0 8px 24px -14px rgba(0, 0, 0, 0.5);
 }
 .mdoc-nav {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-bottom: 12px;
-  margin-bottom: 14px;
+  gap: 14px;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
   border-bottom: 1px solid var(--border);
-  font-size: 9px;
+  font-size: 10.5px;
   color: var(--fg-muted);
 }
-.mdoc-brand { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; color: var(--fg); letter-spacing: 0.01em; }
-.mdoc-brand i { width: 9px; height: 9px; border-radius: 3px; background: var(--fg); }
-.mdoc-links { display: inline-flex; gap: 10px; margin-left: auto; }
-.mdoc-navbtn { padding: 3px 8px; border-radius: 3px; background: var(--fg); color: #fff; font-weight: 600; }
+.mdoc-brand { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--fg); }
+.mdoc-brand i { width: 10px; height: 10px; border-radius: 3px; background: var(--fg); }
+.mdoc-links { display: inline-flex; gap: 12px; margin-left: auto; }
+.mdoc-navbtn { padding: 4px 10px; border-radius: 4px; background: var(--fg); color: #fff; font-weight: 600; }
 .mdoc-h {
-  margin: 0 0 6px;
-  max-width: 88%;
-  font-size: 17px;
+  margin: 0 0 8px;
+  font-size: 25px;
   font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
   color: var(--fg);
 }
-.mdoc-sub { margin: 0 0 14px; font-size: 10px; line-height: 1.45; color: var(--fg-muted); max-width: 78%; }
-.mdoc-logos { display: flex; gap: 8px; margin-top: 16px; }
-.mdoc-logos i { flex: 1; height: 8px; border-radius: 3px; background: var(--bg-mute); }
+.mdoc-sub { margin: 0 0 18px; font-size: 11.5px; line-height: 1.5; color: var(--fg-muted); }
+.mdoc-logos { display: flex; gap: 10px; margin-top: 20px; }
+.mdoc-logos i { flex: 1; height: 9px; border-radius: 3px; background: var(--bg-mute); }
 .mdoc-logos i:nth-child(2) { flex: 0.7; }
 .mdoc-logos i:nth-child(4) { flex: 0.8; }
+.mdoc-logos i:nth-child(5) { flex: 0.6; }
 
-.mock-doc .row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-/* The tile is the selectable object; `.ph` is the clipped photograph inside
-   it. Splitting them lets handles, tags and the gap measurement sit outside
-   the image edge, which is where every editor puts them. */
-.mock-doc .tile { position: relative; height: 64px; border-radius: 4px; }
+.mock-doc .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.mock-doc .tile { position: relative; height: 118px; border-radius: 6px; }
 .mock-doc .tile .ph {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   overflow: hidden;
   background: linear-gradient(135deg, var(--p-50), #fff);
-  border: 1px solid var(--border);
 }
 .mock-doc .tile img {
   position: absolute;
@@ -419,136 +358,139 @@
 }
 .mock-doc .tile img.is-out { opacity: 0; }
 
-/* Our selection: a 1.5px purple outline, four handles, a label, a measurement. */
-.mock-doc .tile.is-selected .ph { border-color: var(--p-500); box-shadow: 0 0 0 1px var(--p-500); }
+/* Our selection: hairline ring, four handles, a label. */
+.mock-doc .tile.is-selected .ph { box-shadow: 0 0 0 1.5px var(--p-500); }
 .mock-doc .hnd {
   position: absolute;
-  width: 6px; height: 6px;
+  width: 7px; height: 7px;
   background: #fff;
   border: 1.5px solid var(--p-500);
-  border-radius: 1px;
+  border-radius: 1.5px;
   z-index: 2;
 }
-.mock-doc .hnd:nth-of-type(1) { left: -3px;  top: -3px; }
-.mock-doc .hnd:nth-of-type(2) { right: -3px; top: -3px; }
-.mock-doc .hnd:nth-of-type(3) { left: -3px;  bottom: -3px; }
-.mock-doc .hnd:nth-of-type(4) { right: -3px; bottom: -3px; }
+.mock-doc .hnd:nth-of-type(1) { left: -4px;  top: -4px; }
+.mock-doc .hnd:nth-of-type(2) { right: -4px; top: -4px; }
+.mock-doc .hnd:nth-of-type(3) { left: -4px;  bottom: -4px; }
+.mock-doc .hnd:nth-of-type(4) { right: -4px; bottom: -4px; }
 .mock-doc .seltag {
   position: absolute;
-  top: -9px; left: 7px;
-  padding: 1px 5px;
-  font-size: 8px;
+  top: -10px; left: 8px;
+  padding: 1px 6px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  line-height: 1.5;
+  line-height: 1.6;
   color: #fff;
   background: var(--p-500);
   border-radius: 3px;
   z-index: 3;
 }
-.mock-doc .gapchip {
-  position: absolute;
-  top: 50%; right: -13px;
-  transform: translate(50%, -50%);
-  padding: 0 3px;
-  font: 700 7.5px/1.5 var(--font-mono);
-  color: var(--p-700);
-  background: var(--p-100);
-  border-radius: 2px;
-  z-index: 3;
-}
-/* Maya's selection: same grammar, her colour, no handles — you cannot resize
-   someone else's selection. */
-.mock-doc .tile.is-peer .ph { border-color: var(--peer); box-shadow: 0 0 0 1px var(--peer); }
+/* Maya's selection: same grammar, her colour, no handles. */
+.mock-doc .tile.is-peer .ph { box-shadow: 0 0 0 1.5px var(--peer); }
 
-.mock-doc .ctas { margin-top: 14px; display: inline-flex; gap: 8px; }
+.mock-doc .ctas { margin-top: 16px; display: inline-flex; gap: 8px; }
 .mock-doc .ctas span {
   display: inline-grid;
   place-items: center;
-  height: 24px;
-  padding: 0 10px;
-  border-radius: 4px;
-  font-size: 9.5px;
+  height: 28px;
+  padding: 0 13px;
+  border-radius: 5px;
+  font-size: 10.5px;
   font-weight: 600;
   white-space: nowrap;
 }
-/* The page's own primary is black, like its nav button. Purple stays the
-   editor's: selection, handles, Publish. A reader can then tell the tool
-   from the site being built without being told. */
+/* The page's primary is black like its nav button, so purple stays the
+   tool's: selection, handles, Publish. */
 .mock-doc .ctas .b1 { background: var(--fg); color: #fff; }
 .mock-doc .ctas .b2 { border: 1px solid var(--border-2); color: var(--fg-2); }
 
-/* Maya's cursor. It rests by her selection and wanders to the headline and
-   the buttons — places a person editing this page would actually go — then
-   comes home. Her colour throughout, so cursor, ring and layer row read as
-   one person. */
+/* Maya's cursor: rests in her selection, visits the headline and the second
+   button, comes home. Positions are measured against the rendered page. */
 .mock-cursor {
   position: absolute;
-  left: 70%; top: 42%;
+  left: 74%; top: 52%;
   display: inline-flex;
   align-items: center;
   gap: 5px;
   pointer-events: none;
   color: var(--peer);
-  filter: drop-shadow(0 4px 6px rgba(15, 15, 20, 0.18));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
   animation: cursor-loop 11s var(--ease-in-out) infinite;
   will-change: transform;
   z-index: 4;
 }
-@media (prefers-reduced-motion: reduce) {
-  .mock-cursor { opacity: 1 !important; }
-}
+@media (prefers-reduced-motion: reduce) { .mock-cursor { opacity: 1 !important; } }
 .mock-cursor .label {
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 700;
   background: var(--peer);
-  color: #fff;
+  color: #0b1a24;
   padding: 2px 7px;
   border-radius: 4px;
 }
-/* Measured against the rendered document at 1180px: rest is inside Maya's
-   tile, the first hop lands on the headline, the second on "Start a project". */
 @keyframes cursor-loop {
   0%, 12%   { transform: translate(0, 0); }
-  30%, 44%  { transform: translate(-206px, -80px); }
-  62%, 74%  { transform: translate(-236px, 54px); }
+  30%, 44%  { transform: translate(-300px, -100px); }
+  62%, 74%  { transform: translate(-367px, 119px); }
   92%, 100% { transform: translate(0, 0); }
 }
-@media (max-width: 720px) {
-  .mock-cursor { left: 66%; top: 46%; }
-  @keyframes cursor-loop {
-    0%, 12%   { transform: translate(0, 0); }
-    30%, 44%  { transform: translate(-140px, -76px); }
-    62%, 74%  { transform: translate(-150px, 62px); }
-    92%, 100% { transform: translate(0, 0); }
-  }
-}
 
-/* Inspector */
-.mock-crumb { margin: -6px 0 10px; padding: 0 6px; font-size: 10px; color: var(--fg-faint); }
+/* Inspector, dark. */
+.mock-side {
+  padding: 16px 14px;
+  border-left: 1px solid var(--mk-line);
+}
+.mock-side__title {
+  margin: 0 0 6px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mk-dim);
+}
+.mock-side__title--sub { margin-top: 16px; }
+.mock-crumb { margin: 0 0 12px; padding: 0 4px; font-size: 10.5px; color: var(--mk-dim); }
 .mock-crumb b { font-weight: 400; margin: 0 3px; }
-.mock-side__title--sub { margin-top: 14px; }
 .mock-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  min-height: 28px;
-  padding: 0 8px;
-  margin: 4px 0;
+  min-height: 30px;
+  padding: 0 9px;
+  margin: 5px 0;
   font-size: 11px;
-  border-radius: 4px;
-  background: var(--bg-soft);
+  border-radius: 6px;
+  background: var(--mk-soft);
+  border: 1px solid transparent;
 }
-.mock-row .label { color: var(--fg-dim); flex: 0 0 auto; }
-.mock-row .value { color: var(--fg); display: inline-flex; align-items: center; gap: 6px; font-weight: 500; min-width: 0; }
-.mock-row--field .value { font-weight: 400; color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mock-seg { display: inline-flex; padding: 2px; gap: 2px; background: #fff; border: 1px solid var(--border); border-radius: 3px; }
-.mock-seg b { font-weight: 500; font-size: 10px; padding: 1px 7px; border-radius: 2px; color: var(--fg-dim); }
-.mock-seg b.is-on { background: var(--p-600); color: #fff; }
-.mock-step b { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 3px; background: #fff; border: 1px solid var(--border); font-weight: 500; color: var(--fg-dim); }
+.mock-row .label { color: var(--mk-dim); flex: 0 0 auto; }
+.mock-row .value { color: var(--mk-text); display: inline-flex; align-items: center; gap: 6px; font-weight: 500; min-width: 0; }
+.mock-row--field .value { font-weight: 400; color: var(--mk-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mock-seg { display: inline-flex; padding: 2px; gap: 2px; border-radius: 4px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--mk-line); }
+.mock-seg b { font-weight: 500; font-size: 10px; padding: 2px 8px; border-radius: 3px; color: var(--mk-dim); }
+.mock-seg b.is-on { background: var(--p-500); color: #fff; }
+.mock-step b { display: inline-grid; place-items: center; width: 17px; height: 17px; border-radius: 4px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--mk-line); color: var(--mk-muted); font-weight: 500; }
 .mock-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .mock-pair .mock-row { margin: 0; }
+
+/* Phones: the page gets the whole window. */
+@media (max-width: 720px) {
+  .mock-body { grid-template-columns: 1fr; min-height: 0; }
+  .mock-rail, .mock-side, .mock-chrome .bp { display: none; }
+  .mock-canvas { padding: 16px; }
+  .mock-doc { padding: 14px 16px 16px; }
+  .mdoc-h { font-size: 19px; }
+  .mock-doc .tile { height: 84px; }
+  .mock-cursor { left: 70%; top: 50%; }
+  @keyframes cursor-loop {
+    0%, 12%   { transform: translate(0, 0); }
+    30%, 44%  { transform: translate(-150px, -90px); }
+    62%, 74%  { transform: translate(-160px, 50px); }
+    92%, 100% { transform: translate(0, 0); }
+  }
+}
 
 /* Floating chips around hero preview */
 .float-chip {

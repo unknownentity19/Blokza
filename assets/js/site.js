@@ -499,7 +499,7 @@
   const runners = [
     // The photograph sits in an inner frame (`.ph`) so the tile itself can hold
     // selection handles and labels outside the clipped image.
-    canvas && shuffler(canvas, ".tile .ph", 400, 164, 3200),
+    canvas && shuffler(canvas, ".tile .ph", 640, 352, 3200),
     faces && shuffler(faces, "span", 48, 48, 5100),
   ].filter(Boolean);
   if (!runners.length) return;
