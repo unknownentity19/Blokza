@@ -424,8 +424,7 @@
     const pool = (root.dataset.canvasPool || root.dataset.facesPool || "")
       .split(/\s+/).filter(Boolean);
     // Nothing to rotate between if the pool is no bigger than what is shown.
-    // One slot is fine — the hero's floating photograph rotates alone.
-    if (slots.length < 1 || pool.length <= slots.length) return null;
+    if (slots.length < 2 || pool.length <= slots.length) return null;
 
     const shown = slots.map((slot) => {
       const img = slot.querySelector("img");

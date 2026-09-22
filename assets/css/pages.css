@@ -4,79 +4,299 @@
    proper template + blog illustrations.
    ========================================================= */
 
-/* ================= HERO: direction C, "working canvas" =================
-   The page sits on the editor's dot grid (painted by body in base.css). The
-   headline wears our purple selection — ring, handles, tag — and the
-   photograph being edited floats loose beside it wearing a collaborator's
-   sky ring. Two selections, never the same colour. */
-.hero { padding: 56px 0 8px; }
+/* =================== HERO =================== */
+.hero {
+  position: relative;
+  padding: 56px 0 80px;
+  overflow: hidden;
+  background: #ffffff;
+}
+.hero > * { position: relative; z-index: 1; }
+
+/* Decorative purple star in the hero's top-right corner.
+   It used to be 220px at mid-height, which parked it on the astronaut's boot;
+   sending it behind the art hid all but two clipped slivers, because the
+   illustration is an opaque box. The empty sky above the planet is the one
+   spot that is reliably clear at any width, and a smaller star reads as an
+   accent there rather than a sticker. */
+.hero__star {
+  position: absolute;
+  top: 9%;
+  right: 2.5%;
+  width: 120px;
+  height: 120px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.85;
+  filter: drop-shadow(0 6px 16px rgba(124, 58, 237, 0.18));
+  animation: hero-star-spin 24s linear infinite;
+}
+.hero__star svg { width: 100%; height: 100%; display: block; }
+@keyframes hero-star-spin {
+  to { transform: rotate(360deg); }
+}
+@media (max-width: 980px) {
+  .hero__star { display: none; }
+}
+
+/* 2-column layout: copy left, illustration right */
 .hero__layout {
   display: grid;
-  grid-template-columns: 1.02fr 0.98fr;
-  gap: 56px;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
   align-items: center;
 }
-.hero__title {
-  font-family: var(--font-display);
-  font-size: clamp(2.9rem, 1.7rem + 3.4vw, 4.75rem);
-  line-height: 1.0;
-  letter-spacing: -0.03em;
+@media (max-width: 980px) {
+  .hero__layout { grid-template-columns: 1fr; gap: 24px; }
+  .hero { text-align: center; padding-top: 32px; }
+  .hero__copy { order: 1; }
+  .hero__illustration { order: 0; }
 }
-.hero__sel {
-  position: relative;
+
+.hero__copy { position: relative; z-index: 2; max-width: 580px; }
+
+
+/* Live dot indicator */
+.live-dot {
   display: inline-block;
-  padding: 0 12px;
-  margin-left: -12px;
-  border-radius: 6px;
-  box-shadow: 0 0 0 2px var(--p-600);
-  color: var(--p-600);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  margin-right: 2px;
+  vertical-align: middle;
+  position: relative;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  animation: live-pulse 2s ease-in-out infinite;
 }
-.hnd {
-  position: absolute;
-  width: 10px; height: 10px;
-  background: #fff;
-  border: 2px solid var(--p-600);
-  border-radius: 3px;
-  z-index: 2;
+@keyframes live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50%      { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
 }
-.hnd:nth-of-type(1) { left: -6px;  top: -6px; }
-.hnd:nth-of-type(2) { right: -6px; top: -6px; }
-.hnd:nth-of-type(3) { left: -6px;  bottom: -6px; }
-.hnd:nth-of-type(4) { right: -6px; bottom: -6px; }
-.hero__seltag {
-  position: absolute;
-  top: -15px; left: 8px;
-  font: 700 11px/1.7 var(--font-sans);
-  letter-spacing: 0.02em;
-  background: var(--p-600);
-  color: #fff;
-  padding: 1px 8px;
-  border-radius: 4px;
-  z-index: 3;
+
+
+/* Hero illustration (right side) */
+.hero__illustration {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  /* Subtle cursor parallax (vars set by site.js on .hero) */
+  translate: var(--parallax-x, 0px) var(--parallax-y, 0px);
+  /* Reveal (opacity/transform) gets a 0.15s stagger delay; translate must
+     stay at 0s delay or every parallax update lags and the scene stutters. */
+  transition: opacity 0.7s var(--ease) 0.15s, transform 0.7s var(--ease) 0.15s, translate 0.6s var(--ease);
+}
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.hero__illustration svg {
+  max-width: 560px;
+  width: 100%;
+}
+
+.hero__art {
+  width: 100%;
+  max-width: 620px;
+  aspect-ratio: 720 / 540;
+  background-image: url('../images/hero.webp?v=ca6adc2854');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Float lives here (not on .hero__illustration) so it can't fight the
+     data-reveal transform transition on the parent. */
+  animation: hero-float 6s ease-in-out infinite;
+  /* Not a real <img>: nothing to "save image as", nothing to drag out. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+
+.hero__title {
+  margin: 26px 0 22px;
+  font-size: clamp(2.6rem, 1.5rem + 4vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+.hero__title .accent {
+  display: inline-block;
+  color: var(--p-700);
 }
 .hero__sub {
-  margin: 28px 0 0;
-  font-size: 19px;
-  line-height: 1.55;
+  max-width: 520px;
+  margin: 0;
+  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.28rem);
   color: var(--fg-muted);
-  max-width: 440px;
+  line-height: 1.6;
 }
-.hero__ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
-.hero__meta { margin: 22px 0 0; font-size: 13.5px; color: var(--fg-dim); }
+.hero__ctas {
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hero__meta {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  font-size: 13px;
+  color: var(--fg-dim);
+}
+@media (max-width: 980px) {
+  .hero__sub { margin: 0 auto; }
+  .hero__ctas { justify-content: center; }
+  .hero__meta { justify-content: center; }
+}
+.hero__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hero__meta svg { color: var(--p-600); flex: 0 0 auto; }
 
-/* The floating photograph. The tilt is the point: it is a thing on a canvas,
-   not a section of a layout. */
-.hero__float { position: relative; transform: rotate(1.2deg); }
-.hero__img { position: relative; height: 440px; border-radius: 14px; }
-.hero__img .ph {
+/* ===== Hero product preview: the work, framed, with the tool floating over it ===== */
+.product-preview {
+  position: relative;
+  isolation: isolate;
+  margin: 64px auto 0;
+  max-width: 1120px;
+  padding: 0 24px;
+}
+/* A diffuse brand glow so the frame floats on the page rather than sitting on it. */
+.product-preview::before {
+  content: "";
+  position: absolute;
+  inset: -6% 8% -14%;
+  background: radial-gradient(55% 60% at 50% 65%, rgba(122, 95, 229, 0.30), transparent 72%);
+  filter: blur(22px);
+  pointer-events: none;
+  z-index: 0;
+}
+.stage { position: relative; z-index: 1; padding: 0 56px; }
+
+/* The site: a light browser frame, the one bright object in the composition. */
+.site {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(15, 15, 20, 0.05), 0 40px 90px -36px rgba(20, 16, 40, 0.45), 0 18px 40px -24px rgba(20, 16, 40, 0.25);
+  overflow: hidden;
+}
+.site__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 0 14px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+}
+.site__dots { display: inline-flex; gap: 6px; }
+.site__dots i { width: 10px; height: 10px; border-radius: 999px; background: var(--border-2); }
+.site__url {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto;
+  padding: 4px 12px;
+  font-size: 11.5px;
+  color: var(--fg-dim);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.site__url svg { color: var(--fg-faint); }
+
+/* The page inside. Sized to be read as a page, cropped at the bottom so it
+   reads as the top of one. */
+.site__page {
+  height: 470px;
+  padding: 22px 30px 0;
+  overflow: hidden;
+  color: var(--fg);
+}
+.sp-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--fg-muted);
+}
+.sp-brand { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; color: var(--fg); font-size: 12.5px; }
+.sp-brand i { width: 11px; height: 11px; border-radius: 3px; background: var(--fg); }
+.sp-links { display: inline-flex; gap: 14px; margin-left: auto; }
+.sp-navbtn { padding: 5px 11px; border-radius: 5px; background: var(--fg); color: #fff; font-weight: 600; }
+
+.sp-hero {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 30px;
+  align-items: center;
+}
+.sp-copy { padding-right: 8px; }
+.sp-h {
+  margin: 0 0 12px;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.032em;
+  color: var(--fg);
+}
+/* Maya's text selection: her colour, as a highlight, on the words her cursor
+   rests over. */
+.sp-h mark {
+  background: rgba(56, 189, 248, 0.28);
+  color: inherit;
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.28);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.sp-p { margin: 0 0 18px; font-size: 12.5px; line-height: 1.55; color: var(--fg-muted); max-width: 300px; }
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 6px;
+  background: var(--fg);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+.sp-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 26px;
+}
+.sp-cards .tile { height: 120px; border-radius: 8px; }
+
+/* Photograph slots. The tile is the selectable object; `.ph` is the clipped
+   image inside it, so handles and labels can sit outside the image edge. */
+.tile { position: relative; }
+.sp-media { height: 276px; border-radius: 12px; }
+.tile .ph {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   overflow: hidden;
   background: linear-gradient(135deg, var(--p-50), #fff);
-  box-shadow: 0 0 0 2.5px var(--peer), 10px 12px 0 rgba(27, 26, 23, 0.14);
 }
-.hero__img img {
+.tile img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -85,53 +305,164 @@
   display: block;
   transition: opacity 0.6s var(--ease);
 }
-.hero__img img.is-out { opacity: 0; }
-.hero__imgtag {
+.tile img.is-out { opacity: 0; }
+
+/* Our selection: hairline ring, four handles, a label. */
+.tile.is-selected .ph { box-shadow: 0 0 0 1.5px var(--p-500); }
+.hnd {
   position: absolute;
-  top: -13px; left: 14px;
-  font: 700 11px/1.8 var(--font-sans);
-  background: var(--peer);
+  width: 8px; height: 8px;
+  background: #fff;
+  border: 1.5px solid var(--p-500);
+  border-radius: 2px;
+  z-index: 2;
+}
+.hnd:nth-of-type(1) { left: -4px;  top: -4px; }
+.hnd:nth-of-type(2) { right: -4px; top: -4px; }
+.hnd:nth-of-type(3) { left: -4px;  bottom: -4px; }
+.hnd:nth-of-type(4) { right: -4px; bottom: -4px; }
+.seltag {
+  position: absolute;
+  top: -11px; left: 10px;
+  padding: 1px 7px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
   color: #fff;
-  padding: 1px 9px;
+  background: var(--p-500);
   border-radius: 4px;
   z-index: 3;
 }
-.hero__cursor {
+
+/* Maya's cursor rests on the words she has selected, visits the button and a
+   card, comes home. Offsets are measured against the rendered page. */
+.mock-cursor {
+  --peer: #0ea5e9;
   position: absolute;
-  right: 56px; top: 54px;
+  left: 25%; top: 41%;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  pointer-events: none;
   color: var(--peer);
-  filter: drop-shadow(0 4px 8px rgba(27, 26, 23, 0.35));
-  z-index: 3;
-  animation: cursor-drift 9s var(--ease-in-out) infinite;
+  filter: drop-shadow(0 4px 8px rgba(15, 15, 20, 0.25));
+  animation: cursor-loop 12s var(--ease-in-out) infinite;
+  will-change: transform;
+  z-index: 4;
 }
-@keyframes cursor-drift {
-  0%, 100% { transform: translate(0, 0); }
-  30%      { transform: translate(-26px, 18px); }
-  65%      { transform: translate(14px, -12px); }
+@media (prefers-reduced-motion: reduce) { .mock-cursor { opacity: 1 !important; } }
+.mock-cursor .label {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--peer);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 4px;
 }
-@media (prefers-reduced-motion: reduce) { .hero__cursor { animation: none; } }
-.hero__crew {
+@keyframes cursor-loop {
+  0%, 14%   { transform: translate(0, 0); }
+  32%, 46%  { transform: translate(-40px, 96px); }
+  64%, 76%  { transform: translate(120px, 250px); }
+  92%, 100% { transform: translate(0, 0); }
+}
+
+/* Floating tool cards: dark, small, overlapping the frame's edges. The
+   dark is the brand's own (the demo bars, the product page's closing band),
+   tinted toward the purple so it belongs to this palette. */
+.fcard {
+  --mk-line: rgba(255, 255, 255, 0.08);
+  --mk-soft: rgba(255, 255, 255, 0.06);
+  --mk-text: #eeecf7;
+  --mk-muted: rgba(238, 236, 247, 0.62);
+  --mk-dim: rgba(238, 236, 247, 0.4);
+  --peer: #38bdf8;
   position: absolute;
-  right: -14px; bottom: -24px;
-  transform: rotate(-1.5deg);
+  z-index: 3;
+  width: 224px;
+  padding: 12px 12px 10px;
+  color: var(--mk-text);
+  background: #14152b;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  box-shadow: 0 30px 60px -24px rgba(20, 16, 40, 0.6), 0 10px 24px -14px rgba(20, 16, 40, 0.4);
+}
+/* Beside the selected image, clear of the site's own nav. */
+.fcard--style  { right: 0;  top: 30%; }
+/* Straddles the bottom-left edge, balancing the status card on the right;
+   it overlaps a photograph, which tolerates it, rather than the paragraph,
+   which did not. */
+.fcard--type   { left: 2%;  bottom: -26px; }
+.fcard--status {
+  right: 9%;
+  bottom: -22px;
+  width: auto;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: var(--ink);
-  color: #fff;
-  padding: 10px 16px 10px 12px;
-  border-radius: 999px;
-  z-index: 4;
+  padding: 8px 8px 8px 10px;
 }
-.hero__crew b { font-size: 13px; font-weight: 700; white-space: nowrap; }
+.fcard__title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0 3px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.fcard__title span { font-size: 10px; font-weight: 500; color: var(--mk-dim); }
+.fcard__title--peer span { color: var(--peer); }
+.fcard__status { font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.fcard__sep { width: 1px; height: 18px; background: var(--mk-line); }
+.fcard__live { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6ee7b7; }
+.fcard__live i { width: 6px; height: 6px; border-radius: 999px; background: #34d399; box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2); }
+.fcard__publish {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  background: var(--p-500);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+  box-shadow: 0 6px 16px -6px rgba(122, 95, 229, 0.7);
+}
+
+/* Rows shared by the property cards. */
+.mock-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 0 8px;
+  margin: 4px 0;
+  font-size: 11px;
+  border-radius: 6px;
+  background: var(--mk-soft);
+}
+.mock-row .label { color: var(--mk-dim); flex: 0 0 auto; }
+.mock-row .value { color: var(--mk-text); display: inline-flex; align-items: center; gap: 6px; font-weight: 500; min-width: 0; }
+.mock-row--field .value { font-weight: 400; color: var(--mk-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mock-seg { display: inline-flex; padding: 2px; gap: 2px; border-radius: 4px; background: rgba(0, 0, 0, 0.28); border: 1px solid var(--mk-line); }
+.mock-seg b { font-weight: 500; font-size: 10px; padding: 1px 8px; border-radius: 3px; color: var(--mk-dim); }
+.mock-seg b.is-on { background: var(--p-500); color: #fff; }
+.mock-step b { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; background: rgba(0, 0, 0, 0.28); border: 1px solid var(--mk-line); color: var(--mk-muted); font-weight: 500; }
+.mock-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mock-pair .mock-row { margin: 4px 0; }
+
+/* Avatar pile inside the status card. */
 .avpile { display: inline-flex; align-items: center; }
 .avpile span {
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 25px; height: 25px;
+  width: 24px; height: 24px;
   border-radius: 999px;
-  border: 2px solid var(--ink);
+  border: 2px solid #14152b;
   margin-left: -7px;
   overflow: hidden;
 }
@@ -139,127 +470,37 @@
 .avpile .a1 { background: linear-gradient(135deg, var(--p-500), var(--p-700)); }
 .avpile .a2 { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
 .avpile .a3 { background: linear-gradient(135deg, #f59e0b, #ef4444); }
-.avpile img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: opacity 0.55s var(--ease);
-}
+.avpile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.55s var(--ease); }
 .avpile img.is-out { opacity: 0; }
 
+/* Narrower: the cards need room outside the frame; below 980px they tuck in,
+   below 720px they go and the page has the stage to itself. */
 @media (max-width: 980px) {
-  .hero__layout { grid-template-columns: 1fr; gap: 48px; }
-  .hero__float { max-width: 560px; }
-  .hero__img { height: 360px; }
+  .stage { padding: 0 20px; }
+  .fcard--style { right: -8px; top: 10%; }
+  .fcard--type  { left: -8px; bottom: -20px; }
 }
 @media (max-width: 720px) {
-  .hero { padding-top: 36px; }
-  /* Room for the ring and its tag once the headline wraps to three lines. */
-  .hero__title { line-height: 1.08; }
-  .hero__sel { margin-top: 10px; }
-  .hero__img { height: 260px; }
-  .hero__crew { right: 4px; }
-  .hero__cursor { right: 36px; top: 36px; }
-}
-
-/* ============== The finished page: one clean tab card ============== */
-.mockcard {
-  background: #fff;
-  border: 1.5px solid var(--ink);
-  border-radius: 14px;
-  box-shadow: var(--pop-lg);
-  transform: rotate(-0.6deg);
-}
-.mockcard__bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  border-bottom: 1.5px solid var(--ink);
-}
-.mockcard__bar b { font-size: 12.5px; font-weight: 700; }
-.mockcard__bar > span { font-size: 12px; color: var(--fg-dim); }
-.mockcard__publish {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff !important;
-  background: var(--p-600);
-  padding: 6px 13px;
-  border-radius: 999px;
-}
-.mockcard__body {
-  display: grid;
-  grid-template-columns: 0.92fr 1.08fr;
-  gap: 30px;
-  padding: 30px 34px 34px;
-  align-items: center;
-}
-.mockcard__copy { display: flex; flex-direction: column; gap: 14px; }
-.sp-nav {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 12px;
-  color: var(--fg-muted);
-  padding-bottom: 11px;
-  border-bottom: 1px solid var(--border);
-}
-.sp-brand { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--fg); font-size: 13px; }
-.sp-brand i { width: 10px; height: 10px; border-radius: 3px; background: var(--fg); }
-.sp-links { display: inline-flex; gap: 12px; margin-left: auto; }
-.sp-navbtn { background: var(--fg); color: #fff; padding: 4px 11px; border-radius: 999px; font-weight: 600; }
-.sp-h {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 31px;
-  line-height: 1.06;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--fg);
-}
-/* A collaborator's text selection, in her sky. */
-.sp-h mark {
-  background: rgba(14, 165, 233, 0.26);
-  color: inherit;
-  border-radius: 3px;
-  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.26);
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
-.sp-p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--fg-muted); max-width: 300px; }
-.sp-btn {
-  align-self: flex-start;
-  display: inline-grid;
-  place-items: center;
-  height: 38px;
-  padding: 0 18px;
-  background: var(--fg);
-  color: #fff;
-  font-size: 12.5px;
-  font-weight: 700;
-  border-radius: 999px;
-}
-.sp-thumbs { display: flex; gap: 12px; margin-top: 4px; }
-.sp-thumbs img { width: 33%; height: 76px; object-fit: cover; border-radius: 8px; }
-.mockcard__media {
-  display: block;
-  width: 100%;
-  height: 360px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-@media (max-width: 880px) {
-  .mockcard { transform: none; }
-  .mockcard__body { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
-  .mockcard__media { height: 220px; }
+  .product-preview { margin-top: 40px; padding: 0 16px; }
+  .stage { padding: 0; }
+  .fcard--style, .fcard--type { display: none; }
+  .fcard--status { right: 50%; transform: translateX(50%); bottom: -20px; }
+  .fcard__sep, .fcard__live { display: none; }
+  .site__page { height: auto; padding: 16px 16px 44px; }
   .sp-links { display: none; }
+  .sp-hero { grid-template-columns: 1fr; gap: 18px; }
+  .sp-h { font-size: 26px; }
+  .sp-media { height: 200px; }
+  .sp-cards { gap: 10px; margin-top: 18px; }
+  .sp-cards .tile { height: 78px; }
+  /* Rest on the highlighted words, which sit higher once the page stacks. */
+  .mock-cursor { left: 34%; top: 21%; }
+  @keyframes cursor-loop {
+    0%, 14%   { transform: translate(0, 0); }
+    32%, 46%  { transform: translate(-30px, 90px); }
+    64%, 76%  { transform: translate(60px, 220px); }
+    92%, 100% { transform: translate(0, 0); }
+  }
 }
 
 /* =================== SECTION HEAD =================== */
@@ -280,37 +521,24 @@
 }
 
 /* =================== STAT CARDS =================== */
-/* The problem, as three pinned cards — the last on the amber sticky,
-   because the sequence ends on the consequence. */
-.prob-head { max-width: 760px; margin-bottom: 44px; }
-.prob-head h2 { font-size: clamp(2rem, 1.4rem + 1.9vw, 3.25rem); }
-.prob-head p { margin: 12px 0 0; font-size: 17px; color: var(--fg-muted); }
+/* The problem, as prose. A label column and a sentence: the closest thing to
+   a chart this section needs. */
 .prob {
+  max-width: 760px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border);
+}
+.prob__item {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
+  grid-template-columns: 250px 1fr;
+  gap: 28px;
+  padding: 26px 4px;
+  border-bottom: 1px solid var(--border);
 }
-.prob__card {
-  background: #fff;
-  border: 1.5px solid var(--ink);
-  border-radius: 14px;
-  padding: 26px;
-  box-shadow: var(--pop);
-  transform: rotate(-0.5deg);
-}
-.prob__card--mid { transform: rotate(0.4deg) translateY(10px); }
-.prob__card--amber { background: var(--amber); transform: rotate(-0.3deg); }
-.prob__card h3 {
-  font-family: var(--font-display);
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-}
-.prob__card p { margin: 10px 0 0; font-size: 14px; line-height: 1.6; color: var(--fg-muted); }
-@media (max-width: 880px) {
-  .prob { grid-template-columns: 1fr; }
-  .prob__card, .prob__card--mid, .prob__card--amber { transform: none; }
+.prob__item strong { font-size: 15.5px; letter-spacing: -0.01em; color: var(--fg); line-height: 1.4; }
+.prob__item p { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--fg-muted); }
+@media (max-width: 720px) {
+  .prob__item { grid-template-columns: 1fr; gap: 6px; padding: 20px 2px; }
 }
 
 /* =================== FEATURE CARDS =================== */
@@ -3545,28 +3773,44 @@
 }
 
 /* ---------------------------------------------------------------- the output */
-/* Claims with outlined check chips on the left; the zip as a tab card on the
-   right, its header on the amber sticky, rows separated by dashed rules. */
+/*
+ * Set like a spread, not a section: kicker, headline and claims ragged-left in
+ * one column, the file listing beside them typeset like a printed directory —
+ * dotted leaders between name and note, hairline rules, no card chrome. The
+ * listing is the proof, so it gets the typography of a document rather than
+ * the border-and-shadow of a component.
+ */
 .out {
   display: grid;
-  grid-template-columns: 1fr 0.95fr;
-  gap: 70px;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 72px;
   align-items: start;
 }
 @media (max-width: 900px) { .out { grid-template-columns: 1fr; gap: 44px; } }
 
-.out__h { font-size: clamp(2rem, 1.4rem + 1.9vw, 3.25rem); margin-bottom: 14px; }
+.out__h {
+  margin: 14px 0 12px;
+  font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.6rem);
+  letter-spacing: -0.028em;
+}
 .out__lede {
-  margin: 0 0 30px;
-  font-size: 17px;
+  margin: 0 0 34px;
+  font-size: 16.5px;
   line-height: 1.6;
   color: var(--fg-muted);
-  max-width: 44ch;
+  max-width: 46ch;
 }
-.out__rows { display: grid; gap: 16px; }
-.out__row { display: flex; gap: 14px; font-size: 14.5px; line-height: 1.6; color: var(--fg-muted); }
-.out__row b { font-size: 16px; color: var(--fg); }
-.out__row code {
+.out__facts dl { margin: 0; display: grid; gap: 26px; }
+.out__facts dt {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+.out__facts dd { margin: 0; font-size: 14.5px; line-height: 1.62; color: var(--fg-muted); max-width: 52ch; }
+.out__facts code {
   font-family: var(--font-mono);
   font-size: 12.5px;
   padding: 1px 5px;
@@ -3574,69 +3818,65 @@
   background: var(--p-50);
   border-radius: 4px;
 }
-.out__ok {
-  flex: 0 0 auto;
-  width: 30px; height: 30px;
-  margin-top: 2px;
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
-  display: inline-grid;
-  place-items: center;
-  background: #fff;
-  color: var(--ink);
-}
 
-.zipcard {
-  margin: 0;
-  background: #fff;
-  border: 1.5px solid var(--ink);
-  border-radius: 14px;
-  box-shadow: var(--pop-lg);
-  transform: rotate(0.5deg);
-  overflow: hidden;
-}
-.zipcard figcaption {
+/* The listing: a document, not a panel. */
+.out__tree { margin: 0; padding-top: 6px; }
+.out__tree figcaption {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: center;
   gap: 16px;
-  padding: 13px 18px;
-  border-bottom: 1.5px solid var(--ink);
-  background: var(--amber);
+  padding: 0 2px 12px;
+  border-bottom: 2px solid var(--fg);
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 600;
   color: var(--fg);
 }
-.zipcard figcaption span { font-weight: 400; font-size: 11.5px; color: var(--fg-2); }
-.zipcard ol { margin: 0; padding: 8px 18px 6px; list-style: none; }
-.zipcard li {
+.out__tree figcaption span { font-weight: 400; font-size: 11.5px; color: var(--fg-faint); }
+.out__tree ol { margin: 0; padding: 6px 0 0; list-style: none; }
+.out__tree li {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 9px 0;
-  border-bottom: 1px dashed var(--border-2);
+  gap: 10px;
+  padding: 9px 2px;
+  border-bottom: 1px solid var(--border);
 }
-.zipcard li:last-child { border-bottom: 0; }
-.zipcard__f { font-family: var(--font-mono); font-size: 13px; color: var(--fg); }
-.zipcard__f.is-css { color: var(--p-700); font-weight: 700; }
-.zipcard li.is-dir .zipcard__f { color: var(--fg-muted); }
-.zipcard em {
+/* The leader: a print device. It fills whatever space the name and the note
+   leave, which is why it is its own flexible element. */
+.out__tree li::before { content: none; }
+.out__f {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--fg);
+  flex: 0 0 auto;
+}
+.out__tree li::after {
+  content: "";
+  flex: 1;
+  min-width: 24px;
+  border-bottom: 1px dotted var(--border-2);
+  transform: translateY(-3px);
+  order: 2;
+}
+.out__f { order: 1; }
+.out__tree em { order: 3; }
+/* The one file that carries every page's styling earns the accent. */
+.out__f.is-css { color: var(--p-700); font-weight: 600; }
+.out__tree li.is-dir .out__f { color: var(--fg-muted); }
+.out__tree em {
   font-style: normal;
   font-size: 11.5px;
-  color: var(--fg-dim);
+  color: var(--fg-faint);
   white-space: nowrap;
 }
-.zipcard__host {
-  margin: 0;
-  padding: 12px 18px;
-  border-top: 1.5px solid var(--ink);
+.out__host {
+  margin: 16px 0 0;
+  padding: 0 2px;
   font-size: 12.5px;
   line-height: 1.6;
   color: var(--fg-muted);
 }
-@media (max-width: 900px) { .zipcard { transform: none; } }
 
 /* A plan feature that is intended but not built yet. Listing it with the same
    tick as a shipped one is a claim the product cannot keep, so it reads
