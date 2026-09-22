@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="preload" as="image" href="assets/images/canvas/garage.webp?v=fa2c7fb367" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="assets/images/hero.webp?v=ca6adc2854" type="image/webp" fetchpriority="high" />
 <link rel="stylesheet" href="assets/css/base.css?v=c8980e65cb" />
-  <link rel="stylesheet" href="assets/css/pages.css?v=62287d30d9" />
+  <link rel="stylesheet" href="assets/css/pages.css?v=2b6098427f" />
 <link rel="canonical" href="https://blokza.com/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blokza.com/" />
@@ -157,6 +157,11 @@
   <main id="main">
     <!-- ========= HERO ========= -->
     <section class="hero">
+      <span class="hero__star" aria-hidden="true">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 0 L58 36 L100 50 L58 64 L50 100 L42 64 L0 50 L42 36 Z" fill="#c4b5fd" opacity="0.85"/>
+        </svg>
+      </span>
 
       <div class="container hero__layout">
         <div class="hero__copy" data-reveal>
@@ -189,29 +194,14 @@
           </div>
         </div>
 
-        <!--
-          The floating photograph, as approved on the board: the thing being
-          edited, loose beside the headline. Our purple selection on it —
-          ring, handles, tag — a collaborator's sky cursor drifting over it,
-          and the presence pill hung off its corner. It keeps the pool
-          rotation, and the faces in the pill keep theirs.
-        -->
-        <div class="hero__float" data-reveal data-canvas-pool="assets/images/canvas/garage.webp?v=fa2c7fb367 assets/images/canvas/laptop.webp?v=665bc5df37 assets/images/canvas/studio.webp?v=38f8ed55c3 assets/images/canvas/desk.webp?v=bbb3f3aef6 assets/images/canvas/lamp.webp?v=e1375e726b assets/images/canvas/cafe.webp?v=000d05c48b assets/images/canvas/structure.webp?v=9a8e861354 assets/images/canvas/lights.webp?v=d02d926a58 assets/images/canvas/notes.webp?v=615d1f17fc">
-          <div class="tile hero__img">
-            <span class="ph"><img src="assets/images/canvas/garage.webp?v=fa2c7fb367" width="880" height="560" alt="" decoding="async" /></span>
-            <span class="hero__imgtag">Image</span>
-            <i class="hnd"></i><i class="hnd"></i><i class="hnd"></i><i class="hnd"></i>
-            <span class="hero__cursor" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round" aria-hidden="true"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></svg></span>
-          </div>
-          <span class="hero__crew" aria-hidden="true">
-            <span class="avpile" data-faces-pool="assets/images/faces/ava.webp?v=ff118470df assets/images/faces/noor.webp?v=7ec47cdab8 assets/images/faces/finn.webp?v=5c8a1d1f2c assets/images/faces/mara.webp?v=510eeba225 assets/images/faces/theo.webp?v=11d1312a74 assets/images/faces/iris.webp?v=0eabf16236">
-              <span class="a1"><img src="assets/images/faces/ava.webp?v=ff118470df" width="48" height="48" alt="" decoding="async" /></span>
-              <span class="a2"><img src="assets/images/faces/noor.webp?v=7ec47cdab8" width="48" height="48" alt="" decoding="async" /></span>
-              <span class="a3"><img src="assets/images/faces/finn.webp?v=5c8a1d1f2c" width="48" height="48" alt="" decoding="async" /></span>
-            </span>
-            <b>3 editing &middot; published in 1.2s</b>
-          </span>
-        </div>
+        <div class="hero__illustration" data-reveal>
+          <div
+            class="hero__art"
+            role="img"
+            aria-label="BLOKZA Visual Builder"
+            oncontextmenu="return false"
+            ondragstart="return false"
+          ></div>
         </div>
       </div>
     </section>
@@ -229,9 +219,10 @@
           <div class="mockcard__bar">
             <b>Home</b>
             <span>northwind.studio</span>
+            <span class="mockcard__crew" aria-hidden="true"><span class="avpile" data-faces-pool="assets/images/faces/ava.webp?v=ff118470df assets/images/faces/noor.webp?v=7ec47cdab8 assets/images/faces/finn.webp?v=5c8a1d1f2c assets/images/faces/mara.webp?v=510eeba225 assets/images/faces/theo.webp?v=11d1312a74 assets/images/faces/iris.webp?v=0eabf16236"><span class="a1"><img src="assets/images/faces/ava.webp?v=ff118470df" width="48" height="48" alt="" decoding="async" /></span><span class="a2"><img src="assets/images/faces/noor.webp?v=7ec47cdab8" width="48" height="48" alt="" decoding="async" /></span><span class="a3"><img src="assets/images/faces/finn.webp?v=5c8a1d1f2c" width="48" height="48" alt="" decoding="async" /></span></span>3 editing</span>
             <span class="mockcard__publish"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Publish</span>
           </div>
-          <div class="mockcard__body">
+          <div class="mockcard__body" data-canvas-pool="assets/images/canvas/lights.webp?v=d02d926a58 assets/images/canvas/laptop.webp?v=665bc5df37 assets/images/canvas/studio.webp?v=38f8ed55c3 assets/images/canvas/notes.webp?v=615d1f17fc assets/images/canvas/garage.webp?v=fa2c7fb367 assets/images/canvas/desk.webp?v=bbb3f3aef6 assets/images/canvas/lamp.webp?v=e1375e726b assets/images/canvas/cafe.webp?v=000d05c48b assets/images/canvas/structure.webp?v=9a8e861354">
             <div class="mockcard__copy">
               <div class="sp-nav" aria-hidden="true">
                 <span class="sp-brand"><i></i>Northwind</span>
@@ -242,12 +233,12 @@
               <p class="sp-p">Brand, product and interiors from a small team in Lisbon.</p>
               <span class="sp-btn">See the work</span>
               <div class="sp-thumbs" aria-hidden="true">
-                <img src="assets/images/canvas/laptop.webp?v=665bc5df37" width="880" height="560" alt="" decoding="async" />
-                <img src="assets/images/canvas/studio.webp?v=38f8ed55c3" width="880" height="560" alt="" decoding="async" />
-                <img src="assets/images/canvas/notes.webp?v=615d1f17fc" width="880" height="560" alt="" decoding="async" />
+                <span class="tile sp-thumb"><span class="ph"><img src="assets/images/canvas/laptop.webp?v=665bc5df37" width="880" height="560" alt="" decoding="async" /></span></span>
+                <span class="tile sp-thumb"><span class="ph"><img src="assets/images/canvas/studio.webp?v=38f8ed55c3" width="880" height="560" alt="" decoding="async" /></span></span>
+                <span class="tile sp-thumb"><span class="ph"><img src="assets/images/canvas/notes.webp?v=615d1f17fc" width="880" height="560" alt="" decoding="async" /></span></span>
               </div>
             </div>
-            <img class="mockcard__media" src="assets/images/canvas/lights.webp?v=d02d926a58" width="880" height="560" alt="" decoding="async" />
+            <span class="tile mockcard__media"><span class="ph"><img src="assets/images/canvas/lights.webp?v=d02d926a58" width="880" height="560" alt="" decoding="async" /></span></span>
           </div>
         </div>
       </div>

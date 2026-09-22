@@ -4,82 +4,175 @@
    proper template + blog illustrations.
    ========================================================= */
 
-/* ===== Hero ===== */
+/* =================== HERO =================== */
 .hero {
   position: relative;
-  padding: 56px 0 40px;
+  padding: 56px 0 80px;
   overflow: hidden;
   background: #ffffff;
 }
 .hero > * { position: relative; z-index: 1; }
 
+/* Decorative purple star in the hero's top-right corner.
+   It used to be 220px at mid-height, which parked it on the astronaut's boot;
+   sending it behind the art hid all but two clipped slivers, because the
+   illustration is an opaque box. The empty sky above the planet is the one
+   spot that is reliably clear at any width, and a smaller star reads as an
+   accent there rather than a sticker. */
+.hero__star {
+  position: absolute;
+  top: 9%;
+  right: 2.5%;
+  width: 120px;
+  height: 120px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.85;
+  filter: drop-shadow(0 6px 16px rgba(124, 58, 237, 0.18));
+  animation: hero-star-spin 24s linear infinite;
+}
+.hero__star svg { width: 100%; height: 100%; display: block; }
+@keyframes hero-star-spin {
+  to { transform: rotate(360deg); }
+}
+@media (max-width: 980px) {
+  .hero__star { display: none; }
+}
+
+/* 2-column layout: copy left, illustration right */
 .hero__layout {
   display: grid;
-  grid-template-columns: 1.02fr 0.98fr;
-  gap: 56px;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
   align-items: center;
 }
 @media (max-width: 980px) {
-  .hero__layout { grid-template-columns: 1fr; gap: 48px; }
+  .hero__layout { grid-template-columns: 1fr; gap: 24px; }
+  .hero { text-align: center; padding-top: 32px; }
+  .hero__copy { order: 1; }
+  .hero__illustration { order: 0; }
 }
 
-.hero__badge {
+.hero__copy { position: relative; z-index: 2; max-width: 580px; }
+
+
+/* Live dot indicator */
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  margin-right: 2px;
+  vertical-align: middle;
+  position: relative;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  animation: live-pulse 2s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50%      { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+}
+
+
+/* Hero illustration (right side) */
+.hero__illustration {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  /* Subtle cursor parallax (vars set by site.js on .hero) */
+  translate: var(--parallax-x, 0px) var(--parallax-y, 0px);
+  /* Reveal (opacity/transform) gets a 0.15s stagger delay; translate must
+     stay at 0s delay or every parallax update lags and the scene stutters. */
+  transition: opacity 0.7s var(--ease) 0.15s, transform 0.7s var(--ease) 0.15s, translate 0.6s var(--ease);
+}
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.hero__illustration svg {
+  max-width: 560px;
+  width: 100%;
+}
+
+.hero__art {
+  width: 100%;
+  max-width: 620px;
+  aspect-ratio: 720 / 540;
+  background-image: url('../images/hero.webp?v=ca6adc2854');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Float lives here (not on .hero__illustration) so it can't fight the
+     data-reveal transform transition on the parent. */
+  animation: hero-float 6s ease-in-out infinite;
+  /* Not a real <img>: nothing to "save image as", nothing to drag out. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+
+.hero__title {
+  margin: 26px 0 22px;
+  font-size: clamp(2.6rem, 1.5rem + 4vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+.hero__title .accent {
+  display: inline-block;
+  color: var(--p-700);
+}
+.hero__sub {
+  max-width: 520px;
+  margin: 0;
+  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.28rem);
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+.hero__ctas {
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hero__meta {
+  margin-top: 20px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 22px;
-  padding: 8px 16px 8px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--fg-muted);
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-}
-.live-dot {
-  width: 8px; height: 8px;
-  border-radius: 999px;
-  background: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
-}
-.hero__title {
-  font-size: clamp(2.8rem, 1.6rem + 3.6vw, 4.6rem);
-  letter-spacing: -0.035em;
-  line-height: 1.02;
-}
-.hero__title .accent { color: var(--p-600); }
-.hero__sub {
-  margin: 22px 0 0;
-  font-size: 19px;
-  line-height: 1.55;
-  color: var(--fg-muted);
-  max-width: 460px;
-}
-.hero__ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
-.hero__meta {
-  display: flex;
+  gap: 28px;
   flex-wrap: wrap;
-  gap: 10px 22px;
-  margin-top: 26px;
-  font-size: 13.5px;
+  justify-content: flex-start;
+  font-size: 13px;
   color: var(--fg-dim);
 }
-.hero__meta span { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 980px) {
+  .hero__sub { margin: 0 auto; }
+  .hero__ctas { justify-content: center; }
+  .hero__meta { justify-content: center; }
+}
+.hero__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 .hero__meta svg { color: var(--p-600); flex: 0 0 auto; }
 
-/* The floating photograph: the thing being edited, loose beside the headline.
-   Our purple selection on it; a collaborator's sky cursor drifting over it. */
-.hero__float { position: relative; transform: rotate(1deg); }
-.hero__img { position: relative; height: 420px; border-radius: 10px; }
-.hero__img .ph {
+/* Photograph slots inside the mock: the tile is the frame, `.ph` the clipped
+   image, so the crossfade never disturbs layout. */
+.tile { position: relative; display: block; }
+.tile .ph {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   overflow: hidden;
   background: linear-gradient(135deg, var(--p-50), #fff);
-  box-shadow: 0 0 0 2px var(--p-500), 0 30px 60px -24px rgba(20, 16, 40, 0.35);
 }
-.hero__img img {
+.tile img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -88,68 +181,16 @@
   display: block;
   transition: opacity 0.6s var(--ease);
 }
-.hero__img img.is-out { opacity: 0; }
-.hnd {
-  position: absolute;
-  width: 9px; height: 9px;
-  background: #fff;
-  border: 2px solid var(--p-500);
-  border-radius: 2px;
-  z-index: 2;
-}
-.hnd:nth-of-type(1) { left: -5px;  top: -5px; }
-.hnd:nth-of-type(2) { right: -5px; top: -5px; }
-.hnd:nth-of-type(3) { left: -5px;  bottom: -5px; }
-.hnd:nth-of-type(4) { right: -5px; bottom: -5px; }
-.hero__imgtag {
-  position: absolute;
-  top: -11px; left: 12px;
-  font: 700 10.5px/1.7 var(--font-sans);
-  letter-spacing: 0.02em;
-  background: var(--p-500);
-  color: #fff;
-  padding: 1px 8px;
-  border-radius: 4px;
-  z-index: 3;
-}
-.hero__cursor {
-  position: absolute;
-  right: 54px; top: 50px;
-  color: #0ea5e9;
-  filter: drop-shadow(0 4px 8px rgba(15, 15, 20, 0.3));
-  z-index: 3;
-  animation: cursor-drift 9s var(--ease-in-out) infinite;
-}
-@keyframes cursor-drift {
-  0%, 100% { transform: translate(0, 0); }
-  30%      { transform: translate(-24px, 18px); }
-  65%      { transform: translate(14px, -10px); }
-}
-@media (prefers-reduced-motion: reduce) { .hero__cursor { animation: none; } }
-.hero__crew {
-  position: absolute;
-  right: -12px; bottom: -22px;
-  transform: rotate(-1deg);
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: #14152b;
-  color: #fff;
-  padding: 9px 15px 9px 11px;
-  border-radius: 999px;
-  box-shadow: 0 16px 32px -14px rgba(20, 16, 40, 0.5);
-  z-index: 4;
-}
-.hero__crew b { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.tile img.is-out { opacity: 0; }
 .avpile { display: inline-flex; align-items: center; }
 .avpile span {
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: 24px; height: 24px;
+  width: 22px; height: 22px;
   border-radius: 999px;
-  border: 2px solid #14152b;
-  margin-left: -7px;
+  border: 2px solid #fff;
+  margin-left: -6px;
   overflow: hidden;
 }
 .avpile span:first-child { margin-left: 0; }
@@ -166,12 +207,6 @@
   transition: opacity 0.55s var(--ease);
 }
 .avpile img.is-out { opacity: 0; }
-@media (max-width: 980px) { .hero__float { max-width: 560px; } .hero__img { height: 340px; } }
-@media (max-width: 720px) {
-  .hero__img { height: 250px; }
-  .hero__crew { right: 2px; }
-  .hero__cursor { right: 34px; top: 32px; }
-}
 
 /* ===== The finished page: one clean tab card ===== */
 .section-tight { padding: 40px 0 72px; }
@@ -192,6 +227,16 @@
 }
 .mockcard__bar b { font-size: 13px; font-weight: 700; }
 .mockcard__bar > span { font-size: 12.5px; color: var(--fg-dim); }
+.mockcard__crew {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-muted) !important;
+}
+.mockcard__crew + .mockcard__publish { margin-left: 0; }
 .mockcard__publish {
   margin-left: auto;
   display: inline-flex;
@@ -256,14 +301,8 @@
   border-radius: 5px;
 }
 .sp-thumbs { display: flex; gap: 12px; margin-top: 4px; }
-.sp-thumbs img { width: 33%; height: 74px; object-fit: cover; border-radius: 6px; }
-.mockcard__media {
-  display: block;
-  width: 100%;
-  height: 350px;
-  object-fit: cover;
-  border-radius: 8px;
-}
+.sp-thumb { width: 33%; height: 74px; border-radius: 6px; }
+.mockcard__media { width: 100%; height: 350px; border-radius: 8px; }
 @media (max-width: 880px) {
   .mockcard__body { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
   .mockcard__media { height: 220px; }
