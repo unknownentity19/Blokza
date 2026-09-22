@@ -208,55 +208,179 @@
 }
 .avpile img.is-out { opacity: 0; }
 
-/* ===== The finished page: one clean tab card ===== */
+/* ===== The editor, mid-drag: a gallery block on its way in ===== */
 .section-tight { padding: 40px 0 72px; }
-.mockcard {
+.edmock {
+  position: relative;
+  display: grid;
+  grid-template-columns: 172px minmax(0, 1fr);
   background: #fff;
   border: 1px solid var(--border);
   border-radius: var(--r-3xl);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
-.mockcard__bar {
+.edmock__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 14px;
+  border-right: 1px solid var(--border);
+}
+.edmock__ptitle {
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+.edchip {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 18px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-soft);
+  gap: 9px;
+  padding: 9px 11px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 15, 20, 0.04);
 }
-.mockcard__bar b { font-size: 13px; font-weight: 700; }
-.mockcard__bar > span { font-size: 12.5px; color: var(--fg-dim); }
-.mockcard__crew {
-  margin-left: auto;
+.edchip::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 13px;
+  background-image: radial-gradient(circle, #c4c8d4 1px, transparent 1.2px);
+  background-size: 5px 5px;
+  background-position: 0 1px;
+}
+.edchip svg { flex: none; color: var(--fg-faint); }
+/* The gallery card left its slot: it is the one floating over the canvas. */
+.edchip.is-lifted {
+  border-style: dashed;
+  color: var(--fg-faint);
+  background: var(--bg-soft);
+  box-shadow: none;
+}
+.edchip.is-lifted svg { opacity: 0.55; }
+.edmock__stage {
+  position: relative;
+  padding: 48px 44px 42px;
+  background:
+    radial-gradient(circle, #d9dce6 1px, transparent 1.1px) 0 0 / 18px 18px,
+    var(--bg-soft);
+}
+.edmock__crew {
+  position: absolute;
+  top: 12px;
+  right: 14px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  padding: 5px 12px 5px 7px;
+  font-size: 11.5px;
   font-weight: 600;
-  color: var(--fg-muted) !important;
+  color: var(--fg-muted);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
 }
-.mockcard__crew + .mockcard__publish { margin-left: 0; }
-.mockcard__publish {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff !important;
-  background: var(--p-700);
-  padding: 6px 13px;
-  border-radius: 5px;
+.edmock__page {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  padding: 22px 26px 30px;
 }
-.mockcard__body {
+.edmock__hero {
   display: grid;
-  grid-template-columns: 0.92fr 1.08fr;
-  gap: 32px;
-  padding: 30px 36px 36px;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 26px;
   align-items: center;
+  padding: 20px 0 4px;
 }
-.mockcard__copy { display: flex; flex-direction: column; gap: 14px; }
+.edmock__copy { display: flex; flex-direction: column; gap: 13px; }
+/* Selected on the canvas: the editor's outline and name tag. */
+.edmock__media {
+  width: 100%;
+  height: 230px;
+  border-radius: 4px;
+  outline: 2px solid var(--p-500);
+  outline-offset: -1px;
+}
+.edtag {
+  position: absolute;
+  bottom: 100%;
+  left: -1px;
+  z-index: 1;
+  padding: 3px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #fff;
+  background: var(--p-500);
+  border-radius: 3px 3px 0 0;
+}
+/* The drop indicator the editor draws: a bar with round caps. */
+.eddrop {
+  position: relative;
+  display: block;
+  height: 3px;
+  margin: 22px 1px 4px;
+  background: var(--p-600);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+.eddrop::before,
+.eddrop::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateY(-50%);
+  background: var(--p-600);
+  border-radius: 999px;
+}
+.eddrop::before { left: -3px; }
+.eddrop::after { right: -3px; }
+/* The block in hand, tilted under the cursor, previewing live. */
+.eddrag {
+  position: absolute;
+  right: 40px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 320px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--p-200);
+  border-radius: 10px;
+  box-shadow: 0 30px 60px -18px rgba(15, 15, 20, 0.35);
+  transform: rotate(-2.5deg);
+}
+.eddrag__bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--fg-muted);
+}
+.eddrag__row { display: flex; gap: 8px; }
+.eddrag__row .tile { width: 33.33%; height: 64px; border-radius: 5px; }
+.eddrag__cursor {
+  position: absolute;
+  right: -12px;
+  bottom: -13px;
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 2px 4px rgba(15, 15, 20, 0.35));
+}
 .sp-nav {
   display: flex;
   align-items: center;
@@ -300,12 +424,15 @@
   font-weight: 600;
   border-radius: 5px;
 }
-.sp-thumbs { display: flex; gap: 12px; margin-top: 4px; }
-.sp-thumb { width: 33%; height: 74px; border-radius: 6px; }
-.mockcard__media { width: 100%; height: 350px; border-radius: 8px; }
 @media (max-width: 880px) {
-  .mockcard__body { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
-  .mockcard__media { height: 220px; }
+  .edmock { grid-template-columns: 1fr; }
+  .edmock__panel { display: none; }
+  .edmock__stage { padding: 52px 16px 100px; }
+  .edmock__page { padding: 16px 16px 22px; }
+  .edmock__hero { grid-template-columns: 1fr; gap: 18px; padding-top: 14px; }
+  .edmock__media { height: 190px; }
+  .eddrag { right: 10px; bottom: 16px; width: 236px; transform: rotate(-2deg); }
+  .eddrag__row .tile { height: 48px; }
   .sp-links { display: none; }
 }
 
