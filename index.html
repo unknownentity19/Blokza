@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="preload" as="image" href="assets/images/hero.webp?v=ca6adc2854" type="image/webp" fetchpriority="high" />
 <link rel="stylesheet" href="assets/css/base.css?v=c8980e65cb" />
-  <link rel="stylesheet" href="assets/css/pages.css?v=b06ac7b44f" />
+  <link rel="stylesheet" href="assets/css/pages.css?v=9e2cd7e492" />
 <link rel="canonical" href="https://blokza.com/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blokza.com/" />
@@ -505,21 +505,27 @@
      ========================================================================= -->
     <section class="section" id="features">
       <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="kicker">The output</span>
-          <h2 class="reveal-words mt-3">What you publish is a folder you own</h2>
-          <p>No runtime, no build step, no framework. BLOKZA writes plain files and
-            hands them over.</p>
-        </div>
-
+        <!--
+          No centred mega-headline here. Every section on the page opened with
+          the same formula: uppercase kicker, a two-line 48px headline, one
+          summarising sentence, all centred. A formula applied five times reads
+          as a template, whatever the words say. This one is set like a
+          magazine spread instead: the claim on the left in running type, the
+          proof on the right typeset like a printed directory listing, dotted
+          leaders and all. Every number is measured from a real export.
+        -->
         <div class="out">
           <div class="out__facts" data-reveal>
+            <span class="kicker">The output</span>
+            <h2 class="out__h">You keep the files</h2>
+            <p class="out__lede">BLOKZA writes plain HTML and one stylesheet, then
+              hands them over. Nothing of ours runs inside your published site.</p>
             <dl>
               <div>
                 <dt>One stylesheet, every page</dt>
                 <dd>Styles compile to a single <code>styles.css</code> file, and not one
-                  <code>style</code> attribute is emitted anywhere &mdash; so a change
-                  to your type scale is one line, not a search across pages.</dd>
+                  <code>style</code> attribute is emitted anywhere. A change to your
+                  type scale is one line, not a search across pages.</dd>
               </div>
               <div>
                 <dt>Zero JavaScript</dt>
@@ -530,17 +536,14 @@
               <div>
                 <dt>Opens from a folder</dt>
                 <dd>Links between pages are flat filenames, so double-clicking
-                  <code>index.html</code> just works &mdash; no server, and no host
-                  that has to understand your routing.</dd>
+                  <code>index.html</code> just works, with no server and no host that
+                  has to understand your routing.</dd>
               </div>
             </dl>
-            <p class="out__note">A three-page site with a nav, hero, feature
-              section and footer exports to <b>24 KB</b> in six files, before
-              images.</p>
           </div>
 
           <figure class="out__tree" data-reveal style="transition-delay:.08s;">
-            <figcaption>northwind-studio.zip</figcaption>
+            <figcaption>northwind-studio.zip <span>6 files &middot; 24 KB</span></figcaption>
             <ol>
               <li><span class="out__f">index.html</span><em>page</em></li>
               <li><span class="out__f">about.html</span><em>page</em></li>
@@ -551,7 +554,7 @@
               <li class="is-dir"><span class="out__f">assets/</span><em>your images</em></li>
             </ol>
             <p class="out__host">Upload it to Netlify, Vercel, Cloudflare Pages,
-              GitHub Pages, S3 &mdash; or keep it.</p>
+              GitHub Pages, S3. Or keep it.</p>
           </figure>
         </div>
       </div>
@@ -562,8 +565,8 @@
       <div class="container">
         <div class="section-head" data-reveal>
           <span class="kicker">Templates</span>
-          <h2 class="reveal-words mt-3">Start from a beautiful blueprint</h2>
-          <p>Hand-crafted templates for every use case. Fully editable, production ready.</p>
+          <h2 class="reveal-words mt-3">Four places to start</h2>
+          <p>Each one is a complete, working site. Open it in the editor and start changing things.</p>
         </div>
 
         <div class="tpl-row" data-reveal-stagger>
@@ -618,7 +621,7 @@
         <div class="section-head" data-reveal>
           <span class="kicker">FAQ</span>
           <h2 class="reveal-words mt-3">Frequently Asked Questions</h2>
-          <p>Everything you need to know about BLOKZA.</p>
+          <p>Short answers here; the docs go deeper.</p>
         </div>
         <div class="faq" data-reveal-stagger style="max-width:780px;margin:48px auto 0;">
           <details>

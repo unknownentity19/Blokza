@@ -3774,30 +3774,42 @@
 
 /* ---------------------------------------------------------------- the output */
 /*
- * Deliberately not a card grid. This section replaced one that restated the
- * showcase above it, and three equal cards is exactly the shape that made them
- * interchangeable; a list of claims beside the actual file listing is a
- * different thing to look at.
+ * Set like a spread, not a section: kicker, headline and claims ragged-left in
+ * one column, the file listing beside them typeset like a printed directory —
+ * dotted leaders between name and note, hairline rules, no card chrome. The
+ * listing is the proof, so it gets the typography of a document rather than
+ * the border-and-shadow of a component.
  */
 .out {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
-  gap: 56px;
+  gap: 72px;
   align-items: start;
-  margin-top: 52px;
 }
-@media (max-width: 900px) { .out { grid-template-columns: 1fr; gap: 40px; } }
+@media (max-width: 900px) { .out { grid-template-columns: 1fr; gap: 44px; } }
 
-.out__facts dl { margin: 0; display: grid; gap: 30px; }
+.out__h {
+  margin: 14px 0 12px;
+  font-size: clamp(1.8rem, 1.3rem + 1.6vw, 2.6rem);
+  letter-spacing: -0.028em;
+}
+.out__lede {
+  margin: 0 0 34px;
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+  max-width: 46ch;
+}
+.out__facts dl { margin: 0; display: grid; gap: 26px; }
 .out__facts dt {
   font-family: var(--font-sans);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.015em;
   color: var(--fg);
-  margin-bottom: 7px;
+  margin-bottom: 6px;
 }
-.out__facts dd { margin: 0; font-size: 15px; line-height: 1.62; color: var(--fg-muted); }
+.out__facts dd { margin: 0; font-size: 14.5px; line-height: 1.62; color: var(--fg-muted); max-width: 52ch; }
 .out__facts code {
   font-family: var(--font-mono);
   font-size: 12.5px;
@@ -3806,45 +3818,49 @@
   background: var(--p-50);
   border-radius: 4px;
 }
-.out__note {
-  margin: 30px 0 0;
-  padding-top: 22px;
-  border-top: 1px solid var(--border);
-  font-size: 14px;
-  color: var(--fg-muted);
-}
-.out__note b { color: var(--fg); font-weight: 700; }
 
-/* The file listing. A real directory, so it is typeset like one. */
-.out__tree {
-  margin: 0;
-  background: var(--surface, #fff);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg, 12px);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
+/* The listing: a document, not a panel. */
+.out__tree { margin: 0; padding-top: 6px; }
 .out__tree figcaption {
-  padding: 12px 18px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--fg-muted);
-  background: var(--bg-soft);
-  border-bottom: 1px solid var(--border);
-}
-.out__tree ol { margin: 0; padding: 10px 0; list-style: none; counter-reset: none; }
-.out__tree li {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  padding: 7px 18px;
+  padding: 0 2px 12px;
+  border-bottom: 2px solid var(--fg);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
 }
+.out__tree figcaption span { font-weight: 400; font-size: 11.5px; color: var(--fg-faint); }
+.out__tree ol { margin: 0; padding: 6px 0 0; list-style: none; }
+.out__tree li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 2px;
+  border-bottom: 1px solid var(--border);
+}
+/* The leader: a print device. It fills whatever space the name and the note
+   leave, which is why it is its own flexible element. */
+.out__tree li::before { content: none; }
 .out__f {
   font-family: var(--font-mono);
   font-size: 13px;
   color: var(--fg);
+  flex: 0 0 auto;
 }
+.out__tree li::after {
+  content: "";
+  flex: 1;
+  min-width: 24px;
+  border-bottom: 1px dotted var(--border-2);
+  transform: translateY(-3px);
+  order: 2;
+}
+.out__f { order: 1; }
+.out__tree em { order: 3; }
 /* The one file that carries every page's styling earns the accent. */
 .out__f.is-css { color: var(--p-700); font-weight: 600; }
 .out__tree li.is-dir .out__f { color: var(--fg-muted); }
@@ -3855,13 +3871,11 @@
   white-space: nowrap;
 }
 .out__host {
-  margin: 0;
-  padding: 14px 18px;
+  margin: 16px 0 0;
+  padding: 0 2px;
   font-size: 12.5px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--fg-muted);
-  background: var(--bg-soft);
-  border-top: 1px solid var(--border);
 }
 
 /* A plan feature that is intended but not built yet. Listing it with the same
