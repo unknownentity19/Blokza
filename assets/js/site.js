@@ -424,7 +424,8 @@
     const pool = (root.dataset.canvasPool || root.dataset.facesPool || "")
       .split(/\s+/).filter(Boolean);
     // Nothing to rotate between if the pool is no bigger than what is shown.
-    if (slots.length < 2 || pool.length <= slots.length) return null;
+    // One slot is fine — the hero's floating photograph rotates alone.
+    if (slots.length < 1 || pool.length <= slots.length) return null;
 
     const shown = slots.map((slot) => {
       const img = slot.querySelector("img");
@@ -473,12 +474,16 @@
         if (!ok || !current.isConnected) return;
         incoming.className = "is-out";
         slot.appendChild(incoming);
-        // Two frames: one for the node to land at opacity 0, one to give the
-        // transition something to animate from.
-        requestAnimationFrame(() => requestAnimationFrame(() => {
+        // A timeout, not requestAnimationFrame: rAF never fires in a hidden
+        // document, and the cleanup below is a timer that fires anyway — so a
+        // swap that began while the page was occluded flipped nothing, then
+        // removed the visible photograph and left the invisible one. 50ms is
+        // at least one frame whenever the page is being painted, so the
+        // crossfade still animates; hidden, the classes still end up right.
+        window.setTimeout(() => {
           incoming.classList.remove("is-out");
           current.classList.add("is-out");
-        }));
+        }, 50);
         shown[index] = src;
         window.setTimeout(() => current.remove(), 700);
         turn += 1;
