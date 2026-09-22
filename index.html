@@ -10,10 +10,10 @@
   <link rel="icon" href="assets/images/favicon.png?v=560ddc146c" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="preload" as="image" href="assets/images/hero.webp?v=ca6adc2854" type="image/webp" fetchpriority="high" />
-<link rel="stylesheet" href="assets/css/base.css?v=c8980e65cb" />
-  <link rel="stylesheet" href="assets/css/pages.css?v=9e2cd7e492" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="assets/images/canvas/garage.webp?v=fa2c7fb367" type="image/webp" fetchpriority="high" />
+<link rel="stylesheet" href="assets/css/base.css?v=51dbd39ea6" />
+  <link rel="stylesheet" href="assets/css/pages.css?v=fd1bbde054" />
 <link rel="canonical" href="https://blokza.com/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://blokza.com/" />
@@ -156,179 +156,111 @@
 
   <main id="main">
     <!-- ========= HERO ========= -->
+    <!-- =========================================================== HERO ====
+      Direction C, from the approved board: the page sits on the editor's own
+      dot grid, the headline wears our purple selection, and the photograph
+      being edited floats loose beside it wearing a collaborator's sky ring —
+      two selections, never the same colour. The photograph keeps the pool
+      rotation; the presence pill keeps the rotating faces.
+    ======================================================================= -->
     <section class="hero">
-      <span class="hero__star" aria-hidden="true">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <path d="M50 0 L58 36 L100 50 L58 64 L50 100 L42 64 L0 50 L42 36 Z" fill="#c4b5fd" opacity="0.85"/>
-        </svg>
-      </span>
-
       <div class="container hero__layout">
         <div class="hero__copy" data-reveal>
-          <p class="hero__badge">
-            <span class="live-dot" aria-hidden="true"></span>
-            Visual builder &middot; plain HTML and one stylesheet out
-          </p>
-
           <h1 class="hero__title">
             Design it visually.<br/>
-            <span class="accent">Ship it today.</span>
+            <span class="hero__sel">Ship it today.<i class="hnd"></i><i class="hnd"></i><i class="hnd"></i><i class="hnd"></i><b class="hero__seltag">Heading</b></span>
           </h1>
           <p class="hero__sub">
             Drag components onto a canvas, tweak every pixel, and publish to a global edge with one click.
           </p>
           <div class="hero__ctas">
-            <a class="btn btn-primary btn-lg" data-magnetic="0.18" href="app/index.html">
-              Editor
-              <span class="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10" /> <path d="M7 17 17 7" /></svg></span>
+            <a class="btn btn-primary btn-lg" href="app/index.html">
+              Open the editor
+              <span class="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
             </a>
-            <a class="btn btn-secondary btn-lg" href="pricing.html">
-              See pricing
-              <span class="arr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10" /> <path d="M7 17 17 7" /></svg></span>
-            </a>
+            <a class="btn btn-secondary btn-lg" href="pricing.html">See pricing</a>
           </div>
-          <div class="hero__meta">
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg> Free plan, no card needed</span>
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg> Exports plain HTML and CSS</span>
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg> No lock-in</span>
-          </div>
+          <p class="hero__meta">Free plan, no card needed &middot; Exports plain HTML and CSS &middot; No lock-in</p>
         </div>
 
-        <div class="hero__illustration" data-reveal>
-          <div
-            class="hero__art"
-            role="img"
-            aria-label="BLOKZA Visual Builder"
-            oncontextmenu="return false"
-            ondragstart="return false"
-          ></div>
-        </div>
-      </div>
-    </section>
-
-    <!--
-      This block had a closing section tag and no opening one — the file has been
-      unbalanced since before the hero work, one stray closer against ten openers.
-      A bare landmark rather than `.section-tight`, so nothing about the spacing moves.
-    -->
-    <section aria-label="Editor preview">
-      <!--
-        The hero's proof is the work, not the tool.
-
-        Three panels of editor chrome is what every builder puts here, and a
-        literal picture of software is busy by its nature. So the centre of the
-        stage is a finished site — a small studio's page with one large
-        photograph and real type — in a plain light browser frame. The editor
-        shows up only as evidence laid over it: a selection ring on the image,
-        two property cards overlapping the frame's edges, a status card with the
-        people in the document, and a collaborator's cursor mid-edit on the
-        headline. The page is the one bright thing; everything that is "tool"
-        is dark and small.
-      -->
-      <div class="product-preview" data-reveal-scale>
-        <div class="stage">
-          <div class="site">
-            <div class="site__bar">
-              <span class="site__dots"><i></i><i></i><i></i></span>
-              <span class="site__url"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> northwind.studio</span>
-            </div>
-            <div class="site__page" data-canvas-pool="assets/images/canvas/garage.webp?v=fa2c7fb367 assets/images/canvas/laptop.webp?v=665bc5df37 assets/images/canvas/studio.webp?v=38f8ed55c3 assets/images/canvas/desk.webp?v=bbb3f3aef6 assets/images/canvas/lamp.webp?v=e1375e726b assets/images/canvas/cafe.webp?v=000d05c48b assets/images/canvas/structure.webp?v=9a8e861354 assets/images/canvas/lights.webp?v=d02d926a58 assets/images/canvas/notes.webp?v=615d1f17fc">
-              <nav class="sp-nav" aria-hidden="true">
-                <span class="sp-brand"><i></i>Northwind</span>
-                <span class="sp-links"><span>Work</span><span>Studio</span><span>Journal</span></span>
-                <span class="sp-navbtn">Contact</span>
-              </nav>
-              <div class="sp-hero">
-                <div class="sp-copy">
-                  <p class="sp-h">A studio for things <mark>worth making.</mark></p>
-                  <p class="sp-p">Brand, product and interiors from a small team in Lisbon. Twenty years of quiet work for people who notice.</p>
-                  <span class="sp-btn">See the work <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
-                </div>
-                <div class="tile sp-media is-selected">
-                  <span class="ph"><img src="assets/images/canvas/garage.webp?v=fa2c7fb367" width="880" height="560" alt="" decoding="async" /></span>
-                  <span class="seltag">Image</span><i class="hnd"></i><i class="hnd"></i><i class="hnd"></i><i class="hnd"></i>
-                </div>
-              </div>
-              <div class="sp-cards">
-                <div class="tile"><span class="ph"><img src="assets/images/canvas/laptop.webp?v=665bc5df37" width="880" height="560" alt="" decoding="async" /></span></div>
-                <div class="tile"><span class="ph"><img src="assets/images/canvas/studio.webp?v=38f8ed55c3" width="880" height="560" alt="" decoding="async" /></span></div>
-                <div class="tile"><span class="ph"><img src="assets/images/canvas/desk.webp?v=bbb3f3aef6" width="880" height="560" alt="" decoding="async" /></span></div>
-              </div>
-            </div>
-            <div class="mock-cursor" aria-hidden="true">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></svg>
-              <span class="label">Maya</span>
-            </div>
+        <div class="hero__float" data-reveal data-canvas-pool="assets/images/canvas/garage.webp?v=fa2c7fb367 assets/images/canvas/laptop.webp?v=665bc5df37 assets/images/canvas/studio.webp?v=38f8ed55c3 assets/images/canvas/desk.webp?v=bbb3f3aef6 assets/images/canvas/lamp.webp?v=e1375e726b assets/images/canvas/cafe.webp?v=000d05c48b assets/images/canvas/structure.webp?v=9a8e861354 assets/images/canvas/lights.webp?v=d02d926a58 assets/images/canvas/notes.webp?v=615d1f17fc">
+          <div class="tile hero__img">
+            <span class="ph"><img src="assets/images/canvas/garage.webp?v=fa2c7fb367" width="880" height="560" alt="" decoding="async" /></span>
+            <span class="hero__imgtag">Image</span>
+            <span class="hero__cursor" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round" aria-hidden="true"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></svg></span>
           </div>
-
-          <!-- Describes the selected image; the ring on the page is the same purple. -->
-          <aside class="fcard fcard--style" aria-hidden="true">
-            <p class="fcard__title">Image <span>Hero › Media</span></p>
-            <div class="mock-row"><span class="label">Fit</span><span class="mock-seg"><b class="is-on">Cover</b><b>Contain</b></span></div>
-            <div class="mock-row"><span class="label">Radius</span><span class="value mock-step"><b>−</b>12<b>+</b></span></div>
-            <div class="mock-row"><span class="label">Shadow</span><span class="value">lg</span></div>
-            <div class="mock-row mock-row--field"><span class="label">Alt</span><span class="value">Northwind studio</span></div>
-          </aside>
-
-          <!-- Maya's card: what she is editing, in her colour. -->
-          <aside class="fcard fcard--type" aria-hidden="true">
-            <p class="fcard__title fcard__title--peer">Heading <span>Maya is editing</span></p>
-            <div class="mock-row"><span class="label">Font</span><span class="value">Inter</span></div>
-            <div class="mock-pair">
-              <div class="mock-row"><span class="label">Size</span><span class="value">56</span></div>
-              <div class="mock-row"><span class="label">Line</span><span class="value">1.05</span></div>
-            </div>
-            <div class="mock-row"><span class="label">Weight</span><span class="mock-seg"><b>500</b><b class="is-on">700</b></span></div>
-          </aside>
-
-          <!-- Presence and publish state, straddling the frame's bottom edge. -->
-          <aside class="fcard fcard--status" aria-hidden="true">
+          <span class="hero__crew" aria-hidden="true">
             <span class="avpile" data-faces-pool="assets/images/faces/ava.webp?v=ff118470df assets/images/faces/noor.webp?v=7ec47cdab8 assets/images/faces/finn.webp?v=5c8a1d1f2c assets/images/faces/mara.webp?v=510eeba225 assets/images/faces/theo.webp?v=11d1312a74 assets/images/faces/iris.webp?v=0eabf16236">
               <span class="a1"><img src="assets/images/faces/ava.webp?v=ff118470df" width="48" height="48" alt="" decoding="async" /></span>
               <span class="a2"><img src="assets/images/faces/noor.webp?v=7ec47cdab8" width="48" height="48" alt="" decoding="async" /></span>
               <span class="a3"><img src="assets/images/faces/finn.webp?v=5c8a1d1f2c" width="48" height="48" alt="" decoding="async" /></span>
             </span>
-            <span class="fcard__status">3 editing</span>
-            <span class="fcard__sep"></span>
-            <span class="fcard__live"><i></i>Live</span>
-            <span class="fcard__status">Published in 1.2s</span>
-            <span class="fcard__publish"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Publish</span>
-          </aside>
-        </div>
+            <b>3 editing &middot; published in 1.2s</b>
+          </span>
         </div>
       </div>
     </section>
 
-    <!-- ========= PROBLEM ========= -->
+    <!-- The finished page: what the floating pieces above become. A plain
+         screenshot in a tab card — the editing chrome all lives in the hero,
+         so this one is clean. -->
+    <section class="section" aria-label="A site built in BLOKZA">
+      <div class="container">
+        <div class="mockcard" data-reveal-scale>
+          <div class="mockcard__bar">
+            <b>Home</b>
+            <span>northwind.studio</span>
+            <span class="mockcard__publish"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Publish</span>
+          </div>
+          <div class="mockcard__body">
+            <div class="mockcard__copy">
+              <div class="sp-nav" aria-hidden="true">
+                <span class="sp-brand"><i></i>Northwind</span>
+                <span class="sp-links"><span>Work</span><span>Studio</span><span>Journal</span></span>
+                <span class="sp-navbtn">Contact</span>
+              </div>
+              <p class="sp-h">A studio for things <mark>worth making.</mark></p>
+              <p class="sp-p">Brand, product and interiors from a small team in Lisbon.</p>
+              <span class="sp-btn">See the work</span>
+              <div class="sp-thumbs" aria-hidden="true">
+                <img src="assets/images/canvas/laptop.webp?v=665bc5df37" width="880" height="560" alt="" decoding="async" />
+                <img src="assets/images/canvas/studio.webp?v=38f8ed55c3" width="880" height="560" alt="" decoding="async" />
+                <img src="assets/images/canvas/notes.webp?v=615d1f17fc" width="880" height="560" alt="" decoding="async" />
+              </div>
+            </div>
+            <img class="mockcard__media" src="assets/images/canvas/lights.webp?v=d02d926a58" width="880" height="560" alt="" decoding="async" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= PROBLEM =========
+      Three cards pinned a hair off square, the last one on the amber sticky:
+      the sequence ends on the consequence, so it gets the colour.
+    ============================== -->
     <section class="section">
       <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="kicker">The Problem</span>
-          <h2 class="reveal-words mt-3">Why marketing sites take so long to ship</h2>
-          <p>Most of the delay isn't the design work, it's the handoffs, the tooling, and the back-and-forth between teams. Here's how it usually goes.</p>
+        <div class="prob-head" data-reveal>
+          <h2 class="reveal-words">Why marketing sites take so long to ship</h2>
+          <p>Most of the delay is not the design work. It is the handoffs.</p>
         </div>
 
-        <!--
-          Told, not charted. This used to be four KPI cards counting up to
-          invented percentages: a dashboard wearing a marketing hat, sourced
-          from nowhere. Three plain sentences about how the work actually
-          stalls say more and claim nothing that cannot be backed.
-        -->
-        <div class="prob" data-reveal>
-          <div class="prob__item">
-            <strong>The mockup goes to a developer.</strong>
+        <div class="prob" data-reveal-stagger>
+          <article class="prob__card">
+            <h3>The mockup goes to a developer.</h3>
             <p>It comes back two weeks later, close but not quite: the spacing drifted, the type is wrong, and fixing either means another ticket.</p>
-          </div>
-          <div class="prob__item">
-            <strong>The one-word edit waits for a deploy.</strong>
-            <p>A headline change sits in a queue behind real engineering work, because the marketing site lives in the same pipeline as the product.</p>
-          </div>
-          <div class="prob__item">
-            <strong>So the page stops changing.</strong>
+          </article>
+          <article class="prob__card prob__card--mid">
+            <h3>The one-word edit waits for a deploy.</h3>
+            <p>A headline change sits in a queue behind real engineering work, because the site lives in the product's pipeline.</p>
+          </article>
+          <article class="prob__card prob__card--amber">
+            <h3>So the page stops changing.</h3>
             <p>The site that should move weekly stays frozen at launch, because every small improvement costs somebody a conversation.</p>
-          </div>
+          </article>
         </div>
-      </section>
+      </div>
+    </section>
 
     <!-- ========= TABBED SHOWCASE ========= -->
     <section class="section">
@@ -505,55 +437,30 @@
      ========================================================================= -->
     <section class="section" id="features">
       <div class="container">
-        <!--
-          No centred mega-headline here. Every section on the page opened with
-          the same formula: uppercase kicker, a two-line 48px headline, one
-          summarising sentence, all centred. A formula applied five times reads
-          as a template, whatever the words say. This one is set like a
-          magazine spread instead: the claim on the left in running type, the
-          proof on the right typeset like a printed directory listing, dotted
-          leaders and all. Every number is measured from a real export.
-        -->
         <div class="out">
           <div class="out__facts" data-reveal>
-            <span class="kicker">The output</span>
-            <h2 class="out__h">You keep the files</h2>
+            <h2 class="out__h reveal-words">You keep the files</h2>
             <p class="out__lede">BLOKZA writes plain HTML and one stylesheet, then
               hands them over. Nothing of ours runs inside your published site.</p>
-            <dl>
-              <div>
-                <dt>One stylesheet, every page</dt>
-                <dd>Styles compile to a single <code>styles.css</code> file, and not one
-                  <code>style</code> attribute is emitted anywhere. A change to your
-                  type scale is one line, not a search across pages.</dd>
-              </div>
-              <div>
-                <dt>Zero JavaScript</dt>
-                <dd>The exported HTML contains no <code>&lt;script&gt;</code> tag at all:
-                  nothing to hydrate, nothing to wait for, nothing that can break in
-                  a browser you did not test.</dd>
-              </div>
-              <div>
-                <dt>Opens from a folder</dt>
-                <dd>Links between pages are flat filenames, so double-clicking
-                  <code>index.html</code> just works, with no server and no host that
-                  has to understand your routing.</dd>
-              </div>
-            </dl>
+            <div class="out__rows">
+          <div class="out__row"><span class="out__ok"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span><b>One stylesheet, every page.</b> A type-scale change is one line, not a search across pages.</span></div>
+          <div class="out__row"><span class="out__ok"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span><b>Zero JavaScript.</b> No <code>script</code> tag at all: nothing to hydrate, nothing that can break in a browser you did not test.</span></div>
+          <div class="out__row"><span class="out__ok"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span><b>Opens from a folder.</b> Double-clicking <code>index.html</code> just works. No server, and no host that has to understand your routing.</span></div>
+            </div>
           </div>
 
-          <figure class="out__tree" data-reveal style="transition-delay:.08s;">
+          <figure class="zipcard" data-reveal style="transition-delay:.08s;">
             <figcaption>northwind-studio.zip <span>6 files &middot; 24 KB</span></figcaption>
             <ol>
-              <li><span class="out__f">index.html</span><em>page</em></li>
-              <li><span class="out__f">about.html</span><em>page</em></li>
-              <li><span class="out__f">pricing.html</span><em>page</em></li>
-              <li><span class="out__f is-css">styles.css</span><em>all three pages</em></li>
-              <li><span class="out__f">sitemap.xml</span><em>generated</em></li>
-              <li><span class="out__f">robots.txt</span><em>generated</em></li>
-              <li class="is-dir"><span class="out__f">assets/</span><em>your images</em></li>
+              <li><span class="zipcard__f">index.html</span><em>page</em></li>
+              <li><span class="zipcard__f">about.html</span><em>page</em></li>
+              <li><span class="zipcard__f">pricing.html</span><em>page</em></li>
+              <li><span class="zipcard__f is-css">styles.css</span><em>all three pages</em></li>
+              <li><span class="zipcard__f">sitemap.xml</span><em>generated</em></li>
+              <li><span class="zipcard__f">robots.txt</span><em>generated</em></li>
+              <li class="is-dir"><span class="zipcard__f">assets/</span><em>your images</em></li>
             </ol>
-            <p class="out__host">Upload it to Netlify, Vercel, Cloudflare Pages,
+            <p class="zipcard__host">Upload it to Netlify, Vercel, Cloudflare Pages,
               GitHub Pages, S3. Or keep it.</p>
           </figure>
         </div>
@@ -690,6 +597,6 @@
     </div>
   </footer>
 
-  <script src="assets/js/site.js?v=90a3aec917" defer></script>
+  <script src="assets/js/site.js?v=e4cf336c91" defer></script>
 </body>
 </html>
